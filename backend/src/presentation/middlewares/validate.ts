@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { ZodSchema } from "zod";
+import ApiError from "../../shared/utils/apiError.js";
 
 const validate =
     (schema: ZodSchema) =>
@@ -9,10 +10,10 @@ const validate =
 
                 next();
             } catch (error: any) {
-                return res.status(400).json({
-                    success: false,
-                    message: error.errors,
-                });
+                const message =
+                    error.issues?.[0]?.message || "Validation Error";
+
+                next(new ApiError(400, message));
             }
         };
 

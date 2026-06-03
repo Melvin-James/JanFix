@@ -4,6 +4,7 @@ import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 import { Role } from "../../../domain/enums/Role.js";
 import type { User } from "../../../domain/entities/User.js";
+import ApiError from "../../../shared/utils/apiError.js";
 
 export class RegisterUserUseCase {
 
@@ -14,7 +15,7 @@ export class RegisterUserUseCase {
         const existingUser = await this.userRepository.findByEmail(dto.email);
 
         if (existingUser) {
-            throw new Error("User already exists");
+            throw new ApiError(409,"User already exists");
         }
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
