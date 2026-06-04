@@ -7,4 +7,6 @@ export interface User {
     password: string;
     role: Role;
     isVerified: boolean;
+    otp?: string;
+    otpExpiresAt?: Date;
 }
