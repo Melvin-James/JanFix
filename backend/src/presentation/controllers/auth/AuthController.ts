@@ -8,11 +8,16 @@ import { RegisterUserUseCase } from "../../../application/use-cases/auth/Registe
 
 import { UserRepository } from "../../../infrastructure/repositories/UserRepository.js";
 
+import EmailService from "../../../infrastructure/services/EmailService.js";
+
 const userRepository = new UserRepository();
 
+const emailService = new EmailService();
+
 const registerUserUseCase = new RegisterUserUseCase(
-    userRepository
-);
+   userRepository,
+   emailService
+)
 
 export const register = asyncHandler(
     async (
