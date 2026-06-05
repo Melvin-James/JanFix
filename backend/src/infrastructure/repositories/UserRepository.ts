@@ -11,4 +11,16 @@ export class UserRepository implements IUserRepository {
   async create(user: User): Promise<User> {
     return await UserModel.create(user);
   }
+
+  async update(user: User): Promise<User> {
+
+    const updatedUser =
+      await UserModel.findByIdAndUpdate(
+        user.id,
+        user,
+        { new: true }
+      );
+
+    return updatedUser as User;
+  }
 }

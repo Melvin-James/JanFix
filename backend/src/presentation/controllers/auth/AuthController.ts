@@ -10,34 +10,65 @@ import { UserRepository } from "../../../infrastructure/repositories/UserReposit
 
 import EmailService from "../../../infrastructure/services/EmailService.js";
 
+import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js";
+
+import { VerifyOtpUseCase } from "../../../application/use-cases/auth/VerifyOtpUseCase.js";
+
 const userRepository = new UserRepository();
 
-const emailService = new EmailService();
 
-const registerUserUseCase = new RegisterUserUseCase(
-   userRepository,
-   emailService
-)
+
+const verifyOtpUseCase = new VerifyOtpUseCase(userRepository);
 
 export const register = asyncHandler(
-    async (
-        req: Request,
-        res: Response
-    ): Promise<void> => {
+  async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
 
 
-        const dto: RegisterUserDTO = req.body;
+    const dto: RegisterUserDTO = req.body;
 
-        const createdUser = await registerUserUseCase.execute(dto);
+    const userRepository =
+      new UserRepository();
 
-        res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            data: {
-                id: createdUser.id,
-                name: createdUser.name,
-                email: createdUser.email,
-                role: createdUser.role,
-            },
-        });
+    const emailService =
+      new EmailService();
+
+    const registerUserUseCase =
+      new RegisterUserUseCase(
+        userRepository,
+        emailService
+      );
+
+    const createdUser = await registerUserUseCase.execute(dto);
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: {
+        id: createdUser.id,
+        name: createdUser.name,
+        email: createdUser.email,
+        role: createdUser.role,
+      },
     });
+  });
+
+export const verifyOtp = asyncHandler(
+  async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+
+    const dto: VerifyOtpDTO = req.body;
+
+    await verifyOtpUseCase.execute(dto);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP verified successfully",
+    });
+
+  }
+);

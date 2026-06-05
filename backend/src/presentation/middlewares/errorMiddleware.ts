@@ -12,7 +12,7 @@ const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-
+  console.error(err)
   let statusCode = 500;
   let message = "Internal Server Error";
 
@@ -20,7 +20,6 @@ const errorMiddleware = (
     statusCode = err.statusCode;
     message = err.message;
   }
-
   res.status(statusCode).json({
     success: false,
     message,
