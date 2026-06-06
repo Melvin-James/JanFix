@@ -14,11 +14,13 @@ import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js
 
 import { VerifyOtpUseCase } from "../../../application/use-cases/auth/VerifyOtpUseCase.js";
 
+import { RedisOtpRepository } from "../../../infrastructure/repositories/RedisOtpRepository.js";
+
 const userRepository = new UserRepository();
 
+const otpRepository = new RedisOtpRepository();
 
-
-const verifyOtpUseCase = new VerifyOtpUseCase(userRepository);
+const verifyOtpUseCase = new VerifyOtpUseCase(userRepository, otpRepository);
 
 export const register = asyncHandler(
   async (
@@ -38,6 +40,7 @@ export const register = asyncHandler(
     const registerUserUseCase =
       new RegisterUserUseCase(
         userRepository,
+        otpRepository,
         emailService
       );
 

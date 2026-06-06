@@ -8,12 +8,13 @@ import type { User } from "../../../domain/entities/User.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import generateOtp from "../../../shared/utils/generateOtp.js";
 import type { IEmailService } from "../../../domain/interface/IEmailService.js";
+import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
 
 export class RegisterUserUseCase {
 
     constructor(
         private userRepository: IUserRepository,
-
+        private otpRepository: IOtpRepository,
         private emailService: IEmailService
     ) { }
 
@@ -29,10 +30,6 @@ export class RegisterUserUseCase {
 
         const hashedOtp = await bcrypt.hash(otp, 10);
 
-        const otpExpiresAt = new Date(
-            Date.now() + 5 * 60 * 1000
-        );
-
         const hashedPassword = await bcrypt.hash(dto.password, 10);
 
         const user: User = {
@@ -41,11 +38,11 @@ export class RegisterUserUseCase {
             password: hashedPassword,
             role: Role.USER,
             isVerified: false,
-            otp: hashedOtp,
-            otpExpiresAt
         };
 
         const createdUser = await this.userRepository.create(user);
+
+        await this.otpRepository.saveOtp(createdUser.email, hashedOtp);
 
         await this.emailService.sendOtpEmail(
             createdUser.email,
