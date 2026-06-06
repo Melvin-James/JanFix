@@ -1,3 +1,4 @@
+import { env } from "../../infrastructure/config/env.js";
 import nodemailer from "nodemailer";
 import type { IEmailService } from "../../domain/interface/IEmailService.js";
 
@@ -15,8 +16,8 @@ class EmailService implements IEmailService {
       secure: false,
 
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: env.EMAIL_USER,
+        pass: env.EMAIL_PASS,
       },
 
     });
