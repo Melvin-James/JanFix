@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Role } from "../../../domain/enums/Role.js";
 
 export const registerSchema = z.object({
     name: z
@@ -9,7 +10,8 @@ export const registerSchema = z.object({
         .regex(
             /^[A-Za-z\s]+$/,
             "Name can only contain alphabets and spaces"
-        ),
+        )
+        .optional(),
 
     email: z
         .string()
@@ -37,4 +39,43 @@ export const registerSchema = z.object({
             /[^A-Za-z0-9]/,
             "Password must contain at least one special character"
         ),
-});
+
+    confirmPassword: z
+        .string(),
+
+    role: z.enum([
+        Role.USER,
+        Role.SERVICE_PROVIDER
+    ]),
+})
+    .refine(
+
+        (data) =>
+            data.password === data.confirmPassword,
+
+        {
+
+            message: "Passwords do not match",
+
+            path: ["confirmPassword"],
+        }
+    )
+    .refine(
+
+        (data) => {
+
+            if (data.role === Role.USER) {
+
+                return !!data.name?.trim();
+            }
+
+            return true;
+        },
+
+        {
+
+            message: "Name is required for users",
+
+            path: ["name"],
+        }
+    );

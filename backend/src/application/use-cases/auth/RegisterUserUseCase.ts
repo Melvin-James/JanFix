@@ -33,10 +33,12 @@ export class RegisterUserUseCase {
         const hashedPassword = await bcrypt.hash(dto.password, 10);
 
         const user: User = {
-            name: dto.name,
+            ...(dto.name && {
+                name: dto.name
+            }),
             email: dto.email,
             password: hashedPassword,
-            role: Role.USER,
+            role: dto.role,
             isVerified: false,
         };
 
@@ -49,9 +51,8 @@ export class RegisterUserUseCase {
             otp
         );
 
-        return UserMapper.toRegisterResponse({
-            ...createdUser,
-            id: (createdUser as any)._id.toString(),
-        });
+        return UserMapper.toRegisterResponse(
+            createdUser
+        );
     }
 }
