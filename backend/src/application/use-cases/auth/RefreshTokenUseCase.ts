@@ -1,10 +1,15 @@
 import ApiError from "../../../shared/utils/apiError.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { User } from "../../../domain/entities/User.js";
+import { UserMapper } from "../../mappers/UserMapper.js";
+import type { IRefreshTokenUseCase } from "../usecase interfaces/IRefreshTokenUseCase.js";
 
-export class RefreshTokenUseCase {
+export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     constructor(
 
         private jwtService: IJwtService,
@@ -16,7 +21,7 @@ export class RefreshTokenUseCase {
 
         refreshToken: string
 
-    ): Promise<string> {
+    ): Promise<{ accessToken: string; user: User }> {
 
         let decoded: { userId: string; };
 
@@ -33,19 +38,19 @@ export class RefreshTokenUseCase {
         } catch {
 
             throw new ApiError(
-                401,
-                "Invalid refresh token"
+                HttpStatusCode.UNAUTHORIZED,
+                AppMessages.ERROR.INVALID_REFRESH_TOKEN
             );
         }
 
         const user = await this.userRepository.findById(decoded.userId);
 
         if (!user) {
-            throw new ApiError(401, "User not found");
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
         }
 
         const accessToken = this.jwtService.generateAccessToken(user.id as string, user.role);
 
-        return accessToken;
+        return { accessToken, user: UserMapper.toAuthResponse(user) as any };
     }
 }

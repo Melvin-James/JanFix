@@ -2,16 +2,6 @@ import { z } from "zod";
 import { Role } from "../../../domain/enums/Role.js";
 
 export const registerSchema = z.object({
-    name: z
-        .string()
-        .trim()
-        .min(3, "Name must be at least 3 characters")
-        .max(50, "Name cannot exceed 50 characters")
-        .regex(
-            /^[A-Za-z\s]+$/,
-            "Name can only contain alphabets and spaces"
-        )
-        .optional(),
 
     email: z
         .string()
@@ -60,22 +50,3 @@ export const registerSchema = z.object({
             path: ["confirmPassword"],
         }
     )
-    .refine(
-
-        (data) => {
-
-            if (data.role === Role.USER) {
-
-                return !!data.name?.trim();
-            }
-
-            return true;
-        },
-
-        {
-
-            message: "Name is required for users",
-
-            path: ["name"],
-        }
-    );

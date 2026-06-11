@@ -1,4 +1,6 @@
 import type { Response, NextFunction } from "express";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../shared/constants/messages.js";
 
 import ApiError from "../../shared/utils/apiError.js";
 
@@ -18,12 +20,12 @@ export const authorizeRoles = (
         next: NextFunction
 
     ): void => {
-        if (!req.user){ 
-            throw new ApiError(401, "Unauthorized"); 
+        if (!req.user) {
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
         }
 
         if (!allowedRoles.includes(req.user.role)) {
-            throw new ApiError(403,"Forbidden");
+            throw new ApiError(HttpStatusCode.FORBIDDEN, AppMessages.ERROR.FORBIDDEN);
         }
         next();
     };

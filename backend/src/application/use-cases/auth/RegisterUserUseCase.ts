@@ -1,4 +1,6 @@
-import bcrypt from "bcryptjs";
+import { hashData } from "../../../shared/utils/hashUtil.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
 import type { RegisterResponseDTO } from "../../dto/auth/RegisterResponseDTO.js";
 import { UserMapper } from "../../mappers/UserMapper.js";
@@ -9,8 +11,9 @@ import ApiError from "../../../shared/utils/apiError.js";
 import generateOtp from "../../../shared/utils/generateOtp.js";
 import type { IEmailService } from "../../../domain/interface/IEmailService.js";
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+import type { IRegisterUserUseCase } from "../usecase interfaces/IRegisterUserUseCase.js";
 
-export class RegisterUserUseCase {
+export class RegisterUserUseCase implements IRegisterUserUseCase {
 
     constructor(
         private userRepository: IUserRepository,
@@ -23,19 +26,16 @@ export class RegisterUserUseCase {
         const existingUser = await this.userRepository.findByEmail(dto.email);
 
         if (existingUser) {
-            throw new ApiError(409, "User already exists");
+            throw new ApiError(HttpStatusCode.CONFLICT, AppMessages.ERROR.USER_ALREADY_EXISTS);
         }
 
         const otp = generateOtp();
 
-        const hashedOtp = await bcrypt.hash(otp, 10);
+        const hashedOtp = await hashData(otp);
 
-        const hashedPassword = await bcrypt.hash(dto.password, 10);
+        const hashedPassword = await hashData(dto.password);
 
         const user: User = {
-            ...(dto.name && {
-                name: dto.name
-            }),
             email: dto.email,
             password: hashedPassword,
             role: dto.role,
@@ -51,8 +51,6 @@ export class RegisterUserUseCase {
             otp
         );
 
-        return UserMapper.toRegisterResponse(
-            createdUser
-        );
+        return UserMapper.toAuthResponse(createdUser);
     }
 }

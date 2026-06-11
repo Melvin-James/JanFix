@@ -1,4 +1,6 @@
-import bcrypt from "bcryptjs";
+import { compareData } from "../../../shared/utils/hashUtil.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { VerifyOtpDTO } from "../../dto/auth/VerifyOtpDTO.js";
 
@@ -7,8 +9,9 @@ import ApiError from "../../../shared/utils/apiError.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+import type { IVerifyOtpUseCase } from "../usecase interfaces/IVerifyOtpUseCase.js";
 
-export class VerifyOtpUseCase {
+export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
     constructor(
         private userRepository: IUserRepository,
@@ -24,32 +27,32 @@ export class VerifyOtpUseCase {
         );
 
         if (!user) {
-            throw new ApiError(404, "User not found");
+            throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.USER_NOT_FOUND);
         }
 
         if (user.isVerified) {
-            throw new ApiError(400, "User already verified");
+            throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.USER_ALREADY_VERIFIED);
         }
 
         const storedOtp = await this.otpRepository.getOtp(dto.email);
 
         if (!storedOtp) {
-            throw new ApiError(400, "OTP expired or not found");
+            throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.OTP_EXPIRED_OR_NOT_FOUND);
         }
 
-        const isOtpValid = await bcrypt.compare(
+        const isOtpValid = await compareData(
             dto.otp = dto.otp.trim(),
             storedOtp
         )
 
         if (!isOtpValid) {
-            throw new ApiError(400, "Invalid OTP");
+            throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.INVALID_OTP);
         }
 
         user.isVerified = true;
 
         await this.otpRepository.deleteOtp(dto.email);
 
-        await this.userRepository.update(user);
+        await this.userRepository.updateUser(user);
     }
 }

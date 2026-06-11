@@ -1,64 +1,82 @@
-import type { IUserRepository } from "../../domain/interface/IUserRepository.js";
-import type { User } from "../../domain/entities/User.js";
-import UserModel from "../models/UserModel.js";
-import ApiError from "../../shared/utils/apiError.js";
+import type { IUserRepository }
+from "../../domain/interface/IUserRepository.js";
 
-export class UserRepository implements IUserRepository {
+import type { User }
+from "../../domain/entities/User.js";
 
-  private mapToEntity(document: any): User {
+import UserModel
+from "../models/UserModel.js";
 
-    return {
+import { BaseRepository }
+from "./base/BaseRepository.js";
 
-      id: document._id.toString(),
+import { UserMapper }
+from "../mappers/UserMapper.js";
 
-      name: document.name,
+import ApiError
+from "../../shared/utils/apiError.js";
 
-      email: document.email,
+import { HttpStatusCode }
+from "../../shared/enums/HttpStatusCode.js";
 
-      password: document.password,
+import { AppMessages }
+from "../../shared/constants/messages.js";
 
-      role: document.role,
+export class UserRepository
 
-      isVerified: document.isVerified,
-    };
+  extends BaseRepository<User>
+
+  implements IUserRepository {
+
+  constructor() {
+
+    super(
+
+      UserModel,
+
+      UserMapper.toEntity
+    );
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await UserModel.findOne({ email });
+  async findByEmail(
+    email: string
+  ): Promise<User | null> {
+
+    const user =
+      await UserModel.findOne({
+        email
+      });
+
     if (!user) {
+
       return null;
     }
-    return this.mapToEntity(user);
+
+    return UserMapper.toEntity(
+      user
+    );
   }
 
-  async create(user: User): Promise<User> {
-    const createdUser = await UserModel.create(user);
-    return this.mapToEntity(createdUser);
-  }
-
-  async update(user: User): Promise<User> {
+  async updateUser(
+    user: User
+  ): Promise<User> {
 
     const updatedUser =
-      await UserModel.findByIdAndUpdate(
-        user.id,
-        user,
-        { new: true }
+      await super.update(
+        user.id as string,
+        user
       );
 
     if (!updatedUser) {
-      throw new ApiError(404, 'User Not Found')
-    }
-    return this.mapToEntity(updatedUser);
-  }
 
-  async findById(id: string): Promise<User | null> {
+      throw new ApiError(
 
-    const user = await UserModel.findById(id);
+        HttpStatusCode.NOT_FOUND,
 
-    if (!user) {
-      return null;
+        AppMessages.ERROR.USER_NOT_FOUND
+      );
     }
 
-    return this.mapToEntity(user);
+    return updatedUser;
   }
 }

@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
 import type { ZodSchema } from "zod";
 import ApiError from "../../shared/utils/apiError.js";
 
@@ -13,7 +14,7 @@ const validate =
                 const message =
                     error.issues?.[0]?.message || "Validation Error";
 
-                next(new ApiError(400, message));
+                next(new ApiError(HttpStatusCode.BAD_REQUEST, message));
             }
         };
 

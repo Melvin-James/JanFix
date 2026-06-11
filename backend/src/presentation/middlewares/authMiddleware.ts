@@ -1,4 +1,6 @@
 import type { Response, NextFunction } from "express";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../shared/constants/messages.js";
 
 import JwtService from "../../infrastructure/services/JwtService.js";
 
@@ -16,13 +18,13 @@ export const authenticate = asyncHandler(
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            throw new ApiError(401, "Unauthorized");
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
         }
 
         const token = authHeader.split(" ")[1];
 
         if (!token) {
-            throw new ApiError(401, "Unauthorized");
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
         }
 
         try {
@@ -49,8 +51,8 @@ export const authenticate = asyncHandler(
         } catch {
 
             throw new ApiError(
-                401,
-                "Invalid or expired token"
+                HttpStatusCode.UNAUTHORIZED,
+                AppMessages.ERROR.INVALID_OR_EXPIRED_TOKEN
             );
         }
 

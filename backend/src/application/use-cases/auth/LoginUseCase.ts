@@ -1,4 +1,6 @@
-import bcrypt from "bcryptjs";
+import { compareData } from "../../../shared/utils/hashUtil.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { LoginDTO } from "../../dto/auth/LoginDTO.js";
 
@@ -9,8 +11,10 @@ import ApiError from "../../../shared/utils/apiError.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import { UserMapper } from "../../mappers/UserMapper.js";
+import type { ILoginUseCase } from "../usecase interfaces/ILoginUseCase.js";
 
-export class LoginUseCase {
+export class LoginUseCase implements ILoginUseCase {
     constructor(
 
         private userRepository: IUserRepository,
@@ -20,17 +24,17 @@ export class LoginUseCase {
         const user = await this.userRepository.findByEmail(dto.email);
 
         if (!user) {
-            throw new ApiError(401, "Invalid credentials");
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
         }
 
         if (!user.isVerified) {
-            throw new ApiError(401, "Please verify your account");
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.PLEASE_VERIFY_ACCOUNT);
         }
 
-        const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+        const isPasswordValid = await compareData(dto.password, user.password);
 
         if (!isPasswordValid) {
-            throw new ApiError(401, "Invalid credentials");
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
         }
 
         const accessToken = this.jwtService.generateAccessToken(user.id as string, user.role);
@@ -38,23 +42,9 @@ export class LoginUseCase {
         const refreshToken = this.jwtService.generateRefreshToken(user.id as string);
 
         return {
-
             accessToken,
-
             refreshToken,
-
-            user: {
-
-                id: user.id as string,
-
-                name: user.name,
-
-                email: user.email,
-
-                role: user.role,
-
-                isVerified: user.isVerified,
-            },
+            user: UserMapper.toAuthResponse(user) as any,
         };
     }
 }

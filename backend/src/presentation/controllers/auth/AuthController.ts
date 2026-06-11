@@ -1,65 +1,34 @@
 import type { Request, Response } from "express";
-
 import asyncHandler from "../../../shared/utils/asyncHandler.js";
-
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 import type { RegisterUserDTO } from "../../../application/dto/auth/RegisterUserDTO.js";
-
-import { RegisterUserUseCase } from "../../../application/use-cases/auth/RegisterUserUseCase.js";
-
-import { UserRepository } from "../../../infrastructure/repositories/UserRepository.js";
-
-import EmailService from "../../../infrastructure/services/EmailService.js";
-
 import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js";
-
-import { VerifyOtpUseCase } from "../../../application/use-cases/auth/VerifyOtpUseCase.js";
-
-import { RedisOtpRepository } from "../../../infrastructure/repositories/RedisOtpRepository.js";
-
 import type { LoginDTO } from "../../../application/dto/auth/LoginDTO.js";
-
-import { LoginUseCase } from "../../../application/use-cases/auth/LoginUseCase.js";
-
-import JwtService from "../../../infrastructure/services/JwtService.js";
-
 import { setAuthCookies } from "../../../shared/utils/setAuthCookies.js";
-
-import { RefreshTokenUseCase } from "../../../application/use-cases/auth/RefreshTokenUseCase.js";
 import ApiError from "../../../shared/utils/apiError.js";
 
-const userRepository = new UserRepository();
+// Use Cases
+import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/IRegisterUserUseCase.js";
+import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase interfaces/IVerifyOtpUseCase.js";
+import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/ILoginUseCase.js";
+import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/IRefreshTokenUseCase.js";
 
-const otpRepository = new RedisOtpRepository();
+export class AuthController {
+  constructor(
+    private registerUserUseCase: IRegisterUserUseCase,
+    private verifyOtpUseCase: IVerifyOtpUseCase,
+    private loginUseCase: ILoginUseCase,
+    private refreshTokenUseCase: IRefreshTokenUseCase
+  ) {}
 
-const verifyOtpUseCase = new VerifyOtpUseCase(userRepository, otpRepository);
-
-export const register = asyncHandler(
-  async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-
-
+  public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: RegisterUserDTO = req.body;
+    const createdUser = await this.registerUserUseCase.execute(dto);
 
-    const userRepository =
-      new UserRepository();
-
-    const emailService =
-      new EmailService();
-
-    const registerUserUseCase =
-      new RegisterUserUseCase(
-        userRepository,
-        otpRepository,
-        emailService
-      );
-
-    const createdUser = await registerUserUseCase.execute(dto);
-
-    res.status(201).json({
+    res.status(HttpStatusCode.CREATED).json({
       success: true,
-      message: "User registered successfully",
+      message: AppMessages.SUCCESS.USER_REGISTERED,
       data: {
         id: createdUser.id,
         name: createdUser.name,
@@ -69,116 +38,61 @@ export const register = asyncHandler(
     });
   });
 
-export const verifyOtp = asyncHandler(
-  async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-
+  public verifyOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: VerifyOtpDTO = req.body;
+    await this.verifyOtpUseCase.execute(dto);
 
-    await verifyOtpUseCase.execute(dto);
-
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       success: true,
-      message: "OTP verified successfully",
+      message: AppMessages.SUCCESS.OTP_VERIFIED,
     });
+  });
 
-  }
-);
-
-export const login = asyncHandler(
-
-  async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-
+  public login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: LoginDTO = req.body;
-
-    const userRepository = new UserRepository();
-
-    const jwtService = new JwtService();
-
-    const loginUseCase = new LoginUseCase(userRepository, jwtService);
-
-    const result = await loginUseCase.execute(dto);
+    const result = await this.loginUseCase.execute(dto);
 
     setAuthCookies(res, result.refreshToken);
 
-    res.status(200).json({
-
+    res.status(HttpStatusCode.OK).json({
       success: true,
-
-      message: "Login successful",
-
+      message: AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
       data: {
-
-        accessToken:
-          result.accessToken,
-
+        accessToken: result.accessToken,
         user: result.user,
       },
     });
-  }
-);
+  });
 
-export const refreshToken = asyncHandler(
-
-  async (req: Request, res: Response): Promise<void> => {
-
+  public refreshToken = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      throw new ApiError(401, "Refresh token missing");
+      throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.REFRESH_TOKEN_MISSING);
     }
 
-    const jwtService = new JwtService();
+    const result = await this.refreshTokenUseCase.execute(refreshToken);
 
-    const userRepository = new UserRepository();
-
-    const refreshTokenUseCase = new RefreshTokenUseCase(jwtService, userRepository);
-
-    const newAccessToken = await refreshTokenUseCase.execute(refreshToken);
-
-    res.status(200).json({
-
+    res.status(HttpStatusCode.OK).json({
       success: true,
-
-      message: "Access token refreshed",
-
+      message: AppMessages.SUCCESS.TOKEN_REFRESHED,
       data: {
-        accessToken:
-          newAccessToken,
+        accessToken: result.accessToken,
+        user: result.user,
       },
     });
+  });
 
-  }
-);
-
-export const logout = asyncHandler(
-
-  async (_req: Request, res: Response): Promise<void> => {
-    res.clearCookie(
-
-      "refreshToken",
-
-      {
-
-        httpOnly: true,
-
-        secure: false,
-
-        sameSite: "strict",
-      }
-    );
-
-    res.status(200).json({
-
-      success: true,
-
-      message:
-        "Logged out successfully",
+  public logout = asyncHandler(async (_req: Request, res: Response): Promise<void> => {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false, // Update to true in production if HTTPS
+      sameSite: "strict",
     });
-  }
-);
+
+    res.status(HttpStatusCode.OK).json({
+      success: true,
+      message: AppMessages.SUCCESS.LOGGED_OUT,
+    });
+  });
+}
