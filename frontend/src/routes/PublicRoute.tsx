@@ -37,7 +37,7 @@ function PublicRoute({children}: PublicRouteProps) {
 
       return (
 
-        <Navigate to="/provider/onboarding" replace/>
+        <Navigate to="/provider/onboarding/step-1" replace/>
 
       );
     }

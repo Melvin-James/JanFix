@@ -9,16 +9,15 @@ import { verifyOtp } from "../services/authService";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { verifyOtpSchema } from "../validations/verifyOtpSchema";
+import { verifyOtpSchema, type VerifyOtpFormData } from "../validations/verifyOtpSchema";
 
-type FormValues = { otp: string };
 
 function VerifyOtpPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const email: string | undefined = location.state?.email;
 
-    const { handleSubmit, setValue } = useForm<FormValues>({
+    const { handleSubmit, setValue } = useForm<VerifyOtpFormData>({
 
         resolver:
             zodResolver(
@@ -96,8 +95,12 @@ function VerifyOtpPage() {
         focusInput(Math.min(pasted.length, 5));
     };
 
-    const onSubmit = async (data: FormValues) => {
+    const onSubmit = async (data: VerifyOtpFormData) => {
         setError("");
+        if(!email){
+            setError("missing email address");
+            return;
+        }
         try {
             setLoading(true);
             await verifyOtp({ email, otp: data.otp });

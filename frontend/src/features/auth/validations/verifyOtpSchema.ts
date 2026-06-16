@@ -15,3 +15,5 @@ export const verifyOtpSchema =
         "OTP must be 6 digits"
       ),
   });
+
+  export type VerifyOtpFormData = z.infer<typeof verifyOtpSchema>;

@@ -4,19 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, User, Wrench } from "lucide-react";
-import { registerSchema } from "../validations/registerSchema";
-import type { RegisterFormData } from "../types/registerTypes";
+import { registerSchema, type RegisterFormData } from "../validations/registerSchema";
 import { registerUser } from "../services/authService";
 import axios from "axios";
+import FormError from "../../../components/UI/FormError";
 
-// Reserved-height error line so layout never shifts
-function FieldError({ msg }: { msg?: string }) {
-  return (
-    <p className="mt-1 min-h-[10px] text-xs text-red-500 leading-[10px]">
-      {msg ?? "\u00A0"}
-    </p>
-  );
-}
 
 function RegisterPage() {
 
@@ -48,9 +40,7 @@ function RegisterPage() {
 
       setLoading(true);
 
-      const res = await registerUser(data);
-
-      console.log(res.data);
+      await registerUser(data);
 
       navigate("/verify-otp", { state: { email: data.email } });
 
@@ -146,7 +136,7 @@ function RegisterPage() {
                 placeholder="name@example.com"
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
-              <FieldError msg={errors.email?.message as string} />
+              <FormError message={errors.email?.message as string} />
             </div>
 
             <div className="mt-2">
@@ -167,7 +157,7 @@ function RegisterPage() {
                   {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              <FieldError msg={errors.password?.message as string} />
+              <FormError message={errors.password?.message as string} />
             </div>
 
             <div className="mt-2">
@@ -179,7 +169,7 @@ function RegisterPage() {
                 {...register("confirmPassword")}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
-              <FieldError msg={errors.confirmPassword?.message as string} />
+              <FormError message={errors.confirmPassword?.message as string} />
             </div>
 
             {/* Role selector — fixed height cards, no shift */}

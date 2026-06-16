@@ -4,59 +4,52 @@ export abstract class BaseRepository<T> {
 
     protected model: any,
 
-    protected toEntity:
-      (document: any) => T
+    protected toEntity: (document: any) => T
+
   ) { }
 
   async create(data: Partial<T>): Promise<T> {
 
-    const createdDocument =
-      await this.model.create(data);
+    const createdDocument = await this.model.create(data);
 
-    return this.toEntity(
-      createdDocument
-    );
+    return this.toEntity(createdDocument);
+
   }
 
-  async findById(
-    id: string
-  ): Promise<T | null> {
+  async findById(id: string): Promise<T | null> {
 
-    const document =
-      await this.model.findById(id);
+    const document = await this.model.findById(id);
 
     if (!document) {
 
       return null;
+
     }
 
-    return this.toEntity(
-      document
-    );
+    return this.toEntity(document);
+
   }
 
-  async update(
-    id: string,
-    data: Partial<T>
-  ): Promise<T | null> {
+  async update(id: string, data: Partial<T>): Promise<T | null> {
 
-    const updatedDocument =
-      await this.model.findByIdAndUpdate(
+    const updatedDocument = await this.model.findByIdAndUpdate(
 
-        id,
+      id,
 
-        data,
+      data,
 
-        { new: true }
-      );
+      { new: true }
+
+    );
 
     if (!updatedDocument) {
-
+      
       return null;
+    
     }
 
-    return this.toEntity(
-      updatedDocument
-    );
+
+    return this.toEntity(updatedDocument);
+    
   }
 }

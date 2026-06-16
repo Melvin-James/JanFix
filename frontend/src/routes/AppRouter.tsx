@@ -12,7 +12,15 @@ import PublicRoute from "./PublicRoute";
 
 import HomePage from "../pages/HomePage";
 
-import ProviderOnboardingPage from "../pages/provider/ProviderOnboardingPage";
+import ProviderStep1Page from "../features/provider/pages/ProviderStep1Page";
+
+import ProviderStep2Page from "../features/provider/pages/ProviderStep2Page";
+
+import ProviderReviewPage from "../features/provider/pages/ProviderReviewPage";
+
+import ProviderWelcomePage from "../features/provider/pages/ProviderWelcomePage";
+
+import RoleProtectedRoute from "./RoleProtectedRoute";
 
 function AppRouter() {
 
@@ -82,15 +90,57 @@ function AppRouter() {
 
                 <Route
 
-                    path="/provider/onboarding"
+                    path="/provider/onboarding/step-1"
 
                     element={
 
-                        <ProtectedRoute>
+                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
 
-                            <ProviderOnboardingPage />
+                            <ProviderStep1Page />
 
-                        </ProtectedRoute>
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+
+                    path="/provider/onboarding/step-2"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
+
+                            <ProviderStep2Page />
+
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+
+                    path="/provider/onboarding/review"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
+
+                            <ProviderReviewPage />
+
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+
+                    path="/provider/welcome"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
+
+                            <ProviderWelcomePage />
+
+                        </RoleProtectedRoute>
                     }
                 />
 

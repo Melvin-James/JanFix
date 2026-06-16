@@ -44,8 +44,12 @@ const authController = new AuthController(
 const router = express.Router();
 
 router.post("/register", validate(registerSchema), authController.register);
+
 router.post("/verify-otp", validate(verifyOtpSchema), authController.verifyOtp);
+
 router.post("/login", validate(loginSchema), authController.login);
+
+router.post("/logout", authController.logout);
 
 router.get("/me", authenticate, (req: AuthRequest, res) => {
     res.status(HttpStatusCode.OK).json({ success: true, message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED, user: req.user, });
@@ -59,6 +63,5 @@ router.get("/admin-test", authenticate, authorizeRoles(Role.ADMIN), (req, res) =
 });
 
 router.post("/refresh-token", authController.refreshToken);
-router.post("/logout", authController.logout);
 
 export default router;

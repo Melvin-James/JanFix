@@ -1,0 +1,5 @@
+export enum ProviderType {
+  INDIVIDUAL = "INDIVIDUAL",
+  NGO = "NGO",
+  VOLUNTEER_GROUP = "VOLUNTEER_GROUP",
+}

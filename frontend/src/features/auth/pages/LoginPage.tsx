@@ -1,54 +1,55 @@
 // LoginPage.tsx
 import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+
+import { Link } from "react-router-dom";
+
 import { Eye, EyeOff } from "lucide-react";
+
 import { loginUser } from "../services/authService";
+
 import { useAuthStore } from "../../../store/authStore";
 
-const schema = z.object({
-  email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+import { loginSchema, type LoginFormData } from "../validations/loginSchema";
 
-type FormValues = z.infer<typeof schema>;
-
-function FieldError({ message }: { message?: string }) {
-  return (
-    <p className="min-h-[18px] text-xs text-red-500 leading-[18px]">
-      {message || "\u00A0"}
-    </p>
-  );
-}
+import FormError from "../../../components/UI/FormError";
 
 function LoginPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+
+  const {register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+
+    resolver: zodResolver(loginSchema),
+
     defaultValues: { email: "", password: "" },
+
     mode: "onTouched",
+
   });
 
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
+
   const [serverError, setServerError] = useState<string>("");
+
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: LoginFormData) => {
+
     try {
+
       setLoading(true);
+
       setServerError("");
+
       const response = await loginUser(data);
+
       const { accessToken, user } = response.data;
 
       setAuth(accessToken, user);
-
 
     } catch (err: any) {
 
@@ -63,10 +64,15 @@ function LoginPage() {
 
   const handleGoogle = async () => {
     try {
+
       // await googleAuth();
+
     } catch (err) {
+
       console.error(err);
+
       setServerError("Google sign-in failed");
+      
     }
   };
 
@@ -113,7 +119,7 @@ function LoginPage() {
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 {...register("email")}
               />
-              <FieldError message={errors.email?.message} />
+              <FormError message={errors.email?.message} />
             </div>
 
             {/* Password */}
@@ -145,7 +151,7 @@ function LoginPage() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              <FieldError message={errors.password?.message} />
+              <FormError message={errors.password?.message as string} />
             </div>
 
             {/* Server error — reserved height to prevent shift */}

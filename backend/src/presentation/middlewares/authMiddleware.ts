@@ -1,5 +1,7 @@
 import type { Response, NextFunction } from "express";
+
 import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+
 import { AppMessages } from "../../shared/constants/messages.js";
 
 import JwtService from "../../infrastructure/services/JwtService.js";
@@ -46,7 +48,7 @@ export const authenticate = asyncHandler(
                 role: decoded.role,
             };
 
-            next();
+            return next();
 
         } catch {
 
@@ -56,6 +58,5 @@ export const authenticate = asyncHandler(
             );
         }
 
-        next();
     }
 );

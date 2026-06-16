@@ -7,12 +7,11 @@ const validate =
     (schema: ZodSchema) =>
         (req: Request, res: Response, next: NextFunction) => {
             try {
-                schema.parse(req.body);
+                req.body = schema.parse(req.body);
 
                 next();
             } catch (error: any) {
-                const message =
-                    error.issues?.[0]?.message || "Validation Error";
+                const message = error.issues?.[0]?.message || "Validation Error";
 
                 next(new ApiError(HttpStatusCode.BAD_REQUEST, message));
             }
