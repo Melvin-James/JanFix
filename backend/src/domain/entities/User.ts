@@ -1,10 +1,22 @@
 import { Role } from "../enums/Role.js";
 
+import type { ProviderProfile } from "./ProviderProfile.js";
+
 export interface User {
+
     id?: string;
-    name?: string;
+
+    fullName: string;
+
     email: string;
+
     password: string;
-    role: Role;
+
+    roles: Role[];
+
     isVerified: boolean;
+
+    providerProfile?: ProviderProfile
+    
 }
+

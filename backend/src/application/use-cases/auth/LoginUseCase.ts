@@ -1,5 +1,7 @@
 import { compareData } from "../../../shared/utils/hashUtil.js";
+
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+
 import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { LoginDTO } from "../../dto/auth/LoginDTO.js";
@@ -11,7 +13,9 @@ import ApiError from "../../../shared/utils/apiError.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+
 import { UserMapper } from "../../mappers/UserMapper.js";
+
 import type { ILoginUseCase } from "../usecase interfaces/ILoginUseCase.js";
 
 export class LoginUseCase implements ILoginUseCase {
@@ -37,7 +41,7 @@ export class LoginUseCase implements ILoginUseCase {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
         }
 
-        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.role);
+        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles);
 
         const refreshToken = this.jwtService.generateRefreshToken(user.id as string);
 

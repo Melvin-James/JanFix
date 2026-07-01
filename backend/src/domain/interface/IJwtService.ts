@@ -1,6 +1,8 @@
+import type { Role } from "../enums/Role.js";
+
 export interface IJwtService {
 
-    generateAccessToken(userId: string, role: string): string;
+    generateAccessToken(userId: string, roles: Role[]): string;
 
     generateRefreshToken(userId: string): string;
 

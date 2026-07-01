@@ -1,9 +1,6 @@
-import type { ServiceProvider }
-from "../../../domain/entities/ServiceProvider.js";
+import type { ProviderProfile } from "../../../domain/entities/ProviderProfile.js";
 
 export interface IGetProviderProfileUseCase {
 
-    execute(
-        userId: string
-    ): Promise<ServiceProvider>;
+    execute(userId: string): Promise<ProviderProfile>;
 }

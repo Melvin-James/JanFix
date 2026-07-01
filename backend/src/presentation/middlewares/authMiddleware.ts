@@ -11,6 +11,7 @@ import ApiError from "../../shared/utils/apiError.js";
 import type { AuthRequest } from "../../shared/types/AuthRequest.js";
 
 import asyncHandler from "../../shared/utils/asyncHandler.js";
+import type { Role } from "../../domain/enums/Role.js";
 
 const jwtService = new JwtService();
 
@@ -38,14 +39,14 @@ export const authenticate = asyncHandler(
 
                     userId: string;
 
-                    role: string;
+                    roles: Role[];
                 };
 
             req.user = {
 
                 userId: decoded.userId,
 
-                role: decoded.role,
+                roles: decoded.roles,
             };
 
             return next();

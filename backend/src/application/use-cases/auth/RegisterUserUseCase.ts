@@ -36,9 +36,15 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
         const hashedPassword = await hashData(dto.password);
 
         const user: User = {
+
+            fullName: dto.fullName,
+
             email: dto.email,
+
             password: hashedPassword,
-            role: dto.role,
+
+            roles: [Role.USER],
+            
             isVerified: false,
         };
 

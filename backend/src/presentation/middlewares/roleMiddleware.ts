@@ -1,14 +1,18 @@
 import type { Response, NextFunction } from "express";
+
 import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+
 import { AppMessages } from "../../shared/constants/messages.js";
 
 import ApiError from "../../shared/utils/apiError.js";
 
 import type { AuthRequest } from "../../shared/types/AuthRequest.js";
 
+import type { Role } from "../../domain/enums/Role.js";
+
 export const authorizeRoles = (
 
-    ...allowedRoles: string[]
+    ...allowedRoles: Role[]
 
 ) => {
     return (
@@ -24,9 +28,12 @@ export const authorizeRoles = (
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
         }
 
-        if (!allowedRoles.includes(req.user.role)) {
+        const hasRequiredRole = req.user.roles.some(role => allowedRoles.includes(role));
+
+        if (!hasRequiredRole) {
             throw new ApiError(HttpStatusCode.FORBIDDEN, AppMessages.ERROR.FORBIDDEN);
         }
+
         next();
     };
 };

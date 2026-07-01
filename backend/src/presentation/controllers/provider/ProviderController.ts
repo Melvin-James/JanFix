@@ -8,7 +8,7 @@ import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
 
-import type { ICompleteProviderStep1UseCase } from "../../../application/use-cases/usecase interfaces/ICompleteProviderStep1UseCase.js";
+import type { IStartProviderOnboardingUseCase } from "../../../application/use-cases/usecase interfaces/IStartProviderOnboardingUseCase.js";
 
 import type { ICompleteProviderStep2UseCase } from "../../../application/use-cases/usecase interfaces/ICompleteProviderStep2UseCase.js";
 
@@ -16,17 +16,23 @@ import type { ICompleteProviderStep3UseCase } from "../../../application/use-cas
 
 import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/IGetProviderProfileUseCase.js";
 
+import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+
+import { UserMapper } from "../../../application/mappers/UserMapper.js";
+
 export class ProviderController {
 
     constructor(
 
-        private completeProviderStep1UseCase: ICompleteProviderStep1UseCase,
+        private startProviderOnboardingUseCase: IStartProviderOnboardingUseCase,
 
         private completeProviderStep2UseCase: ICompleteProviderStep2UseCase,
 
         private completeProviderStep3UseCase: ICompleteProviderStep3UseCase,
 
-        private getProviderProfileUseCase: IGetProviderProfileUseCase
+        private getProviderProfileUseCase: IGetProviderProfileUseCase,
+
+        private jwtService: IJwtService,
 
     ) { }
 
@@ -36,14 +42,30 @@ export class ProviderController {
 
         const userId = req.user!.userId;
 
-        await this.completeProviderStep1UseCase.execute(userId, providerType);
+        const user =
+            await this.startProviderOnboardingUseCase.execute(
+                userId,
+                providerType
+            );
 
+        const accessToken =
+            this.jwtService.generateAccessToken(
+                user.id!,
+                user.roles
+            );
 
         res.status(HttpStatusCode.CREATED).json({
 
             success: true,
 
-            message: AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED
+            message: AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED,
+
+             data: {
+
+                accessToken,
+
+                user: UserMapper.toAuthResponse(user),
+            },
         });
 
     });

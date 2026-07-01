@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import { ServiceProviderRepository } from "../../infrastructure/repositories/ServiceProviderRepository.js";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
 
-import { CompleteProviderStep1UseCase } from "../../application/use-cases/provider/CompleteProviderStep1UseCase.js";
+import { StartProviderOnboardingUseCase } from "../../application/use-cases/provider/StartProviderOnboardingUseCase.js";
 
 import { CompleteProviderStep2UseCase } from "../../application/use-cases/provider/CompleteProviderStep2UseCase.js";
 
@@ -21,23 +21,28 @@ import { step1Schema } from "../validators/provider/step1Validator.js";
 import { step2Schema } from "../validators/provider/step2Validator.js";
 
 import { Role } from "../../domain/enums/Role.js";
+
 import { GetProviderProfileUseCase } from "../../application/use-cases/provider/GetProviderProfileUseCase.js";
 
-const serviceProviderRepository = new ServiceProviderRepository();
+import JwtService from "../../infrastructure/services/JwtService.js";
 
-const completeProviderStep1UseCase = new CompleteProviderStep1UseCase(serviceProviderRepository);
+const userRepository = new UserRepository();
 
-const completeProviderStep2UseCase = new CompleteProviderStep2UseCase(serviceProviderRepository);
+const startProviderOnboardingUseCase = new StartProviderOnboardingUseCase(userRepository);
 
-const completeProviderStep3UseCase = new CompleteProviderStep3UseCase(serviceProviderRepository);
+const completeProviderStep2UseCase = new CompleteProviderStep2UseCase(userRepository);
 
-const getProviderProfileUseCase = new GetProviderProfileUseCase(serviceProviderRepository);
+const completeProviderStep3UseCase = new CompleteProviderStep3UseCase(userRepository);
 
-const providerController = new ProviderController(completeProviderStep1UseCase, completeProviderStep2UseCase, completeProviderStep3UseCase, getProviderProfileUseCase);
+const getProviderProfileUseCase = new GetProviderProfileUseCase(userRepository);
+
+const jwtService = new JwtService();
+
+const providerController = new ProviderController(startProviderOnboardingUseCase, completeProviderStep2UseCase, completeProviderStep3UseCase, getProviderProfileUseCase, jwtService);
 
 const router = Router();
 
-router.post("/onboarding/step-1", authenticate, authorizeRoles(Role.SERVICE_PROVIDER),
+router.post("/onboarding/step-1", authenticate,
     validate(step1Schema), providerController.completeStep1);
 
 router.put("/onboarding/step-2", authenticate, authorizeRoles(Role.SERVICE_PROVIDER),

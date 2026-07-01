@@ -26,7 +26,7 @@ export const step2Schema = z.object({
       "Phone number must be 10 digits"
     ),
 
-  governmentId: z
+  identityProof: z
   .string()
   .trim()
   .min(1, "Government ID is required"),

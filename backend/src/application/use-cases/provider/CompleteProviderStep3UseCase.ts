@@ -1,6 +1,6 @@
 import type { ICompleteProviderStep3UseCase } from "../usecase interfaces/ICompleteProviderStep3UseCase.js";
 
-import type { IServiceProviderRepository } from "../../../domain/interface/IServiceProviderRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 import ApiError from "../../../shared/utils/apiError.js";
 
@@ -15,32 +15,34 @@ import { VerificationStatus } from "../../../domain/enums/VerificationStatus.js"
 export class CompleteProviderStep3UseCase implements ICompleteProviderStep3UseCase {
 
     constructor(
-        private serviceProviderRepository: IServiceProviderRepository
+        private userRepository: IUserRepository
     ) { }
 
     async execute(userId: string): Promise<void> {
 
-        const provider = await this.serviceProviderRepository.findByUserId(userId);
+        const user = await this.userRepository.findById(userId);
 
-        if (!provider) {
+        if (!user) {
 
-            throw new ApiError(
-                HttpStatusCode.NOT_FOUND,
-                AppMessages.ERROR.PROVIDER_NOT_FOUND
-            )
+            throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.USER_NOT_FOUND)
         }
 
-        if (provider.onboardingStatus !== OnboardingStatus.STEP_3) {
+        if (!user.providerProfile) {
 
-            throw new ApiError(
-                HttpStatusCode.BAD_REQUEST,
-                AppMessages.ERROR.PROVIDER_STEP2_NOT_COMPLETED);
+            throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.PROVIDER_NOT_FOUND);
         }
 
-        provider.onboardingStatus = OnboardingStatus.COMPLETED;
+        const profile = user.providerProfile;
 
-        provider.verificationStatus = VerificationStatus.PENDING;
+        if (profile.status.onboardingStatus !== OnboardingStatus.STEP_3) {
 
-        await this.serviceProviderRepository.updateProvider(provider);
+            throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.PROVIDER_STEP2_NOT_COMPLETED);
+        }
+
+        profile.status.onboardingStatus = OnboardingStatus.COMPLETED;
+
+        profile.status.verificationStatus = VerificationStatus.PENDING;
+
+        await this.userRepository.updateUser(user);
     }
 }

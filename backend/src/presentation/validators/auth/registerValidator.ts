@@ -1,7 +1,11 @@
 import { z } from "zod";
-import { Role } from "../../../domain/enums/Role.js";
 
 export const registerSchema = z.object({
+
+     fullName:
+        z.string()
+         .trim()
+         .min(3),
 
     email: z
         .string()
@@ -33,10 +37,6 @@ export const registerSchema = z.object({
     confirmPassword: z
         .string(),
 
-    role: z.enum([
-        Role.USER,
-        Role.SERVICE_PROVIDER
-    ]),
 })
     .refine(
 

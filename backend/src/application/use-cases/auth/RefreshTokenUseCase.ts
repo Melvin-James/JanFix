@@ -1,12 +1,17 @@
 import ApiError from "../../../shared/utils/apiError.js";
+
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+
 import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+
 import type { User } from "../../../domain/entities/User.js";
+
 import { UserMapper } from "../../mappers/UserMapper.js";
+
 import type { IRefreshTokenUseCase } from "../usecase interfaces/IRefreshTokenUseCase.js";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
@@ -49,7 +54,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
         }
 
-        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.role);
+        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles);
 
         return { accessToken, user: UserMapper.toAuthResponse(user) as any };
     }

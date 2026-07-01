@@ -1,3 +1,5 @@
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
+
 export interface CompleteProviderStep2RequestDto {
 
   userId: string;
@@ -10,29 +12,29 @@ export interface CompleteProviderStep2RequestDto {
 
   phone: string;
 
-  governmentId: string;
+  identityProof: UploadedFile;
 
   categoriesWillingToWork: string[];
 
   websiteLinks?: string[];
 
-  profileImage?: string;
+  profileImage?: UploadedFile;
 
-  previousCommunityPhotos?: string[];
+  previousCommunityPhotos?: UploadedFile[];
 
   volunteerGroupProfile?: {
 
     memberCount: number;
 
-    logo?: string;
+    logo?: UploadedFile;
   };
 
   organizationProfile?: {
 
     memberCount: number;
 
-    ngoRegistrationDocument?: string;
+    ngoRegistrationDocument?: UploadedFile;
 
-    logo?: string;
+    logo?: UploadedFile;
   };
 }

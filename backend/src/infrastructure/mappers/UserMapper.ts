@@ -1,31 +1,42 @@
-import type { User }
-from "../../domain/entities/User.js";
+import type { User } from "../../domain/entities/User.js";
 
 export class UserMapper {
 
-  static toEntity(
-    document: any
-  ): User {
+  static toEntity(document: any): User {
 
     return {
 
-      id:
-        document._id.toString(),
+      id: document._id.toString(),
 
-      name:
-        document.name,
+      fullName: document.fullName,
 
-      email:
-        document.email,
+      email: document.email,
 
-      password:
-        document.password,
+      password: document.password,
 
-      role:
-        document.role,
+      roles: document.roles,
 
-      isVerified:
-        document.isVerified,
-    };
+      isVerified: document.isVerified,
+
+      ...(document.providerProfile && {
+        providerProfile:
+        {
+          identity: document.providerProfile.identity,
+
+          documents: document.providerProfile.documents,
+
+          workPreferences: document.providerProfile.workPreferences,
+
+          volunteerGroupProfile:
+            document.providerProfile.volunteerGroupProfile,
+
+          organizationProfile:
+            document.providerProfile.organizationProfile,
+
+          status:
+            document.providerProfile.status,
+        }
+      })
+    }
   }
 }

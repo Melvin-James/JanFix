@@ -1,3 +1,5 @@
+import type { Role } from "../../../domain/enums/Role.js";
+
 export interface LoginResponseDTO {
 
     accessToken: string;
@@ -6,11 +8,11 @@ export interface LoginResponseDTO {
 
         id: string;
 
-        name: string;
+        fullName: string;
 
         email: string;
 
-        role: string;
+        roles: Role[];
 
         isVerified: boolean;
     };

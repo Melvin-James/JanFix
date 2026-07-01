@@ -1,4 +1,5 @@
 import type { Request } from "express";
+import type { Role } from "../../domain/enums/Role.js";
 
 export interface AuthRequest
   extends Request {
@@ -7,6 +8,6 @@ export interface AuthRequest
 
     userId: string;
 
-    role: string;
+    roles: Role[];
   };
 }
