@@ -1,9 +1,13 @@
 import { Navigate }from "react-router-dom";
 
 import {useAuthStore} from "../store/authStore";
+
 import LoadingSpinner from "../components/LoadingSpinner";
 
+import ProviderRedirect from "../features/provider/components/ProviderRedirect";
+
 import type {ReactNode} from "react";
+import { hasRole } from "../utils/auth";
 
 interface PublicRouteProps {
   
@@ -11,46 +15,35 @@ interface PublicRouteProps {
 
 }
 
-function PublicRoute({children}: PublicRouteProps) {
+function PublicRoute({ children }: PublicRouteProps) {
 
-  const user =useAuthStore((state) => state.user);
+    const user =
+        useAuthStore((state) => state.user);
 
-  const isAuthLoading =
-    useAuthStore((state) =>state.isAuthLoading);
+    const isAuthLoading =
+        useAuthStore((state) => state.isAuthLoading);
 
-  if (isAuthLoading) {
-    return <LoadingSpinner />;
-  }
+    if (isAuthLoading) {
 
-  if (user) {
-
-    if (user.role === "USER") {
-
-      return (
-
-        <Navigate to="/home" replace/>
-
-      );
+        return <LoadingSpinner />;
     }
 
-    if (user.role ==="SERVICE_PROVIDER") {
+    if (!user) {
 
-      return (
-
-        <Navigate to="/provider/onboarding/step-1" replace/>
-
-      );
+        return <>{children}</>;
     }
 
-    return (
+    if (hasRole(user, "ADMIN")) {
 
-      <Navigate to="/dashboard" replace/>
+        return <Navigate to="/dashboard" replace />;
+    }
 
-    );
-    
-  }
+    if (hasRole(user, "SERVICE_PROVIDER")) {
 
-  return <>{children}</>;
+        return <ProviderRedirect />;
+    }
+
+    return <Navigate to="/home" replace />;
 }
 
 export default PublicRoute;

@@ -22,6 +22,8 @@ import ProviderWelcomePage from "../features/provider/pages/ProviderWelcomePage"
 
 import RoleProtectedRoute from "./RoleProtectedRoute";
 
+import ProviderOnboardingRoute from "./ProviderOnboardingRoute";
+
 function AppRouter() {
 
     return (
@@ -64,7 +66,7 @@ function AppRouter() {
                 <Route
                     path="/verify-otp"
                     element={
-                    
+
                         <PublicRoute>
 
                             <VerifyOtpPage />
@@ -96,7 +98,11 @@ function AppRouter() {
 
                         <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
 
-                            <ProviderStep1Page />
+                            <ProviderOnboardingRoute requiredStatus="STEP_1">
+
+                                <ProviderStep1Page />
+
+                            </ProviderOnboardingRoute>
 
                         </RoleProtectedRoute>
                     }
@@ -110,7 +116,11 @@ function AppRouter() {
 
                         <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
 
-                            <ProviderStep2Page />
+                            <ProviderOnboardingRoute requiredStatus="STEP_2">
+
+                                <ProviderStep2Page />
+
+                            </ProviderOnboardingRoute>
 
                         </RoleProtectedRoute>
                     }
@@ -124,7 +134,11 @@ function AppRouter() {
 
                         <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
 
-                            <ProviderReviewPage />
+                            <ProviderOnboardingRoute requiredStatus="STEP_3">
+
+                                <ProviderReviewPage />
+
+                            </ProviderOnboardingRoute>
 
                         </RoleProtectedRoute>
                     }
@@ -138,7 +152,11 @@ function AppRouter() {
 
                         <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
 
-                            <ProviderWelcomePage />
+                            <ProviderOnboardingRoute requiredStatus="COMPLETED">
+
+                                <ProviderWelcomePage />
+                                
+                            </ProviderOnboardingRoute>
 
                         </RoleProtectedRoute>
                     }

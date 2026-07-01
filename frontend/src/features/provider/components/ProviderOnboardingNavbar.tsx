@@ -1,3 +1,9 @@
+import { useNavigate } from "react-router-dom";
+
+import { useAuthStore } from "../../../store/authStore";
+
+import { logoutUser } from "../../auth/services/authService";
+
 interface ProviderOnboardingNavbarProps {
 
     currentStep: 1 | 2 | 3;
@@ -16,6 +22,27 @@ function ProviderOnboardingNavbar({
             : currentStep === 2
                 ? 66
                 : 100;
+
+    const navigate = useNavigate();
+
+    const clearAuth = useAuthStore((state) => state.clearAuth);
+
+    const handleLogout = async () => {
+    
+        try {
+    
+          await logoutUser();
+    
+          clearAuth();
+    
+          navigate("/login");
+    
+        } catch (error) {
+    
+          console.error(error);
+    
+        }
+      };
 
     return (
 
@@ -56,7 +83,7 @@ function ProviderOnboardingNavbar({
 
                 {/* Right */}
 
-                <button
+                <button onClick={handleLogout}
                     type="button"
                     className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                 >

@@ -181,20 +181,6 @@ function ProviderReviewPage() {
 
             <div className="mt-10 flex gap-4">
 
-                <button
-                    type="button"
-                    onClick={() => navigate(-1)}
-                    className="
-      rounded-lg
-      border
-      px-6
-      py-3
-    "
-                >
-
-                    Back
-
-                </button>
 
                 <button
                     type="button"

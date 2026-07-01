@@ -1,7 +1,12 @@
 import axiosInstance from "../../../api/axios";
 
+import type { LoginFormData } from "../validations/loginSchema";
+
+
+import type { RegisterFormData } from "../validations/registerSchema";
+
 export const registerUser = async (
-    data: unknown
+    data: RegisterFormData
 ) => {
     const response = await axiosInstance.post(
         "/auth/register",
@@ -11,14 +16,14 @@ export const registerUser = async (
     return response.data;
 }
 
-export const verifyOtp = async (data: { email: string; otp: string; }) => {
+export const verifyOtp = async (data: { email: string; otp: string }) => {
 
     const response = await axiosInstance.post("/auth/verify-otp", data);
 
     return response.data;
 };
 
-export const loginUser = async (data: { email: string; password: string; }) => {
+export const loginUser = async (data: LoginFormData) => {
 
     const response = await axiosInstance.post("/auth/login", data);
 

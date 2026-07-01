@@ -16,7 +16,7 @@ export interface ProviderProfile {
 
   phone?: string;
 
-  governmentId?: string;
+  identityProof?: string;
 
   categoriesWillingToWork?: string[];
 
