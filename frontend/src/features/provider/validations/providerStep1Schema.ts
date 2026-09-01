@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-import {
-  ProviderType,
-} from "../types/providerTypes";
+import { ProviderType } from "../types/providerTypes";
 
 export const providerStep1Schema =
   z.object({
@@ -15,7 +13,10 @@ export const providerStep1Schema =
 
       ProviderType.NGO,
 
-    ]),
+    ])
+    .refine((value)=> value !== undefined,{
+      message:'Please select a provider type'
+    })
   });
 
 export type ProviderStep1FormData = z.infer<typeof providerStep1Schema>;

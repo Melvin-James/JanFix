@@ -1,17 +1,26 @@
-import type { FieldErrors, UseFormRegister, } from "react-hook-form";
+import type { FieldErrors, UseFormRegister, Control } from "react-hook-form";
 
 import FormField from "../../../components/UI/FormField";
 
 import type { ProviderStep2FormData, } from "../validations/providerStep2Schema";
 
+import FileUploadField from "./FileUploadField";
+
+import { Controller } from "react-hook-form";
+
+import FormError from "../../../components/UI/FormError";
+
+
 interface CommonProviderFieldsProps {
 
     register: UseFormRegister<ProviderStep2FormData>;
 
+    control: Control<ProviderStep2FormData>;
+
     errors: FieldErrors<ProviderStep2FormData>;
 }
 
-function CommonProviderFields({ register, errors }: CommonProviderFieldsProps) {
+function CommonProviderFields({ register, control, errors }: CommonProviderFieldsProps) {
     return (
         <div className="space-y-4">
             <FormField
@@ -19,7 +28,7 @@ function CommonProviderFields({ register, errors }: CommonProviderFieldsProps) {
                 error={errors.providerName?.message as string}
                 {...register("providerName")}
             />
-            
+
             <FormField
                 label="Responsible Person Name"
                 error={errors.responsiblePersonName?.message as string}
@@ -38,11 +47,25 @@ function CommonProviderFields({ register, errors }: CommonProviderFieldsProps) {
                 {...register("phone")}
             />
 
-            <FormField
-                label="Government ID"
-                error={errors.governmentId?.message as string}
-                {...register("governmentId")}
+            <Controller
+                name="identityProof"
+                control={control}
+                render={({field})=>(
+                    <FileUploadField
+                        label='Identity Proof'
+                        folder='provider/identity-proofs'
+                        value={field.value}
+                        onChange={field.onChange}
+                    />
+                )}
             />
+
+            <FormError
+                message={
+                    errors.identityProof?.message as string
+                }
+            />
+            
         </div>
     )
 }

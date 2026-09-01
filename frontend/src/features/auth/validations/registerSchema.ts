@@ -4,6 +4,16 @@ export const registerSchema = z
 
   .object({
 
+    fullName:
+        z.string()
+         .trim()
+         .min(3,"Full name must be at least 3 characters")
+         .max(50,"Full name cannot exceed 50 characters")
+         .regex(
+          /^[a-zA-Z\s]+$/,
+          "Full name can only contain letters and spaces"
+        ),
+         
     email: z
       .string()
       .trim()
@@ -34,10 +44,6 @@ export const registerSchema = z
     confirmPassword: z
       .string(),
 
-    role: z.enum([
-      "USER",
-      "SERVICE_PROVIDER",
-    ]),
   })
 
   .refine(

@@ -1,85 +1,103 @@
-import { useEffect, useState } from "react";
-
-import ProviderOnboardingLayout from "../components/ProviderOnboardingLayout";
-
-import { getProviderProfile } from "../services/providerService";
-
-import LoadingSpinner from "../../../components/LoadingSpinner";
-
-import type { ProviderProfile } from "../types/providerProfile";
-
-import ProviderInfoRow from "../components/ProviderInfoRow";
+import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+
+import ProviderOnboardingLayout from "../components/ProviderOnboardingLayout";
+
+import ProviderInfoRow from "../components/ProviderInfoRow";
+
+
 import { submitProviderApplication } from "../services/providerService";
+
+import { useProviderOnboardingStore } from "../store/providerOnboardingStore";
+
+
 
 function ProviderReviewPage() {
 
-    const [provider, setProvider] = useState<ProviderProfile | null>(null);
 
     const navigate = useNavigate();
 
-    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+    const [loading, setLoading] =
+        useState(false);
 
-        const fetchProvider = async () => {
 
-            const response = await getProviderProfile();
 
-            setProvider(response.provider);
-        };
+    const draft =
+        useProviderOnboardingStore(
+            state => state.draft
+        );
 
-        fetchProvider();
 
-    }, []);
+    const clearDraft =
+        useProviderOnboardingStore(
+            state => state.clearDraft
+        );
+
+
 
     const handleSubmitApplication =
-
         async () => {
+
 
             try {
 
+
                 setLoading(true);
 
-                await submitProviderApplication();
+
+
+                await submitProviderApplication(
+                    draft
+                );
+
+
+
+                clearDraft();
+
+
 
                 navigate(
-                    "/provider/welcome"
+                    "/provider/application-submitted"
                 );
+
+
+
+            } catch (error) {
+
+
+                console.error(error);
+
 
             } finally {
 
+
                 setLoading(false);
+
             }
+
         };
 
-    if (!provider) {
 
-        return (
 
-            <ProviderOnboardingLayout
-                currentStep={3}
-            >
-
-                <LoadingSpinner />
-
-            </ProviderOnboardingLayout>
-        );
-    }
 
     return (
+
 
         <ProviderOnboardingLayout
             currentStep={3}
         >
+
 
             <h1 className="text-3xl font-bold">
 
                 Review & Submit
 
             </h1>
+
+
 
             <p className="mt-2 text-slate-500">
 
@@ -89,124 +107,299 @@ function ProviderReviewPage() {
 
             </p>
 
+
+
+
+
             <ProviderInfoRow
+
                 label="Provider Type"
-                value={provider.providerType}
-            />
 
-            <ProviderInfoRow
-                label="Provider Name"
-                value={provider.providerName}
-            />
-
-            <ProviderInfoRow
-                label="Responsible Person"
-                value={provider.responsiblePersonName}
-            />
-
-            <ProviderInfoRow
-                label="Address"
-                value={provider.address}
-            />
-
-            <ProviderInfoRow
-                label="Phone"
-                value={provider.phone}
-            />
-
-            <ProviderInfoRow
-                label="Government ID"
-                value={provider.governmentId}
-            />
-
-            <ProviderInfoRow
-                label="Categories"
                 value={
-                    provider.categoriesWillingToWork?.join(", ")
+                    draft.providerType
                 }
+
             />
+
+
+
+
+            <ProviderInfoRow
+
+                label="Provider Name"
+
+                value={
+                    draft.providerName
+                }
+
+            />
+
+
+
+
+            <ProviderInfoRow
+
+                label="Responsible Person"
+
+                value={
+                    draft.responsiblePersonName
+                }
+
+            />
+
+
+
+
+            <ProviderInfoRow
+
+                label="Address"
+
+                value={
+                    draft.address
+                }
+
+            />
+
+
+
+
+
+            <ProviderInfoRow
+
+                label="Phone"
+
+                value={
+                    draft.phone
+                }
+
+            />
+
+
+
+
+
+            <ProviderInfoRow
+
+                label="Identity Proof"
+
+                value={
+                    draft.identityProof
+                        ?.originalName
+                }
+
+            />
+
+
+
+
+
+
+            <ProviderInfoRow
+
+                label="Categories"
+
+                value={
+
+                    draft
+                        .categoriesWillingToWork
+                        ?.join(", ")
+
+                }
+
+            />
+
+
+
+
+
+
+
 
             {
-                provider.volunteerGroupProfile && (
+
+                draft.volunteerGroupProfile && (
+
+
                     <>
+
+
                         <h2 className="mt-8 mb-4 text-lg font-semibold">
+
 
                             Volunteer Group Details
 
+
                         </h2>
 
+
+
+
                         <ProviderInfoRow
+
+
                             label="Member Count"
+
+
                             value={
-                                provider
+
+                                draft
                                     .volunteerGroupProfile
                                     .memberCount
+                                    .toString()
+
                             }
+
                         />
+
+
                     </>
+
+
                 )
+
             }
 
+
+
+
+
+
+
+
+
             {
-                provider.organizationProfile && (
+
+                draft.organizationProfile && (
+
 
                     <>
 
+
                         <h2 className="mt-8 mb-4 text-lg font-semibold">
+
 
                             Organization Details
 
+
                         </h2>
 
-                        <ProviderInfoRow
-                            label="Member Count"
-                            value={
-                                provider
-                                    .organizationProfile
-                                    .memberCount
-                            }
-                        />
+
+
+
 
                         <ProviderInfoRow
-                            label="NGO Registration"
+
+
+                            label="Member Count"
+
+
                             value={
-                                provider
+
+                                draft
+                                    .organizationProfile
+                                    .memberCount
+                                    .toString()
+
+                            }
+
+
+                        />
+
+
+
+
+
+
+                        <ProviderInfoRow
+
+
+                            label="NGO Registration"
+
+
+                            value={
+
+                                draft
                                     .organizationProfile
                                     .ngoRegistrationDocument
+                                    ?.originalName
+
                             }
+
+
                         />
+
+
+
                     </>
+
+
                 )
+
             }
+
+
+
+
+
+
 
             <div className="mt-10 flex gap-4">
 
 
+
                 <button
+
+
                     type="button"
-                    onClick={handleSubmitApplication}
-                    disabled={loading}
+
+
+                    onClick={
+                        handleSubmitApplication
+                    }
+
+
+                    disabled={
+                        loading
+                    }
+
+
                     className="
-      rounded-lg
-      bg-blue-600
-      px-6
-      py-3
-      text-white
-    "
+                        rounded-lg
+                        bg-blue-600
+                        px-6
+                        py-3
+                        text-white
+                    "
+
                 >
 
+
                     {
+
                         loading
+
                             ? "Submitting..."
+
                             : "Submit Application"
+
                     }
+
 
                 </button>
 
+
+
             </div>
 
+
+
+
         </ProviderOnboardingLayout>
+
     );
+
 }
+
+
 
 export default ProviderReviewPage;

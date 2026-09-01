@@ -1,6 +1,6 @@
 import type { ProviderType } from "../enums/ProviderType.js";
-import type { OnboardingStatus } from "../enums/OnboardingStatus.js";
-import type { VerificationStatus } from "../enums/VerificationStatus.js";
+
+import type { ApplicationStatus } from "../enums/ApplicationStatus.js";
 
 import type { UploadedFile } from "./UploadedFile.js";
 
@@ -49,9 +49,14 @@ export interface OrganizationProfile {
 
 export interface ProviderStatus {
 
-    onboardingStatus: OnboardingStatus;
+    applicationStatus: ApplicationStatus;
 
-    verificationStatus: VerificationStatus;
+    submittedAt: Date;
+
+    reviewedAt?: Date;
+
+    rejectionReason?: string;
+
 }
 
 export interface ProviderProfile {

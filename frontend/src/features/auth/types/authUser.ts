@@ -8,7 +8,7 @@ export interface AuthUser {
 
   email: string;
 
-  roles: ("USER" | "SERVICE_PROVIDER" | "ADMIN");
+  roles: ("USER" | "SERVICE_PROVIDER" | "ADMIN")[];
 
   isVerified: boolean;
 

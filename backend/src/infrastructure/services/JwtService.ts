@@ -1,6 +1,9 @@
 import { env } from "../../infrastructure/config/env.js";
+
 import jwt from "jsonwebtoken";
+
 import type { IJwtService } from "../../domain/interface/IJwtService.js";
+
 import type { Role } from "../../domain/enums/Role.js";
 
 class JwtService implements IJwtService {

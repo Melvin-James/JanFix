@@ -8,9 +8,11 @@ import type { IStorageService } from "../../application/services/IStorageService
 
 import type { UploadedFile } from "../../domain/entities/UploadedFile.js";
 
+import type { UploadFolder } from "../../domain/enums/UploadFolder.js";
+
 export class S3StorageService implements IStorageService {
 
-    async upload(file: Express.Multer.File, folder: string): Promise<UploadedFile> {
+    async upload(file: Express.Multer.File, folder: UploadFolder): Promise<UploadedFile> {
 
         const key = `${folder}/${uuid()}-${file.originalname}`;
 

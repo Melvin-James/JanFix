@@ -18,11 +18,11 @@ import ProviderStep2Page from "../features/provider/pages/ProviderStep2Page";
 
 import ProviderReviewPage from "../features/provider/pages/ProviderReviewPage";
 
+import ProviderOnboardingRoute from "./ProviderOnboardingRoute";
+
 import ProviderWelcomePage from "../features/provider/pages/ProviderWelcomePage";
 
-import RoleProtectedRoute from "./RoleProtectedRoute";
-
-import ProviderOnboardingRoute from "./ProviderOnboardingRoute";
+import ProviderSubmissionPage from "../features/provider/pages/ProviderSubmissionPage";
 
 function AppRouter() {
 
@@ -31,11 +31,6 @@ function AppRouter() {
         <BrowserRouter>
 
             <Routes>
-
-                <Route
-                    path="/"
-                    element={<h1>JanFix</h1>}
-                />
 
                 <Route
                     path="/login"
@@ -96,15 +91,16 @@ function AppRouter() {
 
                     element={
 
-                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
+                        <ProtectedRoute>
 
-                            <ProviderOnboardingRoute requiredStatus="STEP_1">
+                            <ProviderOnboardingRoute step={1}>
 
                                 <ProviderStep1Page />
 
                             </ProviderOnboardingRoute>
 
-                        </RoleProtectedRoute>
+                        </ProtectedRoute>
+
                     }
                 />
 
@@ -113,16 +109,15 @@ function AppRouter() {
                     path="/provider/onboarding/step-2"
 
                     element={
+                        <ProtectedRoute>
 
-                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
-
-                            <ProviderOnboardingRoute requiredStatus="STEP_2">
+                            <ProviderOnboardingRoute step={2}>
 
                                 <ProviderStep2Page />
 
                             </ProviderOnboardingRoute>
+                        </ProtectedRoute>
 
-                        </RoleProtectedRoute>
                     }
                 />
 
@@ -131,38 +126,43 @@ function AppRouter() {
                     path="/provider/onboarding/review"
 
                     element={
+                        <ProtectedRoute>
 
-                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
-
-                            <ProviderOnboardingRoute requiredStatus="STEP_3">
+                            <ProviderOnboardingRoute step={3}>
 
                                 <ProviderReviewPage />
 
                             </ProviderOnboardingRoute>
+                        </ProtectedRoute>
 
-                        </RoleProtectedRoute>
                     }
                 />
 
                 <Route
-
-                    path="/provider/welcome"
-
+                    path="/provider/application-submitted"
                     element={
-
-                        <RoleProtectedRoute allowedRoles={["SERVICE_PROVIDER"]}>
-
-                            <ProviderOnboardingRoute requiredStatus="COMPLETED">
-
-                                <ProviderWelcomePage />
-                                
-                            </ProviderOnboardingRoute>
-
-                        </RoleProtectedRoute>
+                        <ProtectedRoute>
+                            <ProviderWelcomePage />
+                        </ProtectedRoute>
                     }
                 />
 
+                <Route
+                    path='/provider/submission'
+
+                    element={
+
+                        <ProtectedRoute>
+
+                            <ProviderSubmissionPage />
+
+                        </ProtectedRoute>
+                    }
+                />
+
+
             </Routes>
+
 
         </BrowserRouter>
     );

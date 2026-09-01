@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, User, Wrench } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { registerSchema, type RegisterFormData } from "../validations/registerSchema";
 import { registerUser } from "../services/authService";
 import axios from "axios";
@@ -12,17 +12,14 @@ import FormError from "../../../components/UI/FormError";
 
 function RegisterPage() {
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<RegisterFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
 
     resolver: zodResolver(registerSchema),
 
     shouldUnregister: true,
 
-    defaultValues: { role: "USER" },
-
   });
 
-  const selectedRole = watch("role");
 
   const [loading, setLoading] = useState(false);
 
@@ -99,26 +96,6 @@ function RegisterPage() {
             className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
           >
 
-            <button
-              type="button"
-              //   onClick={handleGoogle}
-              className="flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt=""
-                className="h-4 w-4"
-              />
-              Continue with Google
-            </button>
-
-            <div className="my-4 flex items-center gap-3 text-xs text-slate-400">
-              <div className="h-px flex-1 bg-slate-200" />
-              OR
-              <div className="h-px flex-1 bg-slate-200" />
-            </div>
-
-
             <p
               className={`text-sm text-center transition-colors ${
                 serverError ? "text-red-500" : "text-transparent select-none"
@@ -127,7 +104,19 @@ function RegisterPage() {
               {serverError || "\u00A0"}
             </p>
 
-            <div>
+             <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Full Name
+              </label>
+              <input
+                {...register("fullName")}
+                placeholder="John Doe"
+                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              />
+              <FormError message={errors.fullName?.message as string} />
+            </div>
+
+            <div className="mt-2">
               <label className="block text-sm font-medium text-slate-700">
                 Email Address
               </label>
@@ -165,52 +154,41 @@ function RegisterPage() {
                 Confirm Password
               </label>
               <input
-                type="password"
+                type={showPwd ? "text" : "password"}
                 {...register("confirmPassword")}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
               <FormError message={errors.confirmPassword?.message as string} />
             </div>
 
-            {/* Role selector — fixed height cards, no shift */}
-            <div className="mt-2">
-              <p className="text-sm font-medium text-slate-700">I am a...</p>
-              <div className="mt-2 grid grid-cols-2 gap-3">
-                {[
-                  { val: "USER", label: "User", Icon: User },
-                  { val: "SERVICE_PROVIDER", label: "Service Provider", Icon: Wrench },
-                ].map(({ val, label, Icon }) => {
-                  const active = selectedRole === val;
-                  return (
-                    <button
-                      type="button"
-                      key={val}
-                      onClick={() =>
-                        setValue("role", val as RegisterFormData["role"], {
-                          shouldValidate: true,
-                        })
-                      }
-                      className={`flex h-[78px] flex-col items-center justify-center rounded-md border-2 text-sm transition-colors ${active
-                        ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                        : "border-slate-200 bg-white text-slate-600"
-                        }`}
-                    >
-                      <Icon size={18} className="mb-1" />
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-              <input type="hidden" {...register("role")} />
-            </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="mt-5 w-full rounded-md bg-indigo-400 py-2.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
+              className="mt-5 w-full rounded-md bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
             >
               {loading ? "Loading..." : "Continue"}
             </button>
+
+            <div className="my-4 flex items-center gap-3 text-xs text-slate-400">
+              <div className="h-px flex-1 bg-slate-200" />
+              OR
+              <div className="h-px flex-1 bg-slate-200" />
+            </div>
+
+             <button
+              type="button"
+              //   onClick={handleGoogle}
+              className="flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt=""
+                className="h-4 w-4"
+              />
+              Continue with Google
+            </button>
+
 
             <p className="mt-4 text-center text-xs text-slate-500">
               Already have an account?{" "}
@@ -219,6 +197,8 @@ function RegisterPage() {
               </a>
             </p>
           </form>
+
+          
 
           <div className="mt-4 flex justify-center gap-5 text-xs text-slate-500">
             <a href="#">Privacy Policy</a>

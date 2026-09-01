@@ -16,11 +16,12 @@ import { ProviderType } from "../types/providerTypes";
 
 import { providerStep1Schema, type ProviderStep1FormData } from "../validations/providerStep1Schema";
 
-import { completeProviderStep1 } from "../services/providerService";
+import { useProviderOnboardingStore } from "../store/providerOnboardingStore";
 
-import { useState } from "react";
 
 function ProviderStep1Page() {
+
+    
 
     const navigate = useNavigate();
 
@@ -43,36 +44,30 @@ function ProviderStep1Page() {
 
         defaultValues: {
 
-            providerType:
-                ProviderType.INDIVIDUAL,
+            providerType: undefined,
         },
     });
 
-    const [loading, setLoading] = useState(false);
 
     const selectedProviderType = watch("providerType");
 
+    const updateDraft = useProviderOnboardingStore(state => state.updateDraft);
 
     const onSubmit = async (
         data: ProviderStep1FormData
     ) => {
 
-        try {
+        updateDraft({
 
-            setLoading(true);
+            providerType: data.providerType
 
-            await completeProviderStep1(
-                data.providerType
-            );
+        });
 
-            navigate(
-                "/provider/onboarding/step-2"
-            );
 
-        } finally {
+        navigate(
+            "/provider/onboarding/step-2"
+        );
 
-            setLoading(false);
-        }
     };
 
     return (
@@ -195,23 +190,18 @@ function ProviderStep1Page() {
 
                     <button
                         type="submit"
-                        disabled={loading}
                         className="
-                            mt-6
-                            rounded-lg
-                            bg-blue-600
-                            px-6
-                            py-3
-                            text-white
-                            font-medium
-                            hover:bg-blue-700
-                            disabled:opacity-60
-                        "
+                                mt-6
+                                rounded-lg
+                                bg-blue-600
+                                px-6
+                                py-3
+                                text-white
+                                font-medium
+                                hover:bg-blue-700"
                     >
 
-                        {loading
-                            ? "Please wait..."
-                            : "Continue"}
+                        Continue
 
                     </button>
 

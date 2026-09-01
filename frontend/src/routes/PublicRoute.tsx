@@ -7,6 +7,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import ProviderRedirect from "../features/provider/components/ProviderRedirect";
 
 import type {ReactNode} from "react";
+
 import { hasRole } from "../utils/auth";
 
 interface PublicRouteProps {

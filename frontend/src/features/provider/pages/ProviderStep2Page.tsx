@@ -1,120 +1,135 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useNavigate } from "react-router-dom";
+
 
 import ProviderOnboardingLayout from "../components/ProviderOnboardingLayout";
 
 import CommonProviderFields from "../components/CommonProviderFields";
 
-import { providerStep2Schema, type ProviderStep2FormData } from "../validations/providerStep2Schema";
-
-import { Controller } from "react-hook-form";
-
-import CategorySelector from "../components/CategorySelector";
-
-import FormError from "../../../components/UI/FormError";
-
-import { useState, useEffect, } from "react";
-
-import { useNavigate } from "react-router-dom";
-
-import { getProviderProfile } from "../services/providerService";
-
 import VolunteerGroupFields from "../components/VolunteerGroupFields";
 
 import OrganizationFields from "../components/OrganizationFields";
 
+import CategorySelector from "../components/CategorySelector";
+
+
+import FormError from "../../../components/UI/FormError";
+
+
+import {
+
+    providerStep2Schema,
+
+    type ProviderStep2FormData,
+
+} from "../validations/providerStep2Schema";
+
+
 import { ProviderType } from "../types/providerTypes";
 
-import LoadingSpinner from "../../../components/LoadingSpinner";
 
-import { completeProviderStep2 } from "../services/providerService";
+import { useProviderOnboardingStore } from "../store/providerOnboardingStore";
 
 function ProviderStep2Page() {
 
-    const { register, control, handleSubmit, formState: { errors } } = useForm<ProviderStep2FormData>({
-
-        resolver: zodResolver(providerStep2Schema),
-    });
-
-    const [providerType, setProviderType] = useState<ProviderType | null>(null);
-
-
-    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
 
-        const fetchProvider = async () => {
+    const draft =
+        useProviderOnboardingStore(
+            state => state.draft
+        );
 
-            try {
 
-                const response = await getProviderProfile();
+    const updateDraft =
+        useProviderOnboardingStore(
+            state => state.updateDraft
+        );
 
-                setProviderType(response.provider.providerType);
 
-            } catch (error) {
+    const {
 
-                console.error(error);
-            }
-        };
+        register,
 
-        fetchProvider();
+        control,
 
-    }, []);
+        handleSubmit,
 
-    const onSubmit = async (
+        formState: { errors },
+
+    } = useForm<ProviderStep2FormData>({
+
+        resolver:
+            zodResolver(
+                providerStep2Schema
+            ),
+
+
+        defaultValues: {
+
+            ...draft,
+
+        },
+
+    });
+
+
+
+    const providerType =
+        draft.providerType;
+
+
+
+    const onSubmit = (
+
         data: ProviderStep2FormData
+
     ) => {
 
-        try {
 
-            setLoading(true);
+        updateDraft({
 
-            await completeProviderStep2(data);
+            ...data,
 
-            navigate(
-                "/provider/onboarding/review"
-            );
+        });
 
-        } catch (error) {
 
-            console.error(error);
+        navigate(
 
-        } finally {
+            "/provider/onboarding/review"
 
-            setLoading(false);
-        }
-    };
-    if (!providerType) {
-
-        return (
-
-            <ProviderOnboardingLayout
-                currentStep={2}
-            >
-
-                <LoadingSpinner />
-
-            </ProviderOnboardingLayout>
         );
-    }
+
+    };
+
+
+
     return (
+
         <ProviderOnboardingLayout currentStep={2}>
 
+
             <form
+
                 onSubmit={
                     handleSubmit(onSubmit)
                 }
+
                 className="max-w-3xl"
             >
+
 
                 <h1 className="text-3xl font-bold text-slate-900">
 
                     Profile Setup
 
                 </h1>
+
+
 
                 <p className="mt-2 text-slate-500">
 
@@ -123,23 +138,36 @@ function ProviderStep2Page() {
 
                 </p>
 
+
+
                 <div className="mt-8">
+
 
                     <CommonProviderFields
 
                         register={register}
 
+                        control={control}
+
                         errors={errors}
 
                     />
 
+
                 </div>
+                
+
+
+
 
                 {
+
                     providerType ===
                     ProviderType.VOLUNTEER_GROUP && (
 
+
                         <div className="mt-8">
+
 
                             <VolunteerGroupFields
 
@@ -149,15 +177,25 @@ function ProviderStep2Page() {
 
                             />
 
+
                         </div>
+
                     )
+
                 }
 
+
+
+
+
                 {
+
                     providerType ===
                     ProviderType.NGO && (
 
+
                         <div className="mt-8">
+
 
                             <OrganizationFields
 
@@ -167,86 +205,131 @@ function ProviderStep2Page() {
 
                             />
 
+
                         </div>
+
                     )
+
                 }
+
+
+
+
 
                 <div className="mt-6">
 
+
                     <label
+
                         className="
-                            block
-                            text-sm
-                            font-medium
-                            text-slate-700
-                            mb-3
-                            "
+                        block
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        mb-3
+                        "
+
                     >
+
 
                         Categories Willing To Work
 
+
                     </label>
+
+
+
 
                     <Controller
 
+
                         name="categoriesWillingToWork"
+
 
                         control={control}
 
+
                         defaultValue={[]}
+
 
                         render={({ field }) => (
 
+
                             <CategorySelector
+
 
                                 value={field.value}
 
+
                                 onChange={field.onChange}
 
+
                             />
+
 
                         )}
 
                     />
 
+
+
+
                     <FormError
 
+
                         message={
+
                             errors
                                 .categoriesWillingToWork
                                 ?.message as string
+
                         }
+
 
                     />
 
+
                 </div>
+
+
+
 
                 <button
 
+
                     type="submit"
 
-                    disabled={loading}
 
-                    className="..."
+                    className="
+                    mt-8
+                    rounded-lg
+                    bg-blue-600
+                    px-6
+                    py-3
+                    text-white
+                    font-medium
+                    hover:bg-blue-700
+                    "
 
                 >
 
-                    {
 
-                        loading
+                    Continue
 
-                            ? "Saving..."
-
-                            : "Continue"
-
-                    }
 
                 </button>
 
+
+
             </form>
 
+
         </ProviderOnboardingLayout>
-    )
+
+    );
+
 }
+
+
 
 export default ProviderStep2Page;

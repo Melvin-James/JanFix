@@ -1,8 +1,8 @@
-import type { CompleteProviderStep2RequestDto } from "../../dto/provider/CompleteProviderStep2RequestDto.js";
+import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.js";
 
 export interface ICompleteProviderStep2UseCase {
 
   execute(
-    dto: CompleteProviderStep2RequestDto
+    dto: SubmitProviderApplicationDTO
   ): Promise<void>;
 }

@@ -1,55 +1,91 @@
 import { Router } from "express";
 
+
 import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
 
-import { StartProviderOnboardingUseCase } from "../../application/use-cases/provider/StartProviderOnboardingUseCase.js";
-
-import { CompleteProviderStep2UseCase } from "../../application/use-cases/provider/CompleteProviderStep2UseCase.js";
-
-import { CompleteProviderStep3UseCase } from "../../application/use-cases/provider/CompleteProviderStep3UseCase.js";
 
 import { ProviderController } from "../controllers/provider/ProviderController.js";
 
-import { authenticate } from "../middlewares/authMiddleware.js";
 
-import { authorizeRoles } from "../middlewares/roleMiddleware.js";
-
-import validate from "../middlewares/validate.js";
-
-import { step1Schema } from "../validators/provider/step1Validator.js";
-
-import { step2Schema } from "../validators/provider/step2Validator.js";
-
-import { Role } from "../../domain/enums/Role.js";
+import { SubmitProviderApplicationUseCase } from "../../application/use-cases/provider/SubmitProviderApplicationUseCase.js";
 
 import { GetProviderProfileUseCase } from "../../application/use-cases/provider/GetProviderProfileUseCase.js";
 
-import JwtService from "../../infrastructure/services/JwtService.js";
 
-const userRepository = new UserRepository();
+import { authenticate } from "../middlewares/authMiddleware.js";
 
-const startProviderOnboardingUseCase = new StartProviderOnboardingUseCase(userRepository);
+import validate from "../middlewares/validate.js";
 
-const completeProviderStep2UseCase = new CompleteProviderStep2UseCase(userRepository);
 
-const completeProviderStep3UseCase = new CompleteProviderStep3UseCase(userRepository);
+import { providerApplicationSchema } from "../validators/provider/providerApplicationSchema.js";
 
-const getProviderProfileUseCase = new GetProviderProfileUseCase(userRepository);
 
-const jwtService = new JwtService();
-
-const providerController = new ProviderController(startProviderOnboardingUseCase, completeProviderStep2UseCase, completeProviderStep3UseCase, getProviderProfileUseCase, jwtService);
 
 const router = Router();
 
-router.post("/onboarding/step-1", authenticate,
-    validate(step1Schema), providerController.completeStep1);
 
-router.put("/onboarding/step-2", authenticate, authorizeRoles(Role.SERVICE_PROVIDER),
-    validate(step2Schema), providerController.completeStep2);
 
-router.post("/onboarding/submit", authenticate, authorizeRoles(Role.SERVICE_PROVIDER), providerController.completeStep3);
+const userRepository =
+    new UserRepository();
 
-router.get("/profile", authenticate, authorizeRoles(Role.SERVICE_PROVIDER), providerController.getProfile);
+
+
+const submitProviderApplicationUseCase =
+    new SubmitProviderApplicationUseCase(
+        userRepository
+    );
+
+
+
+const getProviderProfileUseCase =
+    new GetProviderProfileUseCase(
+        userRepository
+    );
+
+
+
+
+const providerController =
+    new ProviderController(
+
+        submitProviderApplicationUseCase,
+
+        getProviderProfileUseCase
+
+    );
+
+
+
+
+// Submit application after review page
+
+router.post(
+
+    "/onboarding/submit",
+
+    authenticate,
+
+    validate(providerApplicationSchema),
+
+    providerController.submit
+
+);
+
+
+
+
+// Get provider profile after submission / dashboard
+
+router.get(
+
+    "/profile",
+
+    authenticate,
+
+    providerController.getProfile
+
+);
+
+
 
 export default router;

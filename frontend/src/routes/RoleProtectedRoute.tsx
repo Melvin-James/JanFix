@@ -34,9 +34,9 @@ function RoleProtectedRoute({ children, allowedRoles }: RoleProtectedRouteProps)
     }
 
     if (
-        !allowedRoles.includes(
-            user.role
-        )
+       !user.roles.some(
+            role => allowedRoles.includes(role)
+       )
     ) {
 
         return (

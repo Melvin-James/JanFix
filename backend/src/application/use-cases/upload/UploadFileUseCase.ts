@@ -8,6 +8,8 @@ import ApiError from "../../../shared/utils/apiError.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
+import type { UploadFolder } from "../../../domain/enums/UploadFolder.js";
+
 export class UploadFileUseCase implements IUploadFileUseCase {
 
     constructor(
@@ -20,7 +22,7 @@ export class UploadFileUseCase implements IUploadFileUseCase {
 
         file: Express.Multer.File,
 
-        folder: string
+        folder: UploadFolder
 
     ): Promise<UploadedFile> {
 

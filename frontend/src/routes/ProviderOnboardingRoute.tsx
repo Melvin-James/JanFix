@@ -1,97 +1,95 @@
-import { useEffect, useState } from "react";
-
 import { Navigate } from "react-router-dom";
 
 import type { ReactNode } from "react";
 
-import LoadingSpinner from "../components/LoadingSpinner";
+import { useEffect, useState } from "react";
+
+import { useProviderOnboardingStore } from "../features/provider/store/providerOnboardingStore";
 
 import { getProviderProfile } from "../features/provider/services/providerService";
 
-import { getOnboardingRedirectPath } from "../features/provider/utils/getOnboardingRedirectPath";
-
-interface ProviderOnboardingRouteProps {
+interface ProviderOnboardingRouteProps{
 
     children: ReactNode;
-
-    requiredStatus: string;
+    step: number;
 }
 
-function ProviderOnboardingRoute({
+function ProviderOnboardingRoute({children, step}: ProviderOnboardingRouteProps) {
 
-    children,
 
-    requiredStatus,
+    const draft = useProviderOnboardingStore(s => s.draft);
 
-}: ProviderOnboardingRouteProps) {
+    const [checkingProvider, setCheckingProvider] = useState(true);
 
-    const [loading, setLoading] =
-        useState(true);
+    const [hasProviderProfile, setHasProviderProfile] = useState(false);
 
-    const [allowed, setAllowed] =
-        useState(false);
+    useEffect(()=>{
+        const checkProviderProfile = async() =>{
+            try{
+                await getProviderProfile();
 
-    const [redirectPath, setRedirectPath] =
-        useState("");
-
-    useEffect(() => {
-
-        const checkStatus =
-            async () => {
-
-                try {
-
-                    const response =
-                        await getProviderProfile();
-
-                    const currentStatus =
-                        response.provider.onboardingStatus;
-
-                    if (
-                        currentStatus ===
-                        requiredStatus
-                    ) {
-
-                        setAllowed(true);
-
-                    } else {
-
-                        setRedirectPath(
-                            getOnboardingRedirectPath(
-                                currentStatus
-                            )
-                        );
-                    }
-
-                } catch (error) {
-
-                    console.error(error);
-                } finally {
-
-                    setLoading(false);
+                setHasProviderProfile(true);
+            }catch(error: any){
+                if(error.response?.status === 404){
+                    setHasProviderProfile(false);
+                }else{
+                    console.error(
+                        "Failed to check provider profile",
+                        error
+                    )
                 }
-            };
+            }finally{
+                setCheckingProvider(false);
+            }
+        }
+        checkProviderProfile();
+    },[]);
 
-        checkStatus();
-
-    }, [requiredStatus]);
-
-    if (loading) {
-
-        return <LoadingSpinner />;
+    if(checkingProvider){
+        return null;
     }
 
-    if (!allowed) {
-
-        return (
+    if(hasProviderProfile){
+        return(
             <Navigate
-                to={redirectPath}
+                to="/provider/application-submitted"
                 replace
             />
         );
     }
 
-    return <>{children}</>;
+
+
+    if (step === 2 && !draft.providerType) {
+
+        return <Navigate
+            to="/provider/onboarding/step-1"
+        />
+
+    }
+
+
+    if (step === 3) {
+
+
+        if (
+            !draft.providerName ||
+            !draft.identityProof
+        ) {
+
+            return <Navigate
+                to="/provider/onboarding/step-2"
+            />
+
+        }
+
+    }
+
+
+    return children;
+
+
 }
+
 
 export default ProviderOnboardingRoute;

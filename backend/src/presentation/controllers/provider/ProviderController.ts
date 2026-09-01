@@ -6,105 +6,117 @@ import asyncHandler from "../../../shared/utils/asyncHandler.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
-
-import type { IStartProviderOnboardingUseCase } from "../../../application/use-cases/usecase interfaces/IStartProviderOnboardingUseCase.js";
-
-import type { ICompleteProviderStep2UseCase } from "../../../application/use-cases/usecase interfaces/ICompleteProviderStep2UseCase.js";
-
-import type { ICompleteProviderStep3UseCase } from "../../../application/use-cases/usecase interfaces/ICompleteProviderStep3UseCase.js";
+import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/ISubmitProviderApplicationUseCase.js";
 
 import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/IGetProviderProfileUseCase.js";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 
-import { UserMapper } from "../../../application/mappers/UserMapper.js";
 
 export class ProviderController {
 
+
     constructor(
 
-        private startProviderOnboardingUseCase: IStartProviderOnboardingUseCase,
+        private submitProviderApplicationUseCase:
+            ISubmitProviderApplicationUseCase,
 
-        private completeProviderStep2UseCase: ICompleteProviderStep2UseCase,
 
-        private completeProviderStep3UseCase: ICompleteProviderStep3UseCase,
-
-        private getProviderProfileUseCase: IGetProviderProfileUseCase,
-
-        private jwtService: IJwtService,
+        private getProviderProfileUseCase:
+            IGetProviderProfileUseCase
 
     ) { }
 
-    completeStep1 = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
 
-        const { providerType } = req.body;
 
-        const userId = req.user!.userId;
 
-        const user =
-            await this.startProviderOnboardingUseCase.execute(
-                userId,
-                providerType
-            );
 
-        const accessToken =
-            this.jwtService.generateAccessToken(
-                user.id!,
-                user.roles
-            );
+    submit = asyncHandler(
 
-        res.status(HttpStatusCode.CREATED).json({
+        async (
 
-            success: true,
+            req: AuthRequest,
 
-            message: AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED,
+            res: Response
 
-             data: {
+        ): Promise<void> => {
 
-                accessToken,
 
-                user: UserMapper.toAuthResponse(user),
-            },
-        });
 
-    });
+            await this
+                .submitProviderApplicationUseCase
+                .execute(
 
-    completeStep2 = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+                    req.user!.userId,
 
-        await this.completeProviderStep2UseCase.execute({ userId: req.user!.userId, ...req.body });
+                    req.body
 
-        res.status(HttpStatusCode.OK).json({
+                );
 
-            success: true,
 
-            message:
-                AppMessages.SUCCESS
-                    .PROVIDER_STEP2_COMPLETED,
-        });
-    });
 
-    completeStep3 = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+            res.status(
+                HttpStatusCode.CREATED
+            )
+            .json({
 
-        await this.completeProviderStep3UseCase.execute(req.user!.userId);
+                success: true,
 
-        res.status(HttpStatusCode.OK).json({
 
-            success: true,
+                message:
+                    AppMessages.SUCCESS
+                        .SERVICE_PROVIDER_PROFILE_CREATED
 
-            message:
-                AppMessages.SUCCESS.PROVIDER_ONBOARDING_COMPLETED
-        });
-    });
+            });
+
+        }
+
+    );
+
+
+
+
+
+
 
     getProfile = asyncHandler(
 
-        async (req: AuthRequest, res: Response): Promise<void> => {
+        async (
 
-            const provider = await this.getProviderProfileUseCase.execute(req.user!.userId);
+            req: AuthRequest,
 
-            res.status(HttpStatusCode.OK).json({ success: true, provider });
+            res: Response
+
+        ): Promise<void> => {
+
+
+
+            const provider =
+
+                await this
+                    .getProviderProfileUseCase
+                    .execute(
+
+                        req.user!.userId
+
+                    );
+
+
+
+
+            res.status(
+                HttpStatusCode.OK
+            )
+            .json({
+
+                success: true,
+
+                provider
+
+            });
+
         }
+
     );
 
 }

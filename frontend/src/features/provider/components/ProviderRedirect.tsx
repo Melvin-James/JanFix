@@ -10,15 +10,13 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 
 function ProviderRedirect() {
 
-  const [redirectPath, setRedirectPath] =
-    useState<string | null>(null);
+  const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
   useEffect(() => {
 
     const fetchProfile = async () => {
 
-      const response =
-        await getProviderProfile();
+      const response = await getProviderProfile();
 
       setRedirectPath(
         getOnboardingRedirectPath(

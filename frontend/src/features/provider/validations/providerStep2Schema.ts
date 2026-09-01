@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+const uploadedFileSchema = z.object({
+
+  key: z.string(),
+
+  url: z.string(),
+
+  originalName: z.string(),
+
+  mimeType: z.string(),
+
+  size: z.number(),
+
+});
+
+
 export const providerStep2Schema = z.object({
 
   providerName: z
@@ -27,15 +42,9 @@ export const providerStep2Schema = z.object({
       "Phone number must be 10 digits"
     ),
 
-  governmentId: z
-    .string()
-    .trim()
-    .min(1, "Government ID is required"),
+  identityProof: uploadedFileSchema,
 
-  // profileImage: z
-  //   .string()
-  //   .trim()
-  //   .min(1, "Profile image is required"),
+  profileImage: uploadedFileSchema.optional(),
 
   categoriesWillingToWork: z
     .array(z.string())
@@ -44,26 +53,27 @@ export const providerStep2Schema = z.object({
       "Select at least one category"
     ),
 
-  // websiteLinks: z
-  //   .array(z.string().url())
-  //   .optional(),
+  websiteLinks: z
+    .array(z.string().url())
+    .optional(),
 
-  // previousCommunityPhotos: z
-  //   .array(z.string())
-  //   .optional(),
+  previousCommunityPhotos: z
+    .array(uploadedFileSchema)
+    .optional(),
 
-  volunteerGroupProfile: z
-    .object({
+  volunteerGroupProfile:
 
-      memberCount: z
-        .number()
-        .min(1, "Member count must be at least 1"),
+    z.object({
 
-      // logo:
-      //   z.string().optional(),
+      memberCount: z.number()
+                  .min(1, "Member count must be at least 1"),
+
+
+      logo: uploadedFileSchema.optional(),
+
 
     })
-    .optional(),
+      .optional(),
 
   organizationProfile: z
     .object({

@@ -1,28 +1,47 @@
 import { Schema } from "mongoose";
 
-import { OnboardingStatus } from "../../../domain/enums/OnboardingStatus.js";
-
-import { VerificationStatus } from "../../../domain/enums/VerificationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
 
 export const providerStatusSchema = new Schema(
     {
 
-        onboardingStatus: {
+        applicationStatus: {
 
             type: String,
 
-            enum: Object.values(OnboardingStatus),
+            enum: Object.values(ApplicationStatus),
 
-            default: OnboardingStatus.STEP_1,
+            default: ApplicationStatus.SUBMITTED,
         },
 
-        verificationStatus: {
+        submittedAt: {
+
+            type: Date,
+
+            default: Date.now,
+        },
+
+        reviewedAt: {
+
+            type: Date,
+        },
+
+        reviewedBy: {
+
+            type: Schema.Types.ObjectId,
+
+            ref: "User",
+        },
+
+        rejectionReason: {
 
             type: String,
 
-            enum: Object.values(VerificationStatus),
+            trim: true,
 
-            default: VerificationStatus.PENDING,
+            maxlength: 500,
+
+            default: null,
         },
     },
     {

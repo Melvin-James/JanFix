@@ -1,5 +1,5 @@
 import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
 
-export interface UploadFileResponseDto {
+export interface UploadFileResponseDTO {
     file: UploadedFile;
 }
