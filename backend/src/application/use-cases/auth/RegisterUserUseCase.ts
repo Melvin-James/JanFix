@@ -1,34 +1,62 @@
-import bcrypt from "bcryptjs";
-
+import { hashData } from "../../../shared/utils/hashUtil.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { AppMessages } from "../../../shared/constants/messages.js";
 import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
+import type { RegisterResponseDTO } from "../../dto/auth/RegisterResponseDTO.js";
+import { UserMapper } from "../../mappers/UserMapper.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 import { Role } from "../../../domain/enums/Role.js";
 import type { User } from "../../../domain/entities/User.js";
+import ApiError from "../../../shared/utils/apiError.js";
+import generateOtp from "../../../shared/utils/generateOtp.js";
+import type { IEmailService } from "../../../domain/interface/IEmailService.js";
+import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+import type { IRegisterUserUseCase } from "../usecase interfaces/IRegisterUserUseCase.js";
 
-export class RegisterUserUseCase {
+export class RegisterUserUseCase implements IRegisterUserUseCase {
 
-    constructor(private userRepository: IUserRepository) { }
+    constructor(
+        private userRepository: IUserRepository,
+        private otpRepository: IOtpRepository,
+        private emailService: IEmailService
+    ) { }
 
-    async execute(dto: RegisterUserDTO): Promise<User> {
+    async execute(dto: RegisterUserDTO): Promise<RegisterResponseDTO> {
 
         const existingUser = await this.userRepository.findByEmail(dto.email);
 
         if (existingUser) {
-            throw new Error("User already exists");
+            throw new ApiError(HttpStatusCode.CONFLICT, AppMessages.ERROR.USER_ALREADY_EXISTS);
         }
 
-        const hashedPassword = await bcrypt.hash(dto.password, 10);
+        const otp = generateOtp();
+
+        const hashedOtp = await hashData(otp);
+
+        const hashedPassword = await hashData(dto.password);
 
         const user: User = {
-            name: dto.name,
+
+            fullName: dto.fullName,
+
             email: dto.email,
+
             password: hashedPassword,
-            role: Role.USER,
+
+            roles: [Role.USER],
+            
             isVerified: false,
         };
 
         const createdUser = await this.userRepository.create(user);
 
-        return createdUser;
+        await this.otpRepository.saveOtp(createdUser.email, hashedOtp);
+
+        await this.emailService.sendOtpEmail(
+            createdUser.email,
+            otp
+        );
+
+        return UserMapper.toAuthResponse(createdUser);
     }
 }

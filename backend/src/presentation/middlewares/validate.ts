@@ -1,18 +1,19 @@
 import type { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
 import type { ZodSchema } from "zod";
+import ApiError from "../../shared/utils/apiError.js";
 
 const validate =
     (schema: ZodSchema) =>
         (req: Request, res: Response, next: NextFunction) => {
             try {
-                schema.parse(req.body);
+                req.body = schema.parse(req.body);
 
                 next();
             } catch (error: any) {
-                return res.status(400).json({
-                    success: false,
-                    message: error.errors,
-                });
+                const message = error.issues?.[0]?.message || "Validation Error";
+
+                next(new ApiError(HttpStatusCode.BAD_REQUEST, message));
             }
         };
 

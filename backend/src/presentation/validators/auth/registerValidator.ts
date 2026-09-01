@@ -1,15 +1,11 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-    name: z
-        .string()
-        .trim()
-        .min(3, "Name must be at least 3 characters")
-        .max(50, "Name cannot exceed 50 characters")
-        .regex(
-            /^[A-Za-z\s]+$/,
-            "Name can only contain alphabets and spaces"
-        ),
+
+     fullName:
+        z.string()
+         .trim()
+         .min(3),
 
     email: z
         .string()
@@ -37,4 +33,20 @@ export const registerSchema = z.object({
             /[^A-Za-z0-9]/,
             "Password must contain at least one special character"
         ),
-});
+
+    confirmPassword: z
+        .string(),
+
+})
+    .refine(
+
+        (data) =>
+            data.password === data.confirmPassword,
+
+        {
+
+            message: "Passwords do not match",
+
+            path: ["confirmPassword"],
+        }
+    )
