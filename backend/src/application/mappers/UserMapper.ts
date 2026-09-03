@@ -16,6 +16,9 @@ export class UserMapper {
       roles: user.roles,
       
       isVerified: user.isVerified,
+
+      providerProfile: user.providerProfile,
+      
     };
   }
 }

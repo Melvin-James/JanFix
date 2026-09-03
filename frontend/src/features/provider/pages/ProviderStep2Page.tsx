@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useNavigate } from "react-router-dom";
 
-
 import ProviderOnboardingLayout from "../components/ProviderOnboardingLayout";
 
 import CommonProviderFields from "../components/CommonProviderFields";
@@ -33,6 +32,8 @@ import { ProviderType } from "../types/providerTypes";
 
 import { useProviderOnboardingStore } from "../store/providerOnboardingStore";
 
+import WebsiteLinksField from "../components/WebsiteLinksField";
+
 function ProviderStep2Page() {
 
 
@@ -57,6 +58,8 @@ function ProviderStep2Page() {
 
         control,
 
+        setValue,
+
         handleSubmit,
 
         formState: { errors },
@@ -72,6 +75,7 @@ function ProviderStep2Page() {
         defaultValues: {
 
             ...draft,
+            websiteLinks: draft.websiteLinks ?? [],
 
         },
 
@@ -173,6 +177,8 @@ function ProviderStep2Page() {
 
                                 register={register}
 
+                                control={control}
+
                                 errors={errors}
 
                             />
@@ -200,6 +206,8 @@ function ProviderStep2Page() {
                             <OrganizationFields
 
                                 register={register}
+
+                                control={control}
 
                                 errors={errors}
 
@@ -288,7 +296,14 @@ function ProviderStep2Page() {
 
                     />
 
-
+                    <div className="mt-8">
+                        <WebsiteLinksField
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            errors={errors}
+                        />
+                    </div>
                 </div>
 
 

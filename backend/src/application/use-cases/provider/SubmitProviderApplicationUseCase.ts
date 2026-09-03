@@ -14,6 +14,8 @@ import { ProviderType } from "../../../domain/enums/ProviderType.js";
 
 import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
 
+import type { User } from "../../../domain/entities/User.js";
+
 
 export class SubmitProviderApplicationUseCase
     implements ISubmitProviderApplicationUseCase {
@@ -31,7 +33,7 @@ export class SubmitProviderApplicationUseCase
 
         dto: SubmitProviderApplicationDTO
 
-    ): Promise<void> {
+    ): Promise<User> {
 
 
         const user =
@@ -247,5 +249,7 @@ export class SubmitProviderApplicationUseCase
 
 
         await this.userRepository.updateUser(user);
+
+        return user;
     }
 }

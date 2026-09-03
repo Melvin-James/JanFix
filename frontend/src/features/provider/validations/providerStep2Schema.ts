@@ -54,7 +54,8 @@ export const providerStep2Schema = z.object({
     ),
 
   websiteLinks: z
-    .array(z.string().url())
+    .array(z.string().url("Please enter a valid URL"))
+    .max(5, "You can add a maximum of 5 links")
     .optional(),
 
   previousCommunityPhotos: z
@@ -82,11 +83,11 @@ export const providerStep2Schema = z.object({
         .number()
         .min(1, "Member count must be at least 1"),
 
-      // ngoRegistrationDocument:
-      //   z.string(),
+      ngoRegistrationDocument:
+        uploadedFileSchema.optional(),
 
-      // logo:
-      //   z.string(),
+      logo:
+        uploadedFileSchema.optional(),
 
     })
     .optional(),

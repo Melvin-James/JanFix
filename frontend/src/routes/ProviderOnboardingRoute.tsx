@@ -2,11 +2,10 @@ import { Navigate } from "react-router-dom";
 
 import type { ReactNode } from "react";
 
-import { useEffect, useState } from "react";
+import { useAuthStore } from "../store/authStore";
 
 import { useProviderOnboardingStore } from "../features/provider/store/providerOnboardingStore";
 
-import { getProviderProfile } from "../features/provider/services/providerService";
 
 interface ProviderOnboardingRouteProps{
 
@@ -19,35 +18,20 @@ function ProviderOnboardingRoute({children, step}: ProviderOnboardingRouteProps)
 
     const draft = useProviderOnboardingStore(s => s.draft);
 
-    const [checkingProvider, setCheckingProvider] = useState(true);
+    const user = useAuthStore(
+        state => state.user
+    );
 
-    const [hasProviderProfile, setHasProviderProfile] = useState(false);
+    const isAuthLoading = useAuthStore(
+        state => state.isAuthLoading
+    )
 
-    useEffect(()=>{
-        const checkProviderProfile = async() =>{
-            try{
-                await getProviderProfile();
-
-                setHasProviderProfile(true);
-            }catch(error: any){
-                if(error.response?.status === 404){
-                    setHasProviderProfile(false);
-                }else{
-                    console.error(
-                        "Failed to check provider profile",
-                        error
-                    )
-                }
-            }finally{
-                setCheckingProvider(false);
-            }
-        }
-        checkProviderProfile();
-    },[]);
-
-    if(checkingProvider){
+    if(isAuthLoading){
         return null;
     }
+
+    const hasProviderProfile = !!user?.providerProfile;
+
 
     if(hasProviderProfile){
         return(

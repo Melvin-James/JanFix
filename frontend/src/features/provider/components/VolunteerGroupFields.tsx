@@ -1,4 +1,6 @@
-import type { FieldErrors, UseFormRegister, } from "react-hook-form";
+import { type FieldErrors, type UseFormRegister, type Control, Controller } from "react-hook-form";
+
+import FileUploadField from "./FileUploadField";
 
 import FormField from "../../../components/UI/FormField";
 
@@ -9,6 +11,9 @@ interface VolunteerGroupFieldsProps {
     register:
     UseFormRegister<ProviderStep2FormData>;
 
+    control:
+    Control<ProviderStep2FormData>;
+
     errors:
     FieldErrors<ProviderStep2FormData>;
 }
@@ -16,6 +21,8 @@ interface VolunteerGroupFieldsProps {
 function VolunteerGroupFields({
 
   register,
+
+  control,
 
   errors,
 
@@ -51,6 +58,19 @@ function VolunteerGroupFields({
           }
         )}
 
+      />
+
+      <Controller
+        name="volunteerGroupProfile.logo"
+        control={control}
+        render={({field}) =>(
+          <FileUploadField
+            label="Group Logo"
+            folder="provider/logos"
+            value={field.value}
+            onChange={field.onChange}
+          />
+        )}
       />
 
     </div>

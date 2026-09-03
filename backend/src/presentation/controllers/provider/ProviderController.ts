@@ -12,6 +12,7 @@ import type { IGetProviderProfileUseCase } from "../../../application/use-cases/
 
 import { AppMessages } from "../../../shared/constants/messages.js";
 
+import { UserMapper } from "../../../application/mappers/UserMapper.js";
 
 export class ProviderController {
 
@@ -43,7 +44,7 @@ export class ProviderController {
 
 
 
-            await this
+           const user =  await this
                 .submitProviderApplicationUseCase
                 .execute(
 
@@ -65,7 +66,11 @@ export class ProviderController {
 
                 message:
                     AppMessages.SUCCESS
-                        .SERVICE_PROVIDER_PROFILE_CREATED
+                        .SERVICE_PROVIDER_PROFILE_CREATED,
+
+                data: {
+                    user: UserMapper.toAuthResponse(user)
+                }
 
             });
 

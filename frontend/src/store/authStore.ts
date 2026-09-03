@@ -59,3 +59,7 @@ export const useAuthStore =
           user: null,
         }),
   }));
+
+  if(import.meta.env.DEV){
+    (window as any).authStore = useAuthStore;
+  }

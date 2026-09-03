@@ -10,6 +10,8 @@ import { Controller } from "react-hook-form";
 
 import FormError from "../../../components/UI/FormError";
 
+import CommunityPhotosField from "./CommunityPhotosField";
+
 
 interface CommonProviderFieldsProps {
 
@@ -64,6 +66,30 @@ function CommonProviderFields({ register, control, errors }: CommonProviderField
                 message={
                     errors.identityProof?.message as string
                 }
+            />
+
+            <Controller
+                name="profileImage"
+                control={control}
+                render={({field}) => (
+                    <FileUploadField
+                        label="Profile Image"
+                        folder="provider/profile-images"
+                        value={field.value}
+                        onChange={field.onChange}
+                    />
+                )}
+            />
+
+            <Controller
+                name="previousCommunityPhotos"
+                control={control}
+                render={({field}) => (
+                    <CommunityPhotosField
+                        value={field.value}
+                        onChange={field.onChange}
+                    />
+                )}
             />
             
         </div>
