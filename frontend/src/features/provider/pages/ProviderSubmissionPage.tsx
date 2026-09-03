@@ -1,30 +1,50 @@
 import { useEffect, useState } from "react";
+
 import { Link } from "react-router-dom";
+
 import { ArrowLeft, FileText, User, Briefcase, ClipboardCheck, Users, Building2 } from "lucide-react";
 
 import { getProviderProfile } from "../services/providerService";
+
 import type { ProviderProfile } from "../types/providerProfile";
+
 import MainLayout from "../../../layouts/MainLayout";
 
+import UploadedFileView from "../components/UploadedFileView";
+
 function ProviderSubmissionPage() {
+
   const [provider, setProvider] = useState<ProviderProfile | null>(null);
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+
     const fetchProviderProfile = async () => {
+
       try {
         const data = await getProviderProfile();
+
         setProvider(data.provider);
+
       } catch (error) {
+
         console.error(error);
+
         setError("Unable to load your application.");
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
     fetchProviderProfile();
+
   }, []);
 
   if (loading) {
@@ -41,7 +61,7 @@ function ProviderSubmissionPage() {
         <div className="text-center">
           <p className="text-red-600">{error ?? "Application not found."}</p>
           <Link
-            to="/"
+            to="/home"
             className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -130,8 +150,49 @@ function ProviderSubmissionPage() {
                     <dt className="font-medium text-slate-900">Categories</dt>
                     <dd>{provider.workPreferences.categoriesWillingToWork.join(", ")}</dd>
 
-                    <dt className="font-medium text-slate-900">Website Links</dt>
-                    <dd>{provider.workPreferences.websiteLinks?.join(", ") || "None"}</dd>
+                    <dt className="font-medium text-slate-900">
+                      Website Links
+                    </dt>
+
+                    <dd>
+
+                      {provider.workPreferences.websiteLinks?.length ? (
+
+                        <div className="space-y-1">
+
+                          {provider.workPreferences.websiteLinks.map(
+                            (url, index) => (
+
+                              <a
+                                key={index}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="
+                            block
+                            break-all
+                            text-blue-600
+                            hover:text-blue-700
+                            hover:underline
+                        "
+                              >
+                                {url}
+                              </a>
+
+                            )
+                          )}
+
+                        </div>
+
+                      ) : (
+
+                        <span className="text-slate-400">
+                          None
+                        </span>
+
+                      )}
+
+                    </dd>
                   </dl>
                 </div>
               </div>
@@ -146,62 +207,180 @@ function ProviderSubmissionPage() {
                 <div className="min-w-0 flex-1">
                   <h2 className="font-semibold text-slate-900">Documents</h2>
                   <dl className="mt-3 grid gap-y-2 text-sm text-slate-600 sm:grid-cols-[140px_1fr] sm:gap-x-4">
-                    <dt className="font-medium text-slate-900">Identity Proof</dt>
-                    <dd>{provider.documents.identityProof.key}</dd>
 
-                    {provider.documents.profileImage && (
-                      <>
-                        <dt className="font-medium text-slate-900">Profile Image</dt>
-                        <dd>{provider.documents.profileImage.originalName}</dd>
-                      </>
-                    )}
+                    <dt className="font-medium text-slate-900">
+                      Identity Proof
+                    </dt>
+
+                    <dd>
+                      <UploadedFileView
+                        file={provider.documents.identityProof}
+                      />
+                    </dd>
+
+
+                    <dt className="font-medium text-slate-900">
+                      Profile Image
+                    </dt>
+
+                    <dd>
+                      <UploadedFileView
+                        file={provider.documents.profileImage}
+                      />
+                    </dd>
+
+
+                    <dt className="font-medium text-slate-900">
+                      Community Photos
+                    </dt>
+
+                    <dd>
+                      {provider.documents.previousCommunityPhotos?.length ? (
+
+                        <div className="space-y-1">
+
+                          {provider.documents.previousCommunityPhotos.map(
+                            photo => (
+                              <UploadedFileView
+                                key={photo.key}
+                                file={photo}
+                              />
+                            )
+                          )}
+
+                        </div>
+
+                      ) : (
+
+                        <span className="text-slate-400">
+                          Not uploaded
+                        </span>
+
+                      )}
+                    </dd>
+
                   </dl>
                 </div>
               </div>
             </section>
 
-            {/* Volunteer Group */}
+            {/* Volunteer group */}
             {provider.volunteerGroupProfile && (
               <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+
                 <div className="flex items-start gap-4">
+
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                     <Users className="h-5 w-5" />
                   </div>
-                  <div>
-                    <h2 className="font-semibold text-slate-900">Volunteer Group Details</h2>
-                    <p className="mt-1 text-sm leading-relaxed text-slate-600">
-                      <span className="font-medium text-slate-900">Member Count:</span>{" "}
-                      {provider.volunteerGroupProfile.memberCount}
-                    </p>
+
+                  <div className="min-w-0 flex-1">
+
+                    <h2 className="font-semibold text-slate-900">
+                      Volunteer Group Details
+                    </h2>
+
+                    <dl className="mt-3 grid gap-y-2 text-sm text-slate-600 sm:grid-cols-[140px_1fr] sm:gap-x-4">
+
+                      <dt className="font-medium text-slate-900">
+                        Member Count
+                      </dt>
+
+                      <dd>
+                        {provider.volunteerGroupProfile.memberCount}
+                      </dd>
+
+                      {provider.documents.logo && (
+                        <>
+                          <dt className="font-medium text-slate-900">
+                            Group Logo
+                          </dt>
+
+                          <dd>
+                            <UploadedFileView
+                              file={provider.documents.logo}
+                            />
+                          </dd>
+                        </>
+                      )}
+
+                    </dl>
+
                   </div>
+
                 </div>
+
               </section>
             )}
 
-            {/* Organization */}
             {provider.organizationProfile && (
               <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+
                 <div className="flex items-start gap-4">
+
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                     <Building2 className="h-5 w-5" />
                   </div>
+
                   <div className="min-w-0 flex-1">
-                    <h2 className="font-semibold text-slate-900">Organization Details</h2>
+
+                    <h2 className="font-semibold text-slate-900">
+                      Organization Details
+                    </h2>
+
                     <dl className="mt-3 grid gap-y-2 text-sm text-slate-600 sm:grid-cols-[140px_1fr] sm:gap-x-4">
-                      <dt className="font-medium text-slate-900">Member Count</dt>
-                      <dd>{provider.organizationProfile.memberCount}</dd>
+
+                      <dt className="font-medium text-slate-900">
+                        Member Count
+                      </dt>
+
+                      <dd>
+                        {provider.organizationProfile.memberCount}
+                      </dd>
+
 
                       {provider.documents.ngoRegistrationDocument && (
                         <>
-                          <dt className="font-medium text-slate-900">NGO Registration</dt>
-                          <dd>{provider.documents.ngoRegistrationDocument.originalName}</dd>
+                          <dt className="font-medium text-slate-900">
+                            NGO Registration
+                          </dt>
+
+                          <dd>
+                            <UploadedFileView
+                              file={
+                                provider.documents
+                                  .ngoRegistrationDocument
+                              }
+                            />
+                          </dd>
                         </>
                       )}
+
+
+                      {provider.documents.logo && (
+                        <>
+                          <dt className="font-medium text-slate-900">
+                            NGO Logo
+                          </dt>
+
+                          <dd>
+                            <UploadedFileView
+                              file={provider.documents.logo}
+                            />
+                          </dd>
+                        </>
+                      )}
+
                     </dl>
+
                   </div>
+
                 </div>
+
               </section>
             )}
+
+
           </div>
         </div>
       </main>

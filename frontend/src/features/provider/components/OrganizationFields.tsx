@@ -1,4 +1,8 @@
-import type { FieldErrors, UseFormRegister } from "react-hook-form";
+import type { FieldErrors, UseFormRegister, Control } from "react-hook-form";
+
+import { Controller } from "react-hook-form";
+
+import FileUploadField from "./FileUploadField";
 
 import FormField from "../../../components/UI/FormField";
 
@@ -9,6 +13,9 @@ interface OrganizationFieldsProps {
   register:
     UseFormRegister<ProviderStep2FormData>;
 
+  control:
+    Control<ProviderStep2FormData>
+
   errors:
     FieldErrors<ProviderStep2FormData>;
 }
@@ -16,6 +23,8 @@ interface OrganizationFieldsProps {
 function OrganizationFields({
 
   register,
+
+  control,
 
   errors,
 
@@ -51,6 +60,32 @@ function OrganizationFields({
           }
         )}
 
+      />
+
+      <Controller
+        name="organizationProfile.ngoRegistrationDocument"
+        control={control}
+        render={({field}) => (
+          <FileUploadField
+            label="NGO Registration Document"
+            folder="provider/ngo-documents"
+            value={field.value}
+            onChange={field.onChange}
+          />
+        )}
+      />
+
+      <Controller
+        name="organizationProfile.logo"
+        control={control}
+        render={({field}) => (
+          <FileUploadField
+            label="NGO Logo"
+            folder="provider/logos"
+            value={field.value}
+            onChange={field.onChange}
+          />
+        )}
       />
 
     </div>

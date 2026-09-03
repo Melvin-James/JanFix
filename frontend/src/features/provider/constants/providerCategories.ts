@@ -1,19 +1,17 @@
 export const PROVIDER_CATEGORIES = [
 
-  "Road Repair",
+  "Waste & Cleanliness",
 
-  "Waste Management",
+  "Drainage & Water Issues",
 
-  "Water Supply",
+  "Public Space Maintenance",
 
-  "Street Lights",
+  "Water Body Restoration",
 
-  "Drainage",
+  "Greenary & Vegetation",
 
-  "Public Cleaning",
+  "Coastal & Beach Cleanup",
 
-  "Tree Planting",
-
-  "Community Service",
+  "Urban Beautification",
 
 ] as const;

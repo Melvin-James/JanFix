@@ -24,6 +24,8 @@ import ProviderWelcomePage from "../features/provider/pages/ProviderWelcomePage"
 
 import ProviderSubmissionPage from "../features/provider/pages/ProviderSubmissionPage";
 
+import ProviderRoute from "./ProviderRoute";
+
 function AppRouter() {
 
     return (
@@ -142,7 +144,13 @@ function AppRouter() {
                     path="/provider/application-submitted"
                     element={
                         <ProtectedRoute>
-                            <ProviderWelcomePage />
+
+                            <ProviderRoute>
+
+                                <ProviderWelcomePage />
+
+                            </ProviderRoute>
+
                         </ProtectedRoute>
                     }
                 />
@@ -154,7 +162,11 @@ function AppRouter() {
 
                         <ProtectedRoute>
 
-                            <ProviderSubmissionPage />
+                            <ProviderRoute>
+
+                                <ProviderSubmissionPage />
+
+                            </ProviderRoute>
 
                         </ProtectedRoute>
                     }

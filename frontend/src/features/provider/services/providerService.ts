@@ -1,5 +1,7 @@
 import axiosInstance from "../../../api/axios";
 
+import type { AuthUser } from "../../auth/types/authUser";
+
 import type { ProviderProfile } from "../types/providerProfile";
 
 export const getProviderProfile =
@@ -18,9 +20,21 @@ export const getProviderProfile =
 
 
 export const submitProviderApplication =
-    async (data: any) => {
+    async (data: any): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            user: AuthUser
+        };
+    }> => {
 
-        const response = await axiosInstance.post("/provider/onboarding/submit", data);
+        const response = await axiosInstance.post<{
+            success: boolean;
+            message: string;
+            data: {
+                user: AuthUser;
+            };
+        }>("/provider/onboarding/submit", data);
 
         return response.data;
     };
