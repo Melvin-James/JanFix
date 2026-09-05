@@ -16,6 +16,10 @@ export interface User {
 
     isVerified: boolean;
 
+    authProvider: "LOCAL" | "GOOGLE";
+
+    googleId?: string;
+
     providerProfile?: ProviderProfile
     
 }

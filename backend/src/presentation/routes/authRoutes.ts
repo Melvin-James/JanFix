@@ -22,28 +22,36 @@ import { RegisterUserUseCase } from "../../application/use-cases/auth/RegisterUs
 import { VerifyOtpUseCase } from "../../application/use-cases/auth/VerifyOtpUseCase.js";
 import { LoginUseCase } from "../../application/use-cases/auth/LoginUseCase.js";
 import { RefreshTokenUseCase } from "../../application/use-cases/auth/RefreshTokenUseCase.js";
+import { GoogleAuthUseCase } from "../../application/use-cases/auth/GoogleAuthUseCase.js";
+import GoogleAuthService from "../../infrastructure/services/GoogleAuthService.js";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();
 const otpRepository = new RedisOtpRepository();
 const emailService = new EmailService();
 const jwtService = new JwtService();
+const googleAuthService = new GoogleAuthService();
 
 const registerUserUseCase = new RegisterUserUseCase(userRepository, otpRepository, emailService);
 const verifyOtpUseCase = new VerifyOtpUseCase(userRepository, otpRepository);
 const loginUseCase = new LoginUseCase(userRepository, jwtService);
 const refreshTokenUseCase = new RefreshTokenUseCase(jwtService, userRepository);
+const googleAuthUseCase = new GoogleAuthUseCase(userRepository, jwtService);
 
 const authController = new AuthController(
     registerUserUseCase,
     verifyOtpUseCase,
     loginUseCase,
-    refreshTokenUseCase
+    refreshTokenUseCase,
+    googleAuthUseCase,
+    googleAuthService,
 );
 
 const router = express.Router();
 
 router.post("/register", validate(registerSchema), authController.register);
+
+router.post("/google", authController.googleAuth);
 
 router.post("/verify-otp", validate(verifyOtpSchema), authController.verifyOtp);
 

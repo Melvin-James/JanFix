@@ -7,20 +7,24 @@ import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js
 import type { LoginDTO } from "../../../application/dto/auth/LoginDTO.js";
 import { setAuthCookies } from "../../../shared/utils/setAuthCookies.js";
 import ApiError from "../../../shared/utils/apiError.js";
+import type{ IGoogleAuthService } from "../../../domain/interface/IGoogleAuthService.js";
 
 // Use Cases
 import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/IRegisterUserUseCase.js";
 import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase interfaces/IVerifyOtpUseCase.js";
 import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/ILoginUseCase.js";
 import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/IRefreshTokenUseCase.js";
+import type { IGoogleAuthUseCase } from "../../../application/use-cases/usecase interfaces/IGoogleAuthUseCase.js";
 
 export class AuthController {
   constructor(
     private registerUserUseCase: IRegisterUserUseCase,
     private verifyOtpUseCase: IVerifyOtpUseCase,
     private loginUseCase: ILoginUseCase,
-    private refreshTokenUseCase: IRefreshTokenUseCase
-  ) {}
+    private refreshTokenUseCase: IRefreshTokenUseCase,
+    private googleAuthUseCase: IGoogleAuthUseCase,
+    private googleAuthService: IGoogleAuthService,
+  ) { }
 
   public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: RegisterUserDTO = req.body;
@@ -37,6 +41,30 @@ export class AuthController {
       },
     });
   });
+
+  public googleAuth = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+
+      const {credential} = req.body;
+
+      console.log("Google credential exists:", !!credential);
+
+      const googleUser = await this.googleAuthService.verifyCredential(credential);
+
+      const result = await this.googleAuthUseCase.execute(googleUser);
+
+      setAuthCookies(res, result.refreshToken);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
+        data: {
+          accessToken: result.accessToken,
+          user: result.user,
+        },
+      });
+    }
+  );
 
   public verifyOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: VerifyOtpDTO = req.body;

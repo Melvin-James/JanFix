@@ -33,6 +33,8 @@ export const AppMessages = {
     ORGANIZATION_PROFILE_REQUIRED: "Organization profile is required",
     PROVIDER_STEP2_NOT_COMPLETED: "Please complete step 2 before submitting",
     PROVIDER_ALREADY_EXISTS: "Service provider already exists",
-    INVALID_ONBOARDING_STEP: "Invalid onboarding step"
+    INVALID_ONBOARDING_STEP: "Invalid onboarding step",
+    INCOMPLETE_GOOGLE_ACCOUNT_INFORMATION: "Incomplete Google account information",
+    GOOGLE_EMAIL_NOT_VERIFIED: "Google email not verified"
   }
 };

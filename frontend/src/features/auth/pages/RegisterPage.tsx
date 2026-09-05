@@ -9,6 +9,13 @@ import { registerUser } from "../services/authService";
 import axios from "axios";
 import FormError from "../../../components/UI/FormError";
 
+import { googleLogin } from "../services/authService";
+
+import { GoogleLogin } from "@react-oauth/google";
+
+import { useAuthStore } from "../../../store/authStore";
+
+
 
 function RegisterPage() {
 
@@ -19,6 +26,9 @@ function RegisterPage() {
     shouldUnregister: true,
 
   });
+
+  const setAuth = useAuthStore((state) => state.setAuth);
+
 
 
   const [loading, setLoading] = useState(false);
@@ -176,18 +186,44 @@ function RegisterPage() {
               <div className="h-px flex-1 bg-slate-200" />
             </div>
 
-             <button
-              type="button"
-              //   onClick={handleGoogle}
-              className="flex w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt=""
-                className="h-4 w-4"
-              />
-              Continue with Google
-            </button>
+             <GoogleLogin
+                onSuccess = {async (credentialResponse) => {
+
+                  try{
+                    setLoading(true);
+                    setServerError("");
+
+                    const credential = credentialResponse.credential;
+
+                    if(!credential){
+                      throw new Error("Google credential was not received");
+                    }
+
+                    const response = await googleLogin(credential);
+
+                    const {accessToken, user} = response.data;
+
+                    setAuth(accessToken, user);
+
+                    navigate("/home");
+                  } catch (err: any) {
+                    console.error(err);
+
+                    setServerError(
+                      err?.response?.data?.message ||
+                      "Google sign-up failed"
+                    );
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+
+                onError={() => {
+                  setServerError("Google sign-up failed");
+                }}
+
+                width="100%"
+             ></GoogleLogin>
 
 
             <p className="mt-4 text-center text-xs text-slate-500">
