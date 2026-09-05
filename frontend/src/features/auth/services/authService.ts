@@ -34,3 +34,9 @@ export const logoutUser = async () => {
 
     await axiosInstance.post("/auth/logout");
 };
+
+export const googleLogin = async (credential: string) => {
+    const response = await axiosInstance.post("/auth/google", {credential})
+
+    return response.data;
+}

@@ -17,6 +17,10 @@ import { loginSchema, type LoginFormData } from "../validations/loginSchema";
 
 import FormError from "../../../components/UI/FormError";
 
+import { GoogleLogin } from "@react-oauth/google";
+
+import { googleLogin } from "../services/authService";
+
 function LoginPage() {
 
   const {register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
@@ -58,20 +62,6 @@ function LoginPage() {
     } finally {
 
       setLoading(false);
-      
-    }
-  };
-
-  const handleGoogle = async () => {
-    try {
-
-      // await googleAuth();
-
-    } catch (err) {
-
-      console.error(err);
-
-      setServerError("Google sign-in failed");
       
     }
   };
@@ -173,18 +163,46 @@ function LoginPage() {
               <div className="h-px flex-1 bg-gray-200" />
             </div>
 
-            <button
-              type="button"
-              onClick={handleGoogle}
-              className="w-full flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt=""
-                className="h-4 w-4"
-              />
-              Continue with Google
-            </button>
+            <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+
+                  try {
+
+                    setLoading(true);
+                    setServerError("");
+
+                    const credential = credentialResponse.credential;
+
+                    if(!credential) {
+                      throw new Error("Google credential was not received");
+                    }
+
+                    const response = await googleLogin(credential);
+
+                    const {accessToken, user } = response.data;
+
+                    setAuth(accessToken, user);
+
+                  } catch (err: any) {
+
+                    console.error(err);
+
+                    setServerError(
+                      err?.response?.data?.message ||
+                      "Google sign-in failed"
+                    );
+                  } finally {
+
+                    setLoading(false);
+                  }
+                }} 
+
+                onError={() => {
+                  setServerError("Google sign-in failed");
+                }}
+
+                width="100%"
+            ></GoogleLogin>
 
             <p className="pt-4 text-center text-sm text-gray-500">
               Don't have an account?{" "}

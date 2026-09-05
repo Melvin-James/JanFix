@@ -18,6 +18,10 @@ export class UserMapper {
 
       isVerified: document.isVerified,
 
+      authProvider: document.authProvider,
+
+      googleId: document.googleId,
+
       ...(document.providerProfile && {
         providerProfile:
         {

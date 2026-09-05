@@ -46,6 +46,8 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
             roles: [Role.USER],
             
             isVerified: false,
+
+            authProvider: "LOCAL",
         };
 
         const createdUser = await this.userRepository.create(user);
