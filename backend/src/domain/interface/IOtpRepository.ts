@@ -1,15 +1,18 @@
-export interface IOtpRepository {
+import type { OtpPurpose } from "../enums/OtpPurpose.js";
 
-    saveOtp(
+export interface IOtpRepository { 
+    saveOtp( 
+        email: string, 
+        otp: string,
+        purpose: OtpPurpose,
+    ): Promise<void>; 
+    
+    getOtp( 
         email: string,
-        otp: string
-    ): Promise<void>;
-
-    getOtp(
-        email: string
-    ): Promise<string | null>;
-
-    deleteOtp(
-        email: string
-    ): Promise<void>;
-}
+        purpose: OtpPurpose,
+    ): Promise<string | null>; 
+    
+    deleteOtp( 
+        email: string,
+        purpose: OtpPurpose,
+    ): Promise<void>; }

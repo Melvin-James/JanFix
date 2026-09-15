@@ -13,6 +13,8 @@ import type { IEmailService } from "../../../domain/interface/IEmailService.js";
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
 import type { IRegisterUserUseCase } from "../usecase interfaces/IRegisterUserUseCase.js";
 
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+
 export class RegisterUserUseCase implements IRegisterUserUseCase {
 
     constructor(
@@ -52,7 +54,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
         const createdUser = await this.userRepository.create(user);
 
-        await this.otpRepository.saveOtp(createdUser.email, hashedOtp);
+        await this.otpRepository.saveOtp(createdUser.email, hashedOtp, OtpPurpose.VERIFY_ACCOUNT);
 
         await this.emailService.sendOtpEmail(
             createdUser.email,
