@@ -1,14 +1,28 @@
 import type { IOtpRepository } from "../../domain/interface/IOtpRepository.js";
+
+import type { OtpPurpose } from "../../domain/enums/OtpPurpose.js";
+
 import redisClient from "../config/redis.js";
 
 export class RedisOtpRepository implements IOtpRepository {
-    async saveOtp(email: string, otp: string): Promise<void> {
-        await redisClient.set(`otp:${email}`, otp, { EX: 300, });
+
+    private getKey(
+        email: string,
+        purpose: OtpPurpose,
+    ): string {
+        return `otp:${purpose}:${email}`;
     }
-    async getOtp(email: string): Promise<string | null> {
-        return await redisClient.get(`otp:${email}`);
+
+    async saveOtp(email: string, otp: string, purpose: OtpPurpose): Promise<void> {
+        await redisClient.set(this.getKey(email, purpose), otp, { EX: 300, });
     }
-    async deleteOtp(email: string): Promise<void> {
-        await redisClient.del(`otp:${email}`);
+
+    async getOtp(email: string, purpose: OtpPurpose): Promise<string | null> {
+        return await redisClient.get(this.getKey(email, purpose));
     }
+
+    async deleteOtp(email: string, purpose: OtpPurpose): Promise<void> {
+        await redisClient.del(this.getKey(email, purpose));
+    }
+    
 }

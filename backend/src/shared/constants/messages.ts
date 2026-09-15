@@ -9,7 +9,9 @@ export const AppMessages = {
     LOGGED_OUT: "Logged out successfully",
     SERVICE_PROVIDER_PROFILE_CREATED: "Service provider profile created successfully",
     PROVIDER_STEP2_COMPLETED: "Provider onboarding step 2 completed successfully",
-    PROVIDER_ONBOARDING_COMPLETED: "Provider onboarding completed successfully"
+    PROVIDER_ONBOARDING_COMPLETED: "Provider onboarding completed successfully",
+    OTP_SENT_SUCCESS: "OTP sent successfully",
+    PASSWORD_RESET_SUCCESS: "Password reset successfully"
   },
   ERROR: {
     USER_ALREADY_EXISTS: "User already exists",
@@ -35,6 +37,7 @@ export const AppMessages = {
     PROVIDER_ALREADY_EXISTS: "Service provider already exists",
     INVALID_ONBOARDING_STEP: "Invalid onboarding step",
     INCOMPLETE_GOOGLE_ACCOUNT_INFORMATION: "Incomplete Google account information",
-    GOOGLE_EMAIL_NOT_VERIFIED: "Google email not verified"
+    GOOGLE_EMAIL_NOT_VERIFIED: "Google email not verified",
+    GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN: "This account uses Google sign-in. Please continue with Google",
   }
 };

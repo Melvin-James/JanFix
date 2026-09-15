@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const verifyOtpSchema = z.object({
+export const verifyResetOtpSchema = z.object({
 
   email: z
     .string()

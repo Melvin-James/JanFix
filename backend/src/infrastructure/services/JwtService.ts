@@ -16,6 +16,10 @@ class JwtService implements IJwtService {
         return jwt.sign({ userId, }, env.JWT_REFRESH_SECRET, { expiresIn: "7d", });
     }
 
+    generateResetToken(userId: string): string{
+        return jwt.sign({userId}, env.JWT_RESET_SECRET, {expiresIn: "10m"});
+    }
+
     verifyAccessToken(token: string) {
         return jwt.verify(token, env.JWT_ACCESS_SECRET);
     }
@@ -23,6 +27,13 @@ class JwtService implements IJwtService {
     verifyRefreshToken(token: string) {
         return jwt.verify(token, env.JWT_REFRESH_SECRET);
     }
+
+    verifyResetToken(token: string): string {
+        const decoded = jwt.verify( token, env.JWT_RESET_SECRET) as {userId: string};
+
+        return decoded.userId;
+    }
+    
 }
 
 export default JwtService;

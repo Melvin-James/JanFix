@@ -7,6 +7,10 @@ import validate from "../middlewares/validate.js";
 import { registerSchema } from "../validators/auth/registerValidator.js";
 import { verifyOtpSchema } from "../validators/auth/verifyOtpValidator.js";
 import { loginSchema } from "../validators/auth/loginValidator.js";
+import { forgotPasswordSchema } from "../validators/auth/forgotPasswordValidator.js";
+import { resetPasswordSchema } from "../validators/auth/resetPasswordValidator.js";
+
+
 import { authenticate } from "../middlewares/authMiddleware.js";
 import type { AuthRequest } from "../../shared/types/AuthRequest.js";
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
@@ -24,6 +28,9 @@ import { LoginUseCase } from "../../application/use-cases/auth/LoginUseCase.js";
 import { RefreshTokenUseCase } from "../../application/use-cases/auth/RefreshTokenUseCase.js";
 import { GoogleAuthUseCase } from "../../application/use-cases/auth/GoogleAuthUseCase.js";
 import GoogleAuthService from "../../infrastructure/services/GoogleAuthService.js";
+import { ForgotPasswordUseCase } from "../../application/use-cases/auth/ForgotPasswordUseCase.js";
+import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPasswordUseCase.js";
+import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.js";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();
@@ -37,6 +44,9 @@ const verifyOtpUseCase = new VerifyOtpUseCase(userRepository, otpRepository);
 const loginUseCase = new LoginUseCase(userRepository, jwtService);
 const refreshTokenUseCase = new RefreshTokenUseCase(jwtService, userRepository);
 const googleAuthUseCase = new GoogleAuthUseCase(userRepository, jwtService);
+const forgotPasswordUseCase = new ForgotPasswordUseCase(userRepository, otpRepository, emailService);
+const resetPasswordUseCase = new ResetPasswordUseCase(userRepository, jwtService);
+const verifyResetOtpUseCase = new VerifyResetOtpUseCase(userRepository, otpRepository, jwtService);
 
 const authController = new AuthController(
     registerUserUseCase,
@@ -44,6 +54,9 @@ const authController = new AuthController(
     loginUseCase,
     refreshTokenUseCase,
     googleAuthUseCase,
+    forgotPasswordUseCase,
+    resetPasswordUseCase,
+    verifyResetOtpUseCase,
     googleAuthService,
 );
 
@@ -52,6 +65,12 @@ const router = express.Router();
 router.post("/register", validate(registerSchema), authController.register);
 
 router.post("/google", authController.googleAuth);
+
+router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
+
+router.post('/verify-reset-otp', validate(verifyOtpSchema), authController.verifyResetOtp);
+
+router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
 
 router.post("/verify-otp", validate(verifyOtpSchema), authController.verifyOtp);
 

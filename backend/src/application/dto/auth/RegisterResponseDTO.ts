@@ -1,6 +1,7 @@
 import { Role } from "../../../domain/enums/Role.js";
 
 export interface RegisterResponseDTO {
+
   id: string;
 
   fullName: string;
@@ -10,4 +11,5 @@ export interface RegisterResponseDTO {
   roles: Role[];
 
   isVerified: boolean;
+  
 }

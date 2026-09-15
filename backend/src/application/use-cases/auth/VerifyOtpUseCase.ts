@@ -10,6 +10,7 @@ import type { IUserRepository } from "../../../domain/interface/IUserRepository.
 
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
 import type { IVerifyOtpUseCase } from "../usecase interfaces/IVerifyOtpUseCase.js";
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
@@ -34,14 +35,16 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.USER_ALREADY_VERIFIED);
         }
 
-        const storedOtp = await this.otpRepository.getOtp(dto.email);
+        const storedOtp = await this.otpRepository.getOtp(dto.email, OtpPurpose.VERIFY_ACCOUNT);
 
         if (!storedOtp) {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.OTP_EXPIRED_OR_NOT_FOUND);
         }
 
+        const otp = dto.otp.trim();
+
         const isOtpValid = await compareData(
-            dto.otp = dto.otp.trim(),
+            otp,
             storedOtp
         )
 
@@ -51,7 +54,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
         user.isVerified = true;
 
-        await this.otpRepository.deleteOtp(dto.email);
+        await this.otpRepository.deleteOtp(dto.email, OtpPurpose.VERIFY_ACCOUNT);
 
         await this.userRepository.updateUser(user);
     }

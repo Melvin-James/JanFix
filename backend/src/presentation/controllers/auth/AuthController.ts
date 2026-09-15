@@ -1,13 +1,19 @@
 import type { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler.js";
+
+import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
+
 import type { RegisterUserDTO } from "../../../application/dto/auth/RegisterUserDTO.js";
 import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js";
 import type { LoginDTO } from "../../../application/dto/auth/LoginDTO.js";
+import type { ForgotPasswordDTO } from "../../../application/dto/auth/ForgotPasswordDTO.js";
+import type { ResetPasswordDTO } from "../../../application/dto/auth/ResetPasswordDTO.js";
+
 import { setAuthCookies } from "../../../shared/utils/setAuthCookies.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import type{ IGoogleAuthService } from "../../../domain/interface/IGoogleAuthService.js";
+
+import type { IGoogleAuthService } from "../../../domain/interface/IGoogleAuthService.js";
 
 // Use Cases
 import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/IRegisterUserUseCase.js";
@@ -15,6 +21,10 @@ import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase i
 import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/ILoginUseCase.js";
 import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/IRefreshTokenUseCase.js";
 import type { IGoogleAuthUseCase } from "../../../application/use-cases/usecase interfaces/IGoogleAuthUseCase.js";
+import type { IForgotPasswordUseCase } from "../../../application/use-cases/usecase interfaces/IForgotPasswordUseCase.js";
+import type { IResetPasswordUseCase } from "../../../application/use-cases/usecase interfaces/IResetPasswordUseCase.js";
+import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyResetOtpDTO.js";
+import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/IVerifyResetOtpUseCase.js";
 
 export class AuthController {
   constructor(
@@ -23,6 +33,9 @@ export class AuthController {
     private loginUseCase: ILoginUseCase,
     private refreshTokenUseCase: IRefreshTokenUseCase,
     private googleAuthUseCase: IGoogleAuthUseCase,
+    private forgotPasswordUseCase: IForgotPasswordUseCase,
+    private resetPasswordUseCase: IResetPasswordUseCase,
+    private verifyResetOtpUseCase: IVerifyResetOtpUseCase,
     private googleAuthService: IGoogleAuthService,
   ) { }
 
@@ -35,9 +48,9 @@ export class AuthController {
       message: AppMessages.SUCCESS.USER_REGISTERED,
       data: {
         id: createdUser.id,
-        name: createdUser.name,
+        fullName: createdUser.fullName,
         email: createdUser.email,
-        role: createdUser.role,
+        roles: createdUser.roles,
       },
     });
   });
@@ -45,7 +58,7 @@ export class AuthController {
   public googleAuth = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
 
-      const {credential} = req.body;
+      const { credential } = req.body;
 
       console.log("Google credential exists:", !!credential);
 
@@ -76,6 +89,22 @@ export class AuthController {
     });
   });
 
+  public verifyResetOtp = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const dto: VerifyResetOtpDTO = req.body;
+
+      const resetToken = await this.verifyResetOtpUseCase.execute(dto);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: "OTP verified successfully",
+        data: {
+          resetToken,
+        }
+      })
+    }
+  )
+
   public login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: LoginDTO = req.body;
     const result = await this.loginUseCase.execute(dto);
@@ -91,6 +120,33 @@ export class AuthController {
       },
     });
   });
+
+  public forgotPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+
+      const dto: ForgotPasswordDTO = req.body;
+
+      await this.forgotPasswordUseCase.execute(dto);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: AppMessages.SUCCESS.OTP_SENT_SUCCESS
+      })
+    }
+  );
+
+  public resetPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const dto: ResetPasswordDTO = req.body;
+      
+      await this.resetPasswordUseCase.execute(dto);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: AppMessages.SUCCESS.PASSWORD_RESET_SUCCESS
+      })
+    }
+  )
 
   public refreshToken = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const refreshToken = req.cookies.refreshToken;

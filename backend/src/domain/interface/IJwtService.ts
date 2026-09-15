@@ -6,7 +6,11 @@ export interface IJwtService {
 
     generateRefreshToken(userId: string): string;
 
+    generateResetToken(userId: string): string;
+
     verifyAccessToken(token: string): any;
 
     verifyRefreshToken(token: string): any;
+
+    verifyResetToken(token: string): string;
 }

@@ -26,6 +26,12 @@ import ProviderSubmissionPage from "../features/provider/pages/ProviderSubmissio
 
 import ProviderRoute from "./ProviderRoute";
 
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+
+import VerifyResetOtpPage from "../features/auth/pages/VerifyResetOtpPage";
+
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
+
 function AppRouter() {
 
     return (
@@ -48,6 +54,46 @@ function AppRouter() {
                 />
 
                 <Route
+                    path="/forgot-password"
+                    element={
+
+                        <PublicRoute>
+
+                            <ForgotPasswordPage />
+
+                        </PublicRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/verify-reset-otp"
+                    element={
+
+                        <PublicRoute>
+
+                            <VerifyResetOtpPage />
+
+                        </PublicRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/reset-password"
+
+                    element={
+
+                        <PublicRoute>
+
+                            <ResetPasswordPage/>
+
+                        </PublicRoute>
+
+                    }
+                />
+
+                <Route
                     path="/register"
                     element={
 
@@ -61,7 +107,9 @@ function AppRouter() {
                 />
 
                 <Route
+
                     path="/verify-otp"
+
                     element={
 
                         <PublicRoute>
