@@ -39,5 +39,6 @@ export const AppMessages = {
     INCOMPLETE_GOOGLE_ACCOUNT_INFORMATION: "Incomplete Google account information",
     GOOGLE_EMAIL_NOT_VERIFIED: "Google email not verified",
     GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN: "This account uses Google sign-in. Please continue with Google",
+    ACCOUNT_ALREADY_VERIFIED: "Account is already verified",
   }
 };

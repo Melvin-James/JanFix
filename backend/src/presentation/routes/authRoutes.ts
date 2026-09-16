@@ -9,6 +9,8 @@ import { verifyOtpSchema } from "../validators/auth/verifyOtpValidator.js";
 import { loginSchema } from "../validators/auth/loginValidator.js";
 import { forgotPasswordSchema } from "../validators/auth/forgotPasswordValidator.js";
 import { resetPasswordSchema } from "../validators/auth/resetPasswordValidator.js";
+import { resendOtpSchema } from "../validators/auth/resendOtpValidator.js";
+import { verifyResetOtpSchema } from "../validators/auth/verifyResetOtpValidator.js";
 
 
 import { authenticate } from "../middlewares/authMiddleware.js";
@@ -31,6 +33,7 @@ import GoogleAuthService from "../../infrastructure/services/GoogleAuthService.j
 import { ForgotPasswordUseCase } from "../../application/use-cases/auth/ForgotPasswordUseCase.js";
 import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPasswordUseCase.js";
 import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.js";
+import { ResendOtpUseCase } from "../../application/use-cases/auth/ResendOtpUseCase.js";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();
@@ -47,6 +50,7 @@ const googleAuthUseCase = new GoogleAuthUseCase(userRepository, jwtService);
 const forgotPasswordUseCase = new ForgotPasswordUseCase(userRepository, otpRepository, emailService);
 const resetPasswordUseCase = new ResetPasswordUseCase(userRepository, jwtService);
 const verifyResetOtpUseCase = new VerifyResetOtpUseCase(userRepository, otpRepository, jwtService);
+const resendOtpUseCase = new ResendOtpUseCase(userRepository, otpRepository, emailService);
 
 const authController = new AuthController(
     registerUserUseCase,
@@ -57,6 +61,7 @@ const authController = new AuthController(
     forgotPasswordUseCase,
     resetPasswordUseCase,
     verifyResetOtpUseCase,
+    resendOtpUseCase,
     googleAuthService,
 );
 
@@ -68,7 +73,7 @@ router.post("/google", authController.googleAuth);
 
 router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
 
-router.post('/verify-reset-otp', validate(verifyOtpSchema), authController.verifyResetOtp);
+router.post('/verify-reset-otp', validate(verifyResetOtpSchema), authController.verifyResetOtp);
 
 router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
 
@@ -90,5 +95,7 @@ router.get("/admin-test", authenticate, authorizeRoles(Role.ADMIN), (req, res) =
 });
 
 router.post("/refresh-token", authController.refreshToken);
+
+router.post("/resend-otp", validate(resendOtpSchema), authController.resendOtp);
 
 export default router;

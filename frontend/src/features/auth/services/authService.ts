@@ -62,3 +62,15 @@ export const googleLogin = async (credential: string) => {
 
     return response.data;
 }
+
+export const resendOtp = async (data: {
+    email: string;
+    purpose: "VERIFY_ACCOUNT" | "RESET_PASSWORD"
+}) => {
+    const response = await axiosInstance.post(
+        "/auth/resend-otp",
+        data
+    );
+
+    return response.data;
+}
