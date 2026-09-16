@@ -23,7 +23,7 @@ function AuthInitializer() {
 
             } catch (error) {
 
-                console.log("No active session");
+                // console.log("No active session");
 
             }
             finally {

@@ -52,7 +52,7 @@ function ForgotPasswordPage() {
       {/* Left image */}
       <section className="relative hidden min-h-screen w-1/2 overflow-hidden lg:block">
         <img
-          src="https://images.unsplash.com/photo-1667753980421-68fdc8d8b509?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src="https://images.unsplash.com/photo-1667753980421-68fdc8d8b509?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="A clean city road surrounded by modern buildings"
           className="absolute inset-0 h-full w-full object-cover"
         />

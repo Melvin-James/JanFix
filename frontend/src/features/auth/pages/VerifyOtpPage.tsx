@@ -1,11 +1,10 @@
-// VerifyOtpPage.tsx
 import { useEffect, useRef, useState, type ClipboardEvent, type KeyboardEvent } from "react";
 
 import { useForm } from "react-hook-form";
 
 import { useLocation, useNavigate, Link } from "react-router-dom";
 
-import { verifyOtp } from "../services/authService";
+import { resendOtp, verifyOtp } from "../services/authService";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -13,11 +12,8 @@ import { verifyOtpSchema, type VerifyOtpFormData } from "../validations/verifyOt
 
 
 function VerifyOtpPage() {
-
     const location = useLocation();
-
     const navigate = useNavigate();
-
     const email: string | undefined = location.state?.email;
 
     const { handleSubmit, setValue } = useForm<VerifyOtpFormData>({
@@ -34,38 +30,28 @@ function VerifyOtpPage() {
     });
 
     const [digits, setDigits] = useState<string[]>(["", "", "", "", "", ""]);
-
     const [loading, setLoading] = useState(false);
-
     const [resending, setResending] = useState(false);
-
     const [error, setError] = useState<string>("");
-
     const [secondsLeft, setSecondsLeft] = useState(30);
 
     const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
+    // countdown for resend
     useEffect(() => {
-
         if (secondsLeft <= 0) return;
         const t = setInterval(() => setSecondsLeft((s) => s - 1), 1000);
         return () => clearInterval(t);
-
     }, [secondsLeft]);
 
     // keep RHF value in sync
     useEffect(() => {
-
         setValue("otp", digits.join(""));
-
     }, [digits, setValue]);
 
     const focusInput = (i: number) => {
-
         const el = inputsRef.current[i];
-
         if (el) el.focus();
-
     };
 
     useEffect(() => {
@@ -78,39 +64,24 @@ function VerifyOtpPage() {
     }, [email, navigate]);
 
     const handleChange = (i: number, value: string) => {
-
         const v = value.replace(/\D/g, "").slice(-1); // last typed digit only
         const next = [...digits];
-
         next[i] = v;
-
         setDigits(next);
-
         if (v && i < 5) focusInput(i + 1);
-
     };
 
     const handleKeyDown = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
-
         if (e.key === "Backspace") {
-
             if (digits[i]) {
-
                 const next = [...digits];
-
                 next[i] = "";
-
                 setDigits(next);
-
             } else if (i > 0) {
-
                 focusInput(i - 1);
-
             }
         } else if (e.key === "ArrowLeft" && i > 0) focusInput(i - 1);
-        
         else if (e.key === "ArrowRight" && i < 5) focusInput(i + 1);
-        
     };
 
     const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
@@ -145,8 +116,13 @@ function VerifyOtpPage() {
         try {
             setResending(true);
             setError("");
-            // await resendOtp({ email });
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Mock delay until implemented
+
+            if(!email) {
+                setError("Missing email address");
+                return;
+            }
+            
+            await resendOtp({email, purpose: "VERIFY_ACCOUNT"})
             setDigits(["", "", "", "", "", ""]);
             setSecondsLeft(30);
             focusInput(0);

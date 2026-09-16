@@ -10,6 +10,8 @@ import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js
 import type { LoginDTO } from "../../../application/dto/auth/LoginDTO.js";
 import type { ForgotPasswordDTO } from "../../../application/dto/auth/ForgotPasswordDTO.js";
 import type { ResetPasswordDTO } from "../../../application/dto/auth/ResetPasswordDTO.js";
+import type { ResendOtpDTO } from "../../../application/dto/auth/ResendOtpDTO.js";
+
 
 import { setAuthCookies } from "../../../shared/utils/setAuthCookies.js";
 
@@ -25,6 +27,7 @@ import type { IForgotPasswordUseCase } from "../../../application/use-cases/usec
 import type { IResetPasswordUseCase } from "../../../application/use-cases/usecase interfaces/IResetPasswordUseCase.js";
 import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyResetOtpDTO.js";
 import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/IVerifyResetOtpUseCase.js";
+import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/IResendOtpUseCase.js";
 
 export class AuthController {
   constructor(
@@ -36,6 +39,7 @@ export class AuthController {
     private forgotPasswordUseCase: IForgotPasswordUseCase,
     private resetPasswordUseCase: IResetPasswordUseCase,
     private verifyResetOtpUseCase: IVerifyResetOtpUseCase,
+    private resendOtpUseCase: IResendOtpUseCase,
     private googleAuthService: IGoogleAuthService,
   ) { }
 
@@ -89,22 +93,6 @@ export class AuthController {
     });
   });
 
-  public verifyResetOtp = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      const dto: VerifyResetOtpDTO = req.body;
-
-      const resetToken = await this.verifyResetOtpUseCase.execute(dto);
-
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: "OTP verified successfully",
-        data: {
-          resetToken,
-        }
-      })
-    }
-  )
-
   public login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: LoginDTO = req.body;
     const result = await this.loginUseCase.execute(dto);
@@ -134,6 +122,22 @@ export class AuthController {
       })
     }
   );
+
+  public verifyResetOtp = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const dto: VerifyResetOtpDTO = req.body;
+
+      const resetToken = await this.verifyResetOtpUseCase.execute(dto);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: "OTP verified successfully",
+        data: {
+          resetToken,
+        }
+      })
+    }
+  )
 
   public resetPassword = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
@@ -179,4 +183,18 @@ export class AuthController {
       message: AppMessages.SUCCESS.LOGGED_OUT,
     });
   });
+
+  public resendOtp = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+
+      const dto: ResendOtpDTO = req.body;
+
+      await this.resendOtpUseCase.execute(dto);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: "OTP resent successfully"
+      })
+    }
+  )
 }
