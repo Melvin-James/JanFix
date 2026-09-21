@@ -4,7 +4,9 @@ import authRoutes from "./presentation/routes/authRoutes.js";
 
 import providerRoutes from "./presentation/routes/providerRoutes.js";
 
-import uploadRoutes from "./presentation/routes/uploadRoutes.js"
+import uploadRoutes from "./presentation/routes/uploadRoutes.js";
+
+import adminRoutes from "./presentation/routes/adminRoutes.js";
 
 import errorMiddleware from "./presentation/middlewares/errorMiddleware.js";
 
@@ -25,6 +27,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/provider",providerRoutes);
 
 app.use("/api/v1/upload", uploadRoutes);
+
+app.use("/api/v1/admin", adminRoutes);
 
 app.use(errorMiddleware);
 

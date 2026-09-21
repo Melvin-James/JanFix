@@ -25,21 +25,101 @@ export class UserMapper {
       ...(document.providerProfile && {
         providerProfile:
         {
-          identity: document.providerProfile.identity,
+          identity: {
+            providerType: document.providerProfile.identity?.providerType,
+            providerName: document.providerProfile.identity?.providerName,
+            responsiblePersonName:
+              document.providerProfile.identity?.responsiblePersonName,
+            address: document.providerProfile.identity?.address,
+            phone: document.providerProfile.identity?.phone,
+          },
 
-          documents: document.providerProfile.documents,
+          documents: {
+            identityProof:
+              document.providerProfile.documents?.identityProof
+                ? {
+                  key: document.providerProfile.documents.identityProof.key,
+                  url: document.providerProfile.documents.identityProof.url,
+                  originalName:
+                    document.providerProfile.documents.identityProof.originalName,
+                  mimeType: document.providerProfile.documents.identityProof.mimeType,
+                  size: document.providerProfile.documents.identityProof.size,
+                }
+                : undefined,
 
-          workPreferences: document.providerProfile.workPreferences,
+            profileImage:
+              document.providerProfile.documents?.profileImage
+                ? {
+                  key: document.providerProfile.documents.profileImage.key,
+                  url: document.providerProfile.documents.profileImage.url,
+                  originalName:
+                    document.providerProfile.documents.profileImage.originalName,
+                  mimeType: document.providerProfile.documents.profileImage.mimeType,
+                  size: document.providerProfile.documents.profileImage.size,
+                }
+                : undefined,
 
-          volunteerGroupProfile:
-            document.providerProfile.volunteerGroupProfile,
+            previousCommunityPhotos:
+              document.providerProfile.documents?.previousCommunityPhotos?.map(
+                (file: any) => ({
+                  key: file.key,
+                  url: file.url,
+                  originalName: file.originalName,
+                  mimeType: file.mimeType,
+                  size: file.size,
+                })
+              ),
 
-          organizationProfile:
-            document.providerProfile.organizationProfile,
+            ngoRegistrationDocument:
+              document.providerProfile.documents?.ngoRegistrationDocument
+                ? {
+                  key: document.providerProfile.documents.ngoRegistrationDocument.key,
+                  url: document.providerProfile.documents.ngoRegistrationDocument.url,
+                  originalName: document.providerProfile.documents.ngoRegistrationDocument.originalName,
+                  mimeType: document.providerProfile.documents.ngoRegistrationDocument.mimeType,
+                  size: document.providerProfile.documents.ngoRegistrationDocument.size,
+                }
+                : undefined,
 
-          status:
-            document.providerProfile.status,
-        }
+            logo:
+              document.providerProfile.documents?.logo
+                ? {
+                  key: document.providerProfile.documents.logo.key,
+                  url: document.providerProfile.documents.logo.url,
+                  originalName:
+                    document.providerProfile.documents.logo.originalName,
+                  mimeType: document.providerProfile.documents.logo.mimeType,
+                  size: document.providerProfile.documents.logo.size,
+                }
+                : undefined,
+          },
+
+          workPreferences: {
+            categoriesWillingToWork:
+              document.providerProfile.workPreferences?.categoriesWillingToWork,
+
+            websiteLinks: document.providerProfile.workPreferences?.websiteLinks,
+          },
+
+          ...(document.providerProfile.volunteerGroupProfile && {
+            volunteerGroupProfile: {
+              memberCount: document.providerProfile.volunteerGroupProfile.memberCount
+            },
+          }),
+
+          ...(document.providerProfile.organizationProfile && {
+            organizationProfile: {
+              memberCount: document.providerProfile.organizationProfile.memberCount,
+            },
+          }),
+
+          status: {
+            applicationStatus: document.providerProfile.status.applicationStatus,
+            submittedAt: document.providerProfile.status.submittedAt,
+            reviewedAt: document.providerProfile.status.reviewedAt,
+            rejectionReason: document.providerProfile.status.rejectionReason,
+          },
+        },
       })
     }
   }

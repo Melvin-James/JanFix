@@ -10,4 +10,6 @@ export interface IUserRepository {
 
     findById(id: string): Promise<User | null>;
 
+    findUsersWithProviderApplications(): Promise<User[]>;
+
 }
