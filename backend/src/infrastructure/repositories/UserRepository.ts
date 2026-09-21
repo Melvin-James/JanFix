@@ -54,4 +54,15 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     return updatedUser;
   }
+
+  async findUsersWithProviderApplications(): Promise<User[]> {
+    
+    const users = await UserModel.find({
+      providerProfile: {$exists: true}
+    });
+
+    return users.map(
+      UserMapper.toEntity
+    );
+  }
 }

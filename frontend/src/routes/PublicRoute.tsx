@@ -36,7 +36,7 @@ function PublicRoute({ children }: PublicRouteProps) {
 
     if (hasRole(user, "ADMIN")) {
 
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to="/admin" replace />;
     }
 
     if (hasRole(user, "SERVICE_PROVIDER")) {

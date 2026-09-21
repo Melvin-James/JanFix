@@ -32,6 +32,15 @@ import VerifyResetOtpPage from "../features/auth/pages/VerifyResetOtpPage";
 
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
+
+import RoleProtectedRoute from "./RoleProtectedRoute";
+
+import AdminLayout from "../features/admin/components/AdminLayout";
+
+import ProviderApplicationsPage from "../features/admin/pages/ProviderApplicationsPage";
+import ProviderApplicationDetailsPage from "../features/admin/pages/ProviderApplicationDetailsPage";
+
 function AppRouter() {
 
     return (
@@ -218,6 +227,66 @@ function AppRouter() {
 
                         </ProtectedRoute>
                     }
+                />
+
+                <Route
+
+                    path="/admin"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+
+                            <AdminLayout>
+                                
+                                <AdminDashboardPage/>
+                            
+                            </AdminLayout>
+
+                        </RoleProtectedRoute>
+
+                    }
+
+                />
+
+                <Route 
+
+                    path="/admin/provider-applications"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+
+                            <AdminLayout>
+
+                                <ProviderApplicationsPage/>
+
+                            </AdminLayout>
+
+                        </RoleProtectedRoute>
+
+                    }
+
+                />
+
+                <Route
+
+                    path="/admin/provider-applications/:userId"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+
+                            <AdminLayout>
+
+                                <ProviderApplicationDetailsPage/>
+
+                            </AdminLayout>
+                            
+                        </RoleProtectedRoute>
+
+                    }
+
                 />
 
 

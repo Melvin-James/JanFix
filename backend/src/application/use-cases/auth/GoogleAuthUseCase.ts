@@ -65,14 +65,14 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
             if(user.authProvider === "LOCAL") {
                 throw new ApiError(
                     HttpStatusCode.CONFLICT,
-                    "An account already exists with this email. Please login using your password"
+                    AppMessages.ERROR.GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN
                 );
             }
 
             if(user.googleId !== googleUser.googleId) {
                 throw new ApiError(
                     HttpStatusCode.UNAUTHORIZED,
-                    "Google account verification failed"
+                    AppMessages.ERROR.GOOGLE_EMAIL_NOT_VERIFIED
                 )
             }
         }

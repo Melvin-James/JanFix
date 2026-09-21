@@ -35,10 +35,13 @@ export const AppMessages = {
     ORGANIZATION_PROFILE_REQUIRED: "Organization profile is required",
     PROVIDER_STEP2_NOT_COMPLETED: "Please complete step 2 before submitting",
     PROVIDER_ALREADY_EXISTS: "Service provider already exists",
+    PROVIDER_APPLICATION_NOT_FOUND: "Provider application not found",
     INVALID_ONBOARDING_STEP: "Invalid onboarding step",
     INCOMPLETE_GOOGLE_ACCOUNT_INFORMATION: "Incomplete Google account information",
     GOOGLE_EMAIL_NOT_VERIFIED: "Google email not verified",
     GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN: "This account uses Google sign-in. Please continue with Google",
     ACCOUNT_ALREADY_VERIFIED: "Account is already verified",
+    ALREADY_REJECTED_APPLICATION: "Rejected applications cannot be approved directly",
+    ALREADY_APPROVED_APPLICATION: "Already approved application"
   }
 };
