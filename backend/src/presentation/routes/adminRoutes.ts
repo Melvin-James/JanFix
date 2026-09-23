@@ -30,6 +30,13 @@ import { rejectProviderApplicationSchema } from "../validators/admin/rejectProvi
 
 import { updateServiceProviderStatusSchema } from "../validators/admin/UpdateServiceProviderStatusValidator.js";
 
+import { updateUserAccountStatusSchema } from "../validators/admin/updateUserAccountStatusValidator.js";
+
+
+import { GetUsersForManagementUseCase } from "../../application/use-cases/admin/GetUsersForManagementUseCase.js";
+
+import { UpdateUserAccountStatusUseCase } from "../../application/use-cases/admin/UpdateUserAccountStatusUseCase.js";
+
 const router = Router();
 
 const userRepository = new UserRepository();
@@ -48,6 +55,10 @@ const getServiceProviderDetailsUseCase = new GetServiceProviderDetailsUseCase(us
 
 const updateServiceProviderStatusUseCase = new UpdateServiceProviderStatusUseCase(userRepository);
 
+const getUsersForManagementUseCase = new GetUsersForManagementUseCase(userRepository);
+
+const updateUserAccountStatusUseCase = new UpdateUserAccountStatusUseCase(userRepository);
+
 const adminController = new AdminController(
 
     getProviderApplicationsUseCase,
@@ -63,6 +74,10 @@ const adminController = new AdminController(
     getServiceProviderDetailsUseCase,
 
     updateServiceProviderStatusUseCase,
+
+    getUsersForManagementUseCase,
+
+    updateUserAccountStatusUseCase,
 );
 
 
@@ -79,5 +94,9 @@ router.get("/service-providers", authenticate, authorizeRoles(Role.ADMIN), admin
 router.get("/service-providers/:userId", authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviderDetails);
 
 router.patch("/service-providers/:userId/status", authenticate, authorizeRoles(Role.ADMIN), validate(updateServiceProviderStatusSchema), adminController.updateServiceProviderStatus);
+
+router.get("/users",authenticate, authorizeRoles(Role.ADMIN), adminController.getUsersForManagement)
+
+router.patch('/users/:userId/status', authenticate, authorizeRoles(Role.ADMIN), validate(updateUserAccountStatusSchema), adminController.updateUserAccountStatus);
 
 export default router;

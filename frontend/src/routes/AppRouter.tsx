@@ -46,6 +46,8 @@ import ServiceProvidersPage from "../features/admin/pages/ServiceProvidersPage";
 
 import ServiceProviderDetailsPage from "../features/admin/pages/ServiceProviderDetailsPage";
 
+import UserManagementPage from "../features/admin/pages/UserManagementPage";
+
 function AppRouter() {
 
     return (
@@ -316,21 +318,41 @@ function AppRouter() {
                 <Route
 
                     path="/admin/service-providers/:userId"
-                    
+
                     element={
-                        
+
                         <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-                            
+
                             <AdminLayout>
-                                
+
                                 <ServiceProviderDetailsPage />
-                            
+
                             </AdminLayout>
-                        
+
                         </RoleProtectedRoute>
-                    
+
                     }
-                
+
+                />
+
+                <Route
+
+                    path="/admin/users"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+
+                            <AdminLayout>
+
+                                <UserManagementPage />
+
+                            </AdminLayout>
+
+                        </RoleProtectedRoute>
+
+                    }
+
                 />
 
             </Routes>

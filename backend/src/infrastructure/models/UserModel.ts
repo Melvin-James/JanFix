@@ -4,6 +4,8 @@ import { Role } from "../../domain/enums/Role.js";
 
 import { providerProfileSchema } from "../database/schemas/providerProfileSchema.js";
 
+import { AccountStatus } from "../../domain/enums/AccountStatus.js";
+
 const userSchema = new mongoose.Schema(
 {
     fullName: {
@@ -42,6 +44,13 @@ const userSchema = new mongoose.Schema(
         type: String,
         enum: ["LOCAL", "GOOGLE"],
         default: "LOCAL"
+    },
+
+    accountStatus: {
+        type: String,
+        enum: Object.values(AccountStatus),
+        default: AccountStatus.ACTIVE,
+        required: true,
     },
 
     googleId: {

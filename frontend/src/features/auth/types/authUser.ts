@@ -1,5 +1,7 @@
 import type { ProviderProfile } from "../../provider/types/providerProfile";
 
+import type { UserRole } from "../../admin/types/UserRole";
+
 export interface AuthUser {
 
   id: string;
@@ -8,7 +10,7 @@ export interface AuthUser {
 
   email: string;
 
-  roles: ("USER" | "SERVICE_PROVIDER" | "ADMIN")[];
+  roles: UserRole[];
 
   isVerified: boolean;
 

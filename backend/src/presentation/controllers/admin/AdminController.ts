@@ -20,7 +20,9 @@ import type { IGetServiceProviderDetailsUseCase } from "../../../application/use
 
 import type { IUpdateServiceProviderStatusUseCase } from "../../../application/use-cases/usecase interfaces/IUpdateServiceProviderStatusUseCase.js";
 
-import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import type { IGetUsersForManagementUseCase } from "../../../application/use-cases/usecase interfaces/IGetUsersForManagementUseCase.js";
+
+import type { IUpdateUserAccountStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateUserAccountStatusUseCase.js";
 
 export class AdminController {
 
@@ -38,7 +40,11 @@ export class AdminController {
 
         private readonly getServiceProviderDetailsUseCase: IGetServiceProviderDetailsUseCase,
 
-        private readonly updateServiceProviderStatusUseCase: IUpdateServiceProviderStatusUseCase
+        private readonly updateServiceProviderStatusUseCase: IUpdateServiceProviderStatusUseCase,
+
+        private readonly getUsersForManagementUseCase: IGetUsersForManagementUseCase,
+
+        private readonly updateUserAccountStatusUseCase: IUpdateUserAccountStatusUseCase,
 
     ) { }
 
@@ -194,7 +200,7 @@ export class AdminController {
 
             }
 
-            const {status} = req.body
+            const { status } = req.body
 
             const provider = await this.updateServiceProviderStatusUseCase.execute(
 
@@ -214,5 +220,47 @@ export class AdminController {
 
         }
     )
+
+    getUsersForManagement = asyncHandler(
+
+        async (_req: Request, res: Response) => {
+
+            const users = await this.getUsersForManagementUseCase.execute();
+
+            res.status(HttpStatusCode.OK).json({
+
+                success: true,
+
+                users
+
+            });
+        }
+    );
+
+    updateUserAccountStatus = asyncHandler(
+        async (req: Request, res: Response) => {
+            const userId = req.params.userId;
+
+            if(typeof userId !== "string") {
+                res.status(HttpStatusCode.INVALID).json({
+                    success: false,
+                    message: "Invalid user id",
+                });
+                return;
+            }
+
+            const {status} = req.body;
+
+            const user = await this.updateUserAccountStatusUseCase.execute(
+                userId,
+                status
+            );
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                user,
+            });
+        }
+    );
 
 }

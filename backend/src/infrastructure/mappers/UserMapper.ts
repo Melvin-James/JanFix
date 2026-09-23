@@ -20,6 +20,8 @@ export class UserMapper {
 
       authProvider: document.authProvider,
 
+      accountStatus: document.accountStatus,
+
       googleId: document.googleId,
 
       ...(document.providerProfile && {

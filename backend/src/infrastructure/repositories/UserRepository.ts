@@ -16,6 +16,8 @@ import { AppMessages } from "../../shared/constants/messages.js";
 
 import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
 
+import { Role } from "../../domain/enums/Role.js";
+
 export class UserRepository extends BaseRepository<User> implements IUserRepository {
 
   constructor() {
@@ -87,5 +89,14 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
   }
 
-  
+  async findUsersForManagement(): Promise<User[]> {
+    
+    const users = await UserModel.find({
+
+      roles: {$in: [Role.USER]},
+      
+    });
+
+    return users.map(UserMapper.toEntity);
+  }
 }
