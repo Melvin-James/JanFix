@@ -1,4 +1,5 @@
 import axiosInstance from "../../../api/axios";
+import type { AccountStatus } from "../types/AccountStatus";
 
 import type { ProviderApplication, ProviderApplicationsDetails } from "../types/ProviderApplication";
 
@@ -7,6 +8,9 @@ import type { ProviderStatus, ServiceProvider } from "../types/ServiceProvider";
 import type { ServiceProviderDetails } from "../types/ServiceProviderDetails";
 
 import type { UpdateServiceProviderStatusResponse } from "../types/UpdateServiceProviderStatusResponse";
+import type { UpdateUserAccountStatusResponse } from "../types/UpdateUserAccountStatusResponse";
+
+import type { ManagedUser } from "../types/UserManagement";
 
 export const getProviderApplications = async (): Promise<ProviderApplication[]> => {
 
@@ -105,4 +109,26 @@ export const updateServiceProviderStatus = async (
     );
 
     return response.data.provider;
+};
+
+
+export const getUsersForManagement = async (): Promise<ManagedUser[]> => {
+
+    const response = await axiosInstance.get("/admin/users");
+
+    return response.data.users;
+}
+
+export const updateUserAccountStatus = async (
+    userId: string,
+    status: AccountStatus,
+): Promise<UpdateUserAccountStatusResponse> => {
+
+    const response = await axiosInstance.patch(
+        `/admin/users/${userId}/status`,
+        {status}
+    );
+
+    return response.data.user;
+
 };
