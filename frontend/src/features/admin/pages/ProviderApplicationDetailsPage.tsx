@@ -431,7 +431,7 @@ function ProviderApplicationDetailsPage() {
                                     {application.documents.previousCommunityPhotos.map(
                                         (photo, index) => (
                                             <a
-                                                key={photo.publicId ?? photo.url ?? index}
+                                                key={photo.key ?? photo.url ?? index}
                                                 href={photo.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"

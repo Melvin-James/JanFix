@@ -115,6 +115,7 @@ export class UserMapper {
 
           status: {
             applicationStatus: document.providerProfile.status.applicationStatus,
+            providerStatus: document.providerProfile.status.providerStatus,
             submittedAt: document.providerProfile.status.submittedAt,
             reviewedAt: document.providerProfile.status.reviewedAt,
             rejectionReason: document.providerProfile.status.rejectionReason,

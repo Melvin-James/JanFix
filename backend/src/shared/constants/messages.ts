@@ -42,6 +42,7 @@ export const AppMessages = {
     GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN: "This account uses Google sign-in. Please continue with Google",
     ACCOUNT_ALREADY_VERIFIED: "Account is already verified",
     ALREADY_REJECTED_APPLICATION: "Rejected applications cannot be approved directly",
-    ALREADY_APPROVED_APPLICATION: "Already approved application"
+    ALREADY_APPROVED_APPLICATION: "Already approved application",
+    APPLICATION_NOT_APPROVED: "Only approved service providers can be blocked or unblocked"
   }
 };

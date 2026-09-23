@@ -1,28 +1,10 @@
-import { ProviderType } from "../../provider/types/providerTypes";
+import type { ProviderType } from "../../../domain/enums/ProviderType.js";
+import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
 
-import type { UploadedFile } from "../../provider/types/uploadedFile";
-
-export type ApplicatonStatus = 
-    | "SUBMITTED"
-    | "UNDER_REVIEW"
-    | "APPROVED"
-    | "REJECTED";
-
-export interface ProviderApplication {
+export interface ServiceProviderDetailsResponseDTO {
     id: string;
-    fullName: string;
-    email: string;
-    providerType?: ProviderType;
-    providerName?: string;
-    applicationStatus: ApplicatonStatus;
-    submittedAt: string;
-}
-
-
-
-export interface ProviderApplicationsDetails {
-    id: string;
-    fullName: string;
     email: string;
 
     identity: {
@@ -39,25 +21,26 @@ export interface ProviderApplicationsDetails {
         previousCommunityPhotos?: UploadedFile[];
         ngoRegistrationDocument?: UploadedFile;
         logo?: UploadedFile;
-    }
+    };
 
     workPreferences: {
         categoriesWillingToWork?: string[];
         websiteLinks?: string[];
-    }
+    };
 
     volunteerGroupProfile?: {
         memberCount: number;
-    }
+    };
 
     organizationProfile?: {
         memberCount: number;
     };
 
     status: {
-        applicationStatus: ApplicatonStatus;
-        submittedAt: string;
-        reviewedAt?: string;
+        applicationStatus: ApplicationStatus;
+        providerStatus: ProviderStatus;
+        submittedAt: Date;
+        reviewedAt?: Date;
         rejectionReason?: string;
     };
 }
