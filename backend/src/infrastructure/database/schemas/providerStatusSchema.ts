@@ -2,6 +2,8 @@ import { Schema } from "mongoose";
 
 import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
 
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+
 export const providerStatusSchema = new Schema(
     {
 
@@ -12,6 +14,16 @@ export const providerStatusSchema = new Schema(
             enum: Object.values(ApplicationStatus),
 
             default: ApplicationStatus.SUBMITTED,
+        },
+
+        providerStatus: {
+
+            type: String,
+            
+            enum: Object.values(ProviderStatus),
+            
+            required: false,
+        
         },
 
         submittedAt: {

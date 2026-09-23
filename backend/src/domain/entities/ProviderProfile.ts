@@ -4,6 +4,8 @@ import type { ApplicationStatus } from "../enums/ApplicationStatus.js";
 
 import type { UploadedFile } from "./UploadedFile.js";
 
+import type { ProviderStatus as ProviderOperationalStatus } from "../enums/ProviderStatus.js";
+
 export interface ProviderIdentity {
 
     providerType?: ProviderType;
@@ -50,6 +52,8 @@ export interface OrganizationProfile {
 export interface ProviderStatus {
 
     applicationStatus: ApplicationStatus;
+
+    providerStatus: ProviderOperationalStatus;
 
     submittedAt: Date;
 

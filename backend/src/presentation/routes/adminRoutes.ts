@@ -18,10 +18,17 @@ import { ApproveProviderApplicationUseCase } from "../../application/use-cases/a
 
 import { RejectProviderApplicationUseCase } from "../../application/use-cases/admin/RejectProviderApplicationUseCase.js";
 
+import { GetServiceProvidersUseCase } from "../../application/use-cases/admin/GetServiceProvidersUseCase.js";
+
+import { GetServiceProviderDetailsUseCase } from "../../application/use-cases/admin/GetServiceProviderDetailsUseCase.js";
+
+import { UpdateServiceProviderStatusUseCase } from "../../application/use-cases/admin/UpdateServiceProviderStatusUseCase.js";
+
 import validate from "../middlewares/validate.js";
 
 import { rejectProviderApplicationSchema } from "../validators/admin/rejectProviderApplicationValidator.js";
 
+import { updateServiceProviderStatusSchema } from "../validators/admin/UpdateServiceProviderStatusValidator.js";
 
 const router = Router();
 
@@ -35,6 +42,12 @@ const approveProviderApplicationUseCase = new ApproveProviderApplicationUseCase(
 
 const rejectProviderApplicationUseCase = new RejectProviderApplicationUseCase(userRepository);
 
+const getServiceProvidersUseCase = new GetServiceProvidersUseCase(userRepository);
+
+const getServiceProviderDetailsUseCase = new GetServiceProviderDetailsUseCase(userRepository);
+
+const updateServiceProviderStatusUseCase = new UpdateServiceProviderStatusUseCase(userRepository);
+
 const adminController = new AdminController(
 
     getProviderApplicationsUseCase,
@@ -44,6 +57,12 @@ const adminController = new AdminController(
     approveProviderApplicationUseCase,
 
     rejectProviderApplicationUseCase,
+
+    getServiceProvidersUseCase,
+
+    getServiceProviderDetailsUseCase,
+
+    updateServiceProviderStatusUseCase,
 );
 
 
@@ -54,5 +73,11 @@ router.get("/provider-applications/:userId", authenticate, authorizeRoles(Role.A
 router.patch("/provider-applications/:userId/approve", authenticate, authorizeRoles(Role.ADMIN), adminController.approveProviderApplication);
 
 router.patch("/provider-applications/:userId/reject", authenticate, authorizeRoles(Role.ADMIN), validate(rejectProviderApplicationSchema), adminController.rejectProviderApplication);
+
+router.get("/service-providers", authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviders);
+
+router.get("/service-providers/:userId", authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviderDetails);
+
+router.patch("/service-providers/:userId/status", authenticate, authorizeRoles(Role.ADMIN), validate(updateServiceProviderStatusSchema), adminController.updateServiceProviderStatus);
 
 export default router;

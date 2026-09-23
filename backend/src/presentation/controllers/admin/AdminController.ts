@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 
 import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
 
@@ -14,22 +14,36 @@ import type { IApproveProviderApplicationUseCase } from "../../../application/us
 
 import type { IRejectProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/IRejectProviderApplicationUseCase.js";
 
+import type { IGetServiceProvidersUseCase } from "../../../application/use-cases/usecase interfaces/IGetServiceProvidersUseCase.js";
+
+import type { IGetServiceProviderDetailsUseCase } from "../../../application/use-cases/usecase interfaces/IGetServiceProviderDetailsUseCase.js";
+
+import type { IUpdateServiceProviderStatusUseCase } from "../../../application/use-cases/usecase interfaces/IUpdateServiceProviderStatusUseCase.js";
+
+import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+
 export class AdminController {
 
     constructor(
 
         private getProviderApplicationUseCase: IGetProviderApplicationsUseCase,
-        
-        private getProviderApplicationDetailUseCase: IGetProviderApplicationDetailsUseCase,
-        
-        private readonly approveProviderApplicationUseCase: IApproveProviderApplicationUseCase,
-        
-        private readonly rejectProviderApplicationUseCase: IRejectProviderApplicationUseCase
 
-    ) {}
+        private getProviderApplicationDetailUseCase: IGetProviderApplicationDetailsUseCase,
+
+        private readonly approveProviderApplicationUseCase: IApproveProviderApplicationUseCase,
+
+        private readonly rejectProviderApplicationUseCase: IRejectProviderApplicationUseCase,
+
+        private readonly getServiceProvidersUseCase: IGetServiceProvidersUseCase,
+
+        private readonly getServiceProviderDetailsUseCase: IGetServiceProviderDetailsUseCase,
+
+        private readonly updateServiceProviderStatusUseCase: IUpdateServiceProviderStatusUseCase
+
+    ) { }
 
     getProviderApplications = asyncHandler(
-        
+
         async (
             _req: AuthRequest,
             res: Response
@@ -41,10 +55,10 @@ export class AdminController {
             res.status(
                 HttpStatusCode.OK
             )
-            .json({
-                success:true,
-                applications
-            });
+                .json({
+                    success: true,
+                    applications
+                });
 
         }
     );
@@ -54,7 +68,7 @@ export class AdminController {
 
             const userId = req.params.userId;
 
-            if(typeof userId !== "string") {
+            if (typeof userId !== "string") {
                 res.status(HttpStatusCode.BAD_REQUEST).json({
                     success: false,
                     message: "Invalid user ID."
@@ -65,18 +79,18 @@ export class AdminController {
             const application = await this.getProviderApplicationDetailUseCase.execute(userId);
 
             res.status(HttpStatusCode.OK).json({
-                success:true,
+                success: true,
                 application,
             });
         }
     );
 
     approveProviderApplication = asyncHandler(
-        async (req: AuthRequest, res: Response):Promise<void> => {
+        async (req: AuthRequest, res: Response): Promise<void> => {
 
             const userId = req.params.userId;
 
-            if(typeof userId !== 'string') {
+            if (typeof userId !== 'string') {
                 res.status(HttpStatusCode.BAD_REQUEST).json({
                     success: false,
                     message: "Invalid user ID"
@@ -95,11 +109,11 @@ export class AdminController {
 
     rejectProviderApplication = asyncHandler(
         async (req: AuthRequest, res: Response): Promise<void> => {
-            
+
 
             const userId = req.params.userId;
 
-            if(typeof userId !== 'string') {
+            if (typeof userId !== 'string') {
                 res.status(HttpStatusCode.BAD_REQUEST).json({
                     success: false,
                     message: "Invalid user ID."
@@ -107,7 +121,7 @@ export class AdminController {
                 return;
             }
 
-            const {rejectionReason} = req.body;
+            const { rejectionReason } = req.body;
 
             await this.rejectProviderApplicationUseCase.execute(
                 userId,
@@ -118,6 +132,86 @@ export class AdminController {
                 success: true,
                 message: "Provider application rejected successfully."
             });
+        }
+    )
+
+    getServiceProviders = asyncHandler(
+        async (
+            _req: AuthRequest,
+            res: Response
+        ): Promise<void> => {
+            const providers = await this.getServiceProvidersUseCase.execute();
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                providers
+            });
+        }
+    );
+
+    getServiceProviderDetails = asyncHandler(
+        async (
+            req: AuthRequest,
+            res: Response
+        ): Promise<void> => {
+
+            const userId = req.params.userId;
+
+            if (typeof userId !== "string") {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid user ID"
+                });
+                return;
+            }
+
+            const provider = await this.getServiceProviderDetailsUseCase.execute(userId);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                provider,
+            })
+        }
+    )
+
+    updateServiceProviderStatus = asyncHandler(
+
+        async (req: Request, res: Response) => {
+
+            const userId = req.params.userId;
+
+            if (typeof userId !== "string") {
+
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+
+                    success: false,
+
+                    message: "Invalid service provider id",
+
+                });
+
+                return;
+
+            }
+
+            const {status} = req.body
+
+            const provider = await this.updateServiceProviderStatusUseCase.execute(
+
+                userId,
+
+                status
+
+            );
+
+            res.status(HttpStatusCode.OK).json({
+
+                success: true,
+
+                provider,
+
+            });
+
         }
     )
 

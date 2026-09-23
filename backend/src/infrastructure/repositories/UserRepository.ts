@@ -14,6 +14,8 @@ import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
 
 import { AppMessages } from "../../shared/constants/messages.js";
 
+import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
+
 export class UserRepository extends BaseRepository<User> implements IUserRepository {
 
   constructor() {
@@ -65,4 +67,25 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       UserMapper.toEntity
     );
   }
+
+
+  async findApprovedServiceProviders(): Promise<User[]> {
+
+    const users = await UserModel.find({
+
+      providerProfile:{
+
+        $exists: true
+
+      },
+
+      "providerProfile.status.applicationStatus": ApplicationStatus.APPROVED
+
+    });
+
+    return users.map(UserMapper.toEntity);
+
+  }
+
+  
 }

@@ -12,4 +12,5 @@ export interface IUserRepository {
 
     findUsersWithProviderApplications(): Promise<User[]>;
 
+    findApprovedServiceProviders(): Promise<User[]>;
 }

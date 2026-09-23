@@ -17,11 +17,11 @@ const navigation = [
   { label: "Provider Applications", icon: FileText, to:"/admin/provider-applications" },
 //   { label: "Proposals", icon: ClipboardCheck },
 //   { label: "Activities", icon: Activity },
-  { label: "Users", icon: Users },
-  { label: "Service Providers", icon: Wrench },
+  { label: "Users", icon: Users, to:"/admin/users" },
+  { label: "Service Providers", icon: Wrench, to:"/admin/service-providers" },
 //   { label: "Fund releases", icon: HandCoins },
 //   { label: "Completion", icon: BarChart3 },
-  { label: "Category", icon: Tags },
+  { label: "Category", icon: Tags, to:"/admin/categories" },
 ];
 
 interface AdminSidebarProps {

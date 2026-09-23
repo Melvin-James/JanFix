@@ -12,6 +12,8 @@ import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
 
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+
 
 export class ApproveProviderApplicationUseCase implements IApproveProviderApplicationUseCase {
     constructor(
@@ -40,6 +42,8 @@ export class ApproveProviderApplicationUseCase implements IApproveProviderApplic
         }
 
         user.providerProfile.status.applicationStatus = ApplicationStatus.APPROVED;
+
+        user.providerProfile.status.providerStatus = ProviderStatus.ACTIVE;
 
         user.providerProfile.status.reviewedAt = new Date();
 

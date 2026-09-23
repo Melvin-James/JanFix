@@ -39,7 +39,12 @@ import RoleProtectedRoute from "./RoleProtectedRoute";
 import AdminLayout from "../features/admin/components/AdminLayout";
 
 import ProviderApplicationsPage from "../features/admin/pages/ProviderApplicationsPage";
+
 import ProviderApplicationDetailsPage from "../features/admin/pages/ProviderApplicationDetailsPage";
+
+import ServiceProvidersPage from "../features/admin/pages/ServiceProvidersPage";
+
+import ServiceProviderDetailsPage from "../features/admin/pages/ServiceProviderDetailsPage";
 
 function AppRouter() {
 
@@ -95,7 +100,7 @@ function AppRouter() {
 
                         <PublicRoute>
 
-                            <ResetPasswordPage/>
+                            <ResetPasswordPage />
 
                         </PublicRoute>
 
@@ -238,9 +243,9 @@ function AppRouter() {
                         <RoleProtectedRoute allowedRoles={["ADMIN"]}>
 
                             <AdminLayout>
-                                
-                                <AdminDashboardPage/>
-                            
+
+                                <AdminDashboardPage />
+
                             </AdminLayout>
 
                         </RoleProtectedRoute>
@@ -249,7 +254,7 @@ function AppRouter() {
 
                 />
 
-                <Route 
+                <Route
 
                     path="/admin/provider-applications"
 
@@ -259,7 +264,7 @@ function AppRouter() {
 
                             <AdminLayout>
 
-                                <ProviderApplicationsPage/>
+                                <ProviderApplicationsPage />
 
                             </AdminLayout>
 
@@ -279,16 +284,54 @@ function AppRouter() {
 
                             <AdminLayout>
 
-                                <ProviderApplicationDetailsPage/>
+                                <ProviderApplicationDetailsPage />
 
                             </AdminLayout>
-                            
+
                         </RoleProtectedRoute>
 
                     }
 
                 />
 
+                <Route
+
+                    path="/admin/service-providers"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+
+                            <AdminLayout>
+
+                                <ServiceProvidersPage />
+
+                            </AdminLayout>
+
+                        </RoleProtectedRoute>
+
+                    }
+                />
+
+                <Route
+
+                    path="/admin/service-providers/:userId"
+                    
+                    element={
+                        
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+                            
+                            <AdminLayout>
+                                
+                                <ServiceProviderDetailsPage />
+                            
+                            </AdminLayout>
+                        
+                        </RoleProtectedRoute>
+                    
+                    }
+                
+                />
 
             </Routes>
 
