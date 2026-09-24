@@ -24,6 +24,12 @@ import type { IGetUsersForManagementUseCase } from "../../../application/use-cas
 
 import type { IUpdateUserAccountStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateUserAccountStatusUseCase.js";
 
+import type { ICreateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/ICreateCategoryUseCase.js";
+
+import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
+
+import type { IUpdateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryUseCase.js";
+
 export class AdminController {
 
     constructor(
@@ -45,6 +51,12 @@ export class AdminController {
         private readonly getUsersForManagementUseCase: IGetUsersForManagementUseCase,
 
         private readonly updateUserAccountStatusUseCase: IUpdateUserAccountStatusUseCase,
+
+        private readonly createCategoryUseCase: ICreateCategoryUseCase,
+
+        private readonly getCategoriesUseCase: IGetCategoriesUseCase,
+
+        private readonly updateCategoryUseCase: IUpdateCategoryUseCase,
 
     ) { }
 
@@ -241,7 +253,7 @@ export class AdminController {
         async (req: Request, res: Response) => {
             const userId = req.params.userId;
 
-            if(typeof userId !== "string") {
+            if (typeof userId !== "string") {
                 res.status(HttpStatusCode.INVALID).json({
                     success: false,
                     message: "Invalid user id",
@@ -249,7 +261,7 @@ export class AdminController {
                 return;
             }
 
-            const {status} = req.body;
+            const { status } = req.body;
 
             const user = await this.updateUserAccountStatusUseCase.execute(
                 userId,
@@ -262,5 +274,57 @@ export class AdminController {
             });
         }
     );
+
+    createCategory = asyncHandler(
+        async (req: Request, res: Response): Promise<void> => {
+
+            const category = await this.createCategoryUseCase.execute(
+                req.body
+            );
+
+            res.status(HttpStatusCode.CREATED).json({
+                success: true,
+                category,
+            })
+        }
+    )
+
+    getCategories = asyncHandler(
+        async (_req: Request, res: Response): Promise<void> => {
+
+            const categories = await this.getCategoriesUseCase.execute();
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                categories,
+            });
+        }
+    );
+
+    updateCategory = asyncHandler(
+        async(req: Request, res: Response): Promise<void> => {
+
+            const categoryId = req.params.categoryId;
+
+            if(typeof categoryId !== "string") {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid category ID",
+                });
+                return;
+            }
+
+            const category = await this.updateCategoryUseCase.execute(
+                categoryId,
+                req.body
+            );
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                category,
+            });
+
+        }
+    )
 
 }

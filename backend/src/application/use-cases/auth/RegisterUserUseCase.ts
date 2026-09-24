@@ -14,6 +14,8 @@ import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js
 import type { IRegisterUserUseCase } from "../usecase interfaces/IRegisterUserUseCase.js";
 
 import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
 
 export class RegisterUserUseCase implements IRegisterUserUseCase {
 
@@ -49,7 +51,9 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
             
             isVerified: false,
 
-            authProvider: "LOCAL",
+            authProvider: AuthProvider.LOCAL,
+
+            accountStatus: AccountStatus.ACTIVE,
         };
 
         const createdUser = await this.userRepository.create(user);

@@ -32,14 +32,25 @@ import { updateServiceProviderStatusSchema } from "../validators/admin/UpdateSer
 
 import { updateUserAccountStatusSchema } from "../validators/admin/updateUserAccountStatusValidator.js";
 
-
 import { GetUsersForManagementUseCase } from "../../application/use-cases/admin/GetUsersForManagementUseCase.js";
 
 import { UpdateUserAccountStatusUseCase } from "../../application/use-cases/admin/UpdateUserAccountStatusUseCase.js";
 
+import { CreateCategoryUseCase } from "../../application/use-cases/category/CreateCategoryUseCase.js";
+
+import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.js";
+
+import { createCategorySchema, updateCategorySchema } from "../validators/category/categoryValidator.js";
+
+import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.js";
+
+import { UpdateCategoryUseCase } from "../../application/use-cases/category/UpdateCategoryUseCase.js";
+
 const router = Router();
 
 const userRepository = new UserRepository();
+
+const categoryRepository = new CategoryRepository();
 
 const getProviderApplicationsUseCase = new GetProviderApplicationsUseCase(userRepository);
 
@@ -58,6 +69,12 @@ const updateServiceProviderStatusUseCase = new UpdateServiceProviderStatusUseCas
 const getUsersForManagementUseCase = new GetUsersForManagementUseCase(userRepository);
 
 const updateUserAccountStatusUseCase = new UpdateUserAccountStatusUseCase(userRepository);
+
+const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository);
+
+const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
+
+const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository);
 
 const adminController = new AdminController(
 
@@ -78,6 +95,12 @@ const adminController = new AdminController(
     getUsersForManagementUseCase,
 
     updateUserAccountStatusUseCase,
+
+    createCategoryUseCase,
+
+    getCategoriesUseCase,
+
+    updateCategoryUseCase,
 );
 
 
@@ -98,5 +121,11 @@ router.patch("/service-providers/:userId/status", authenticate, authorizeRoles(R
 router.get("/users",authenticate, authorizeRoles(Role.ADMIN), adminController.getUsersForManagement)
 
 router.patch('/users/:userId/status', authenticate, authorizeRoles(Role.ADMIN), validate(updateUserAccountStatusSchema), adminController.updateUserAccountStatus);
+
+router.post("/categories", authenticate, authorizeRoles(Role.ADMIN), validate(createCategorySchema), adminController.createCategory);
+
+router.get("/categories", authenticate, authorizeRoles(Role.ADMIN), adminController.getCategories);
+
+router.patch("/categories/:categoryId", authenticate, authorizeRoles(Role.ADMIN), validate(updateCategorySchema), adminController.updateCategory);
 
 export default router;

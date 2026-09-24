@@ -18,6 +18,9 @@ import type { GoogleUser } from "../../../domain/interface/IGoogleAuthService.js
 
 import type { LoginResponseDTO } from "../../dto/auth/LoginResponseDTO.js";
 
+import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+
 export class GoogleAuthUseCase implements IGoogleAuthUseCase{
     constructor(
         private userRepository: IUserRepository,
@@ -55,14 +58,16 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
 
                 isVerified: true,
 
-                authProvider: "GOOGLE",
+                authProvider: AuthProvider.GOOGLE,
+
+                accountStatus: AccountStatus.ACTIVE,
 
                 googleId: googleUser.googleId,
 
             });
         } else {
 
-            if(user.authProvider === "LOCAL") {
+            if(user.authProvider === AuthProvider.LOCAL) {
                 throw new ApiError(
                     HttpStatusCode.CONFLICT,
                     AppMessages.ERROR.GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN
