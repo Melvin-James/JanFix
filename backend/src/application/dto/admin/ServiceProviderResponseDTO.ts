@@ -14,6 +14,6 @@ export interface ServiceProviderResponseDTO {
     
     providerName?: string;
     
-    providerStatus: ProviderStatus;
+    providerStatus?: ProviderStatus | undefined;
 
 }

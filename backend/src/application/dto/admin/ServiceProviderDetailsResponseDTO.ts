@@ -38,7 +38,7 @@ export interface ServiceProviderDetailsResponseDTO {
 
     status: {
         applicationStatus: ApplicationStatus;
-        providerStatus: ProviderStatus;
+        providerStatus?: ProviderStatus | undefined;
         submittedAt: Date;
         reviewedAt?: Date;
         rejectionReason?: string;

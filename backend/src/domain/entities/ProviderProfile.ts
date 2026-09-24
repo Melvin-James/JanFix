@@ -53,7 +53,7 @@ export interface ProviderStatus {
 
     applicationStatus: ApplicationStatus;
 
-    providerStatus: ProviderOperationalStatus;
+    providerStatus?: ProviderOperationalStatus | undefined;
 
     submittedAt: Date;
 

@@ -43,6 +43,8 @@ export const AppMessages = {
     ACCOUNT_ALREADY_VERIFIED: "Account is already verified",
     ALREADY_REJECTED_APPLICATION: "Rejected applications cannot be approved directly",
     ALREADY_APPROVED_APPLICATION: "Already approved application",
-    APPLICATION_NOT_APPROVED: "Only approved service providers can be blocked or unblocked"
+    APPLICATION_NOT_APPROVED: "Only approved service providers can be blocked or unblocked",
+    CATEGORY_ALREADY_EXISTS: "Category already exists",
+    CATEGORY_NOT_FOUND: "Category not found"
   }
 };
