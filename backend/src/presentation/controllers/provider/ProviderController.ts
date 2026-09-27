@@ -21,13 +21,13 @@ export class ProviderController {
 
     constructor(
 
-        private submitProviderApplicationUseCase:
+        private _submitProviderApplicationUseCase:
             ISubmitProviderApplicationUseCase,
 
-        private resubmitProviderApplicationUseCase:
+        private _resubmitProviderApplicationUseCase:
             IResubmitProviderApplicationUseCase,
 
-        private getProviderProfileUseCase:
+        private _getProviderProfileUseCase:
             IGetProviderProfileUseCase
 
     ) { }
@@ -49,7 +49,7 @@ export class ProviderController {
 
 
            const user =  await this
-                .submitProviderApplicationUseCase
+                ._submitProviderApplicationUseCase
                 .execute(
 
                     req.user!.userId,
@@ -82,7 +82,8 @@ export class ProviderController {
 
     );
 
-
+
+
     resubmit = asyncHandler(
 
         async (
@@ -95,7 +96,7 @@ export class ProviderController {
 
 
            const user = await this
-                .resubmitProviderApplicationUseCase
+                ._resubmitProviderApplicationUseCase
                 .execute(
 
                     req.user!.userId,
@@ -144,7 +145,7 @@ export class ProviderController {
             const provider =
 
                 await this
-                    .getProviderProfileUseCase
+                    ._getProviderProfileUseCase
                     .execute(
 
                         req.user!.userId

@@ -40,33 +40,33 @@ export class AdminController {
 
     constructor(
 
-        private getProviderApplicationUseCase: IGetProviderApplicationsUseCase,
+        private _getProviderApplicationUseCase: IGetProviderApplicationsUseCase,
 
-        private getProviderApplicationDetailUseCase: IGetProviderApplicationDetailsUseCase,
+        private _getProviderApplicationDetailUseCase: IGetProviderApplicationDetailsUseCase,
 
-        private readonly approveProviderApplicationUseCase: IApproveProviderApplicationUseCase,
+        private readonly _approveProviderApplicationUseCase: IApproveProviderApplicationUseCase,
 
-        private readonly rejectProviderApplicationUseCase: IRejectProviderApplicationUseCase,
+        private readonly _rejectProviderApplicationUseCase: IRejectProviderApplicationUseCase,
 
-        private readonly getServiceProvidersUseCase: IGetServiceProvidersUseCase,
+        private readonly _getServiceProvidersUseCase: IGetServiceProvidersUseCase,
 
-        private readonly getServiceProviderDetailsUseCase: IGetServiceProviderDetailsUseCase,
+        private readonly _getServiceProviderDetailsUseCase: IGetServiceProviderDetailsUseCase,
 
-        private readonly updateServiceProviderStatusUseCase: IUpdateServiceProviderStatusUseCase,
+        private readonly _updateServiceProviderStatusUseCase: IUpdateServiceProviderStatusUseCase,
 
-        private readonly getUsersForManagementUseCase: IGetUsersForManagementUseCase,
+        private readonly _getUsersForManagementUseCase: IGetUsersForManagementUseCase,
 
-        private readonly updateUserAccountStatusUseCase: IUpdateUserAccountStatusUseCase,
+        private readonly _updateUserAccountStatusUseCase: IUpdateUserAccountStatusUseCase,
 
-        private readonly createCategoryUseCase: ICreateCategoryUseCase,
+        private readonly _createCategoryUseCase: ICreateCategoryUseCase,
 
-        private readonly getCategoriesUseCase: IGetCategoriesUseCase,
+        private readonly _getCategoriesUseCase: IGetCategoriesUseCase,
 
-        private readonly updateCategoryUseCase: IUpdateCategoryUseCase,
+        private readonly _updateCategoryUseCase: IUpdateCategoryUseCase,
 
-        private readonly updateCategoryStatusUseCase: IUpdateCategoryStatusUseCase,
+        private readonly _updateCategoryStatusUseCase: IUpdateCategoryStatusUseCase,
 
-        private readonly deleteCategoryUseCase: IDeleteCategoryUseCase,
+        private readonly _deleteCategoryUseCase: IDeleteCategoryUseCase,
 
     ) { }
 
@@ -78,7 +78,7 @@ export class AdminController {
         ): Promise<void> => {
 
 
-            const applications = await this.getProviderApplicationUseCase.execute();
+            const applications = await this._getProviderApplicationUseCase.execute();
 
             res.status(
                 HttpStatusCode.OK
@@ -104,7 +104,7 @@ export class AdminController {
                 return;
             }
 
-            const application = await this.getProviderApplicationDetailUseCase.execute(userId);
+            const application = await this._getProviderApplicationDetailUseCase.execute(userId);
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
@@ -126,7 +126,7 @@ export class AdminController {
                 return;
             }
 
-            await this.approveProviderApplicationUseCase.execute(userId);
+            await this._approveProviderApplicationUseCase.execute(userId);
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
@@ -151,7 +151,7 @@ export class AdminController {
 
             const { rejectionReason } = req.body;
 
-            await this.rejectProviderApplicationUseCase.execute(
+            await this._rejectProviderApplicationUseCase.execute(
                 userId,
                 rejectionReason
             );
@@ -168,7 +168,7 @@ export class AdminController {
             _req: AuthRequest,
             res: Response
         ): Promise<void> => {
-            const providers = await this.getServiceProvidersUseCase.execute();
+            const providers = await this._getServiceProvidersUseCase.execute();
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
@@ -193,7 +193,7 @@ export class AdminController {
                 return;
             }
 
-            const provider = await this.getServiceProviderDetailsUseCase.execute(userId);
+            const provider = await this._getServiceProviderDetailsUseCase.execute(userId);
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
@@ -224,7 +224,7 @@ export class AdminController {
 
             const { status } = req.body
 
-            const provider = await this.updateServiceProviderStatusUseCase.execute(
+            const provider = await this._updateServiceProviderStatusUseCase.execute(
 
                 userId,
 
@@ -247,7 +247,7 @@ export class AdminController {
 
         async (_req: Request, res: Response) => {
 
-            const users = await this.getUsersForManagementUseCase.execute();
+            const users = await this._getUsersForManagementUseCase.execute();
 
             res.status(HttpStatusCode.OK).json({
 
@@ -273,7 +273,7 @@ export class AdminController {
 
             const { status } = req.body;
 
-            const user = await this.updateUserAccountStatusUseCase.execute(
+            const user = await this._updateUserAccountStatusUseCase.execute(
                 userId,
                 status
             );
@@ -288,7 +288,7 @@ export class AdminController {
     createCategory = asyncHandler(
         async (req: Request, res: Response): Promise<void> => {
 
-            const category = await this.createCategoryUseCase.execute(
+            const category = await this._createCategoryUseCase.execute(
                 req.body
             );
 
@@ -302,7 +302,7 @@ export class AdminController {
     getCategories = asyncHandler(
         async (_req: Request, res: Response): Promise<void> => {
 
-            const categories = await this.getCategoriesUseCase.execute();
+            const categories = await this._getCategoriesUseCase.execute();
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
@@ -324,7 +324,7 @@ export class AdminController {
                 return;
             }
 
-            const category = await this.updateCategoryUseCase.execute(
+            const category = await this._updateCategoryUseCase.execute(
                 categoryId,
                 req.body
             );
@@ -364,7 +364,7 @@ export class AdminController {
                 return;
             }
 
-            const category = await this.updateCategoryStatusUseCase.execute(
+            const category = await this._updateCategoryStatusUseCase.execute(
                 categoryId,
                 isActive
             );
@@ -388,7 +388,7 @@ export class AdminController {
                 return;
             }
 
-            const category = await this.updateCategoryStatusUseCase.execute(
+            const category = await this._updateCategoryStatusUseCase.execute(
                 categoryId,
                 false
             );
@@ -412,7 +412,7 @@ export class AdminController {
                 return;
             }
 
-            const category = await this.updateCategoryStatusUseCase.execute(
+            const category = await this._updateCategoryStatusUseCase.execute(
                 categoryId,
                 true
             );
@@ -436,7 +436,7 @@ export class AdminController {
                 return;
             }
 
-            await this.deleteCategoryUseCase.execute(categoryId);
+            await this._deleteCategoryUseCase.execute(categoryId);
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
@@ -445,4 +445,4 @@ export class AdminController {
         }
     );
 
-}
+}

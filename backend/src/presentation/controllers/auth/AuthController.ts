@@ -31,21 +31,21 @@ import type { IResendOtpUseCase } from "../../../application/use-cases/usecase i
 
 export class AuthController {
   constructor(
-    private registerUserUseCase: IRegisterUserUseCase,
-    private verifyOtpUseCase: IVerifyOtpUseCase,
-    private loginUseCase: ILoginUseCase,
-    private refreshTokenUseCase: IRefreshTokenUseCase,
-    private googleAuthUseCase: IGoogleAuthUseCase,
-    private forgotPasswordUseCase: IForgotPasswordUseCase,
-    private resetPasswordUseCase: IResetPasswordUseCase,
-    private verifyResetOtpUseCase: IVerifyResetOtpUseCase,
-    private resendOtpUseCase: IResendOtpUseCase,
-    private googleAuthService: IGoogleAuthService,
+    private _registerUserUseCase: IRegisterUserUseCase,
+    private _verifyOtpUseCase: IVerifyOtpUseCase,
+    private _loginUseCase: ILoginUseCase,
+    private _refreshTokenUseCase: IRefreshTokenUseCase,
+    private _googleAuthUseCase: IGoogleAuthUseCase,
+    private _forgotPasswordUseCase: IForgotPasswordUseCase,
+    private _resetPasswordUseCase: IResetPasswordUseCase,
+    private _verifyResetOtpUseCase: IVerifyResetOtpUseCase,
+    private _resendOtpUseCase: IResendOtpUseCase,
+    private _googleAuthService: IGoogleAuthService,
   ) { }
 
   public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: RegisterUserDTO = req.body;
-    const createdUser = await this.registerUserUseCase.execute(dto);
+    const createdUser = await this._registerUserUseCase.execute(dto);
 
     res.status(HttpStatusCode.CREATED).json({
       success: true,
@@ -66,9 +66,9 @@ export class AuthController {
 
       console.log("Google credential exists:", !!credential);
 
-      const googleUser = await this.googleAuthService.verifyCredential(credential);
+      const googleUser = await this._googleAuthService.verifyCredential(credential);
 
-      const result = await this.googleAuthUseCase.execute(googleUser);
+      const result = await this._googleAuthUseCase.execute(googleUser);
 
       setAuthCookies(res, result.refreshToken);
 
@@ -85,7 +85,7 @@ export class AuthController {
 
   public verifyOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: VerifyOtpDTO = req.body;
-    await this.verifyOtpUseCase.execute(dto);
+    await this._verifyOtpUseCase.execute(dto);
 
     res.status(HttpStatusCode.OK).json({
       success: true,
@@ -95,7 +95,7 @@ export class AuthController {
 
   public login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto: LoginDTO = req.body;
-    const result = await this.loginUseCase.execute(dto);
+    const result = await this._loginUseCase.execute(dto);
 
     setAuthCookies(res, result.refreshToken);
 
@@ -114,7 +114,7 @@ export class AuthController {
 
       const dto: ForgotPasswordDTO = req.body;
 
-      await this.forgotPasswordUseCase.execute(dto);
+      await this._forgotPasswordUseCase.execute(dto);
 
       res.status(HttpStatusCode.OK).json({
         success: true,
@@ -127,7 +127,7 @@ export class AuthController {
     async (req: Request, res: Response): Promise<void> => {
       const dto: VerifyResetOtpDTO = req.body;
 
-      const resetToken = await this.verifyResetOtpUseCase.execute(dto);
+      const resetToken = await this._verifyResetOtpUseCase.execute(dto);
 
       res.status(HttpStatusCode.OK).json({
         success: true,
@@ -143,7 +143,7 @@ export class AuthController {
     async (req: Request, res: Response): Promise<void> => {
       const dto: ResetPasswordDTO = req.body;
       
-      await this.resetPasswordUseCase.execute(dto);
+      await this._resetPasswordUseCase.execute(dto);
 
       res.status(HttpStatusCode.OK).json({
         success: true,
@@ -159,7 +159,7 @@ export class AuthController {
       throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.REFRESH_TOKEN_MISSING);
     }
 
-    const result = await this.refreshTokenUseCase.execute(refreshToken);
+    const result = await this._refreshTokenUseCase.execute(refreshToken);
 
     res.status(HttpStatusCode.OK).json({
       success: true,
@@ -189,7 +189,7 @@ export class AuthController {
 
       const dto: ResendOtpDTO = req.body;
 
-      await this.resendOtpUseCase.execute(dto);
+      await this._resendOtpUseCase.execute(dto);
 
       res.status(HttpStatusCode.OK).json({
         success: true,
