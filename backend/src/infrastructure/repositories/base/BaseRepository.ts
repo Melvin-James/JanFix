@@ -52,4 +52,9 @@ export abstract class BaseRepository<T> {
     return this.toEntity(updatedDocument);
     
   }
+
+  async delete(id: string): Promise<boolean> {
+    const deletedDocument = await this.model.findByIdAndDelete(id);
+    return !!deletedDocument;
+  }
 }

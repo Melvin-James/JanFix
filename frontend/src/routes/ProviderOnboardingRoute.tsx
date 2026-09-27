@@ -6,6 +6,8 @@ import { useAuthStore } from "../store/authStore";
 
 import { useProviderOnboardingStore } from "../features/provider/store/providerOnboardingStore";
 
+import { ApplicationStatus } from "../features/provider/constants/applicationStatus";
+
 
 interface ProviderOnboardingRouteProps{
 
@@ -30,10 +32,14 @@ function ProviderOnboardingRoute({children, step}: ProviderOnboardingRouteProps)
         return null;
     }
 
-    const hasProviderProfile = !!user?.providerProfile;
+    const providerProfile = user?.providerProfile;
+    const applicationStatus = providerProfile?.status?.applicationStatus;
+    const isRejected = applicationStatus === ApplicationStatus.REJECTED;
 
-
-    if(hasProviderProfile){
+    // Rejected providers are allowed into the onboarding flow for resubmission.
+    // They enter via ProviderSubmissionPage → Resubmit button → step 2,
+    // which hydrates the draft before navigating, so draft.providerType is set.
+    if (providerProfile && !isRejected) {
         return(
             <Navigate
                 to="/provider/application-submitted"
@@ -43,7 +49,8 @@ function ProviderOnboardingRoute({children, step}: ProviderOnboardingRouteProps)
     }
 
 
-
+    // Step 2: require providerType in draft (set by Step 1 for new providers,
+    // or by ProviderSubmissionPage hydration for rejected providers).
     if (step === 2 && !draft.providerType) {
 
         return <Navigate

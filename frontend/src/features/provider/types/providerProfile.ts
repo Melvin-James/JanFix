@@ -4,6 +4,8 @@ import type { UploadedFile } from "./uploadedFile";
 
 export interface ProviderProfile {
 
+  onboardingStatus?: string;
+
   identity: {
 
     providerType: ProviderType;

@@ -30,6 +30,12 @@ import type { IGetCategoriesUseCase } from "../../../application/use-cases/useca
 
 import type { IUpdateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryUseCase.js";
 
+import type { IUpdateCategoryStatusUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryStatusUseCase.js";
+
+import type { IDeleteCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IDeleteCategoryUseCase.js";
+
+import { AppMessages } from "../../../shared/constants/messages.js";
+
 export class AdminController {
 
     constructor(
@@ -57,6 +63,10 @@ export class AdminController {
         private readonly getCategoriesUseCase: IGetCategoriesUseCase,
 
         private readonly updateCategoryUseCase: IUpdateCategoryUseCase,
+
+        private readonly updateCategoryStatusUseCase: IUpdateCategoryStatusUseCase,
+
+        private readonly deleteCategoryUseCase: IDeleteCategoryUseCase,
 
     ) { }
 
@@ -325,6 +335,114 @@ export class AdminController {
             });
 
         }
-    )
+    );
 
-}
+    updateCategoryStatus = asyncHandler(
+        async (req: Request, res: Response): Promise<void> => {
+            const categoryId = req.params.categoryId;
+
+            if (typeof categoryId !== "string") {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid category ID",
+                });
+                return;
+            }
+
+            let isActive: boolean;
+            if (typeof req.body.isActive === "boolean") {
+                isActive = req.body.isActive;
+            } else if (req.body.status === "ACTIVE") {
+                isActive = true;
+            } else if (req.body.status === "BLOCKED") {
+                isActive = false;
+            } else {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid status or isActive value",
+                });
+                return;
+            }
+
+            const category = await this.updateCategoryStatusUseCase.execute(
+                categoryId,
+                isActive
+            );
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                category,
+            });
+        }
+    );
+
+    blockCategory = asyncHandler(
+        async (req: Request, res: Response): Promise<void> => {
+            const categoryId = req.params.categoryId;
+
+            if (typeof categoryId !== "string") {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid category ID",
+                });
+                return;
+            }
+
+            const category = await this.updateCategoryStatusUseCase.execute(
+                categoryId,
+                false
+            );
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                category,
+            });
+        }
+    );
+
+    unblockCategory = asyncHandler(
+        async (req: Request, res: Response): Promise<void> => {
+            const categoryId = req.params.categoryId;
+
+            if (typeof categoryId !== "string") {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid category ID",
+                });
+                return;
+            }
+
+            const category = await this.updateCategoryStatusUseCase.execute(
+                categoryId,
+                true
+            );
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                category,
+            });
+        }
+    );
+
+    deleteCategory = asyncHandler(
+        async (req: Request, res: Response): Promise<void> => {
+            const categoryId = req.params.categoryId;
+
+            if (typeof categoryId !== "string") {
+                res.status(HttpStatusCode.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid category ID",
+                });
+                return;
+            }
+
+            await this.deleteCategoryUseCase.execute(categoryId);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                message: AppMessages.SUCCESS.CATEGORY_DELETED,
+            });
+        }
+    );
+
+}

@@ -15,5 +15,7 @@ export interface IUserRepository {
     findApprovedServiceProviders(): Promise<User[]>;
 
     findUsersForManagement(): Promise<User[]>;
+    
+    isCategoryInUse(categoryName: string, categoryId?: string): Promise<boolean>;
 
 }

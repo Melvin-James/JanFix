@@ -38,3 +38,24 @@ export const submitProviderApplication =
 
         return response.data;
     };
+
+
+export const resubmitProviderApplication =
+    async (data: unknown): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            user: AuthUser;
+        };
+    }> => {
+
+        const response = await axiosInstance.post<{
+            success: boolean;
+            message: string;
+            data: {
+                user: AuthUser;
+            };
+        }>("/provider/onboarding/resubmit", data);
+
+        return response.data;
+    };

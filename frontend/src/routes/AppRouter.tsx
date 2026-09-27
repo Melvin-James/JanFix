@@ -47,6 +47,8 @@ import ServiceProvidersPage from "../features/admin/pages/ServiceProvidersPage";
 import ServiceProviderDetailsPage from "../features/admin/pages/ServiceProviderDetailsPage";
 
 import UserManagementPage from "../features/admin/pages/UserManagementPage";
+import CategoryManagementPage from "../features/admin/pages/CategoryManagementPage";
+
 
 function AppRouter() {
 
@@ -354,6 +356,27 @@ function AppRouter() {
                     }
 
                 />
+
+                <Route
+
+                    path="/admin/categories"
+
+                    element={
+
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+
+                            <AdminLayout>
+
+                                <CategoryManagementPage />
+
+                            </AdminLayout>
+
+                        </RoleProtectedRoute>
+
+                    }
+
+                />
+
 
             </Routes>
 
