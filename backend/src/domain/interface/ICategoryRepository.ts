@@ -12,4 +12,6 @@ export interface ICategoryRepository {
 
     update(id: string, data: Partial<Category>): Promise<Category | null>;
 
+    delete(id: string): Promise<boolean>;
+
 }

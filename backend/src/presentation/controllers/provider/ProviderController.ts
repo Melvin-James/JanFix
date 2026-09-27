@@ -8,6 +8,8 @@ import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
 import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/ISubmitProviderApplicationUseCase.js";
 
+import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/IResubmitProviderApplicationUseCase.js";
+
 import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/IGetProviderProfileUseCase.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
@@ -22,6 +24,8 @@ export class ProviderController {
         private submitProviderApplicationUseCase:
             ISubmitProviderApplicationUseCase,
 
+        private resubmitProviderApplicationUseCase:
+            IResubmitProviderApplicationUseCase,
 
         private getProviderProfileUseCase:
             IGetProviderProfileUseCase
@@ -78,10 +82,51 @@ export class ProviderController {
 
     );
 
+
+    resubmit = asyncHandler(
+
+        async (
+
+            req: AuthRequest,
+
+            res: Response
+
+        ): Promise<void> => {
+
+
+           const user = await this
+                .resubmitProviderApplicationUseCase
+                .execute(
+
+                    req.user!.userId,
+
+                    req.body
+
+                );
 
 
 
+            res.status(
+                HttpStatusCode.OK
+            )
+            .json({
 
+                success: true,
+
+
+                message:
+                    AppMessages.SUCCESS
+                        .APPLICATION_RESUBMITTED,
+
+                data: {
+                    user: UserMapper.toAuthResponse(user)
+                }
+
+            });
+
+        }
+
+    );
 
 
     getProfile = asyncHandler(

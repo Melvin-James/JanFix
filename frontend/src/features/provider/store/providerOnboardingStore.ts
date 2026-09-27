@@ -62,6 +62,11 @@ interface ProviderOnboardingStore {
     ) => void;
 
 
+    /** Replaces the entire draft with the provided data — use this for
+     *  resubmission to avoid stale data from a previous session. */
+    hydrateDraft: (data: ProviderDraft) => void;
+
+
     clearDraft: () => void;
 }
 
@@ -86,7 +91,11 @@ export const useProviderOnboardingStore = create<ProviderOnboardingStore>()((set
         })),
 
 
+    hydrateDraft: (data) =>
+
+        set({ draft: data }),
+
 
     clearDraft: () => set({ draft: {} })
 
-}));
+}));

@@ -11,7 +11,9 @@ export const AppMessages = {
     PROVIDER_STEP2_COMPLETED: "Provider onboarding step 2 completed successfully",
     PROVIDER_ONBOARDING_COMPLETED: "Provider onboarding completed successfully",
     OTP_SENT_SUCCESS: "OTP sent successfully",
-    PASSWORD_RESET_SUCCESS: "Password reset successfully"
+    PASSWORD_RESET_SUCCESS: "Password reset successfully",
+    CATEGORY_DELETED: "Category deleted successfully",
+    APPLICATION_RESUBMITTED: "Application resubmitted successfully"
   },
   ERROR: {
     USER_ALREADY_EXISTS: "User already exists",
@@ -45,6 +47,8 @@ export const AppMessages = {
     ALREADY_APPROVED_APPLICATION: "Already approved application",
     APPLICATION_NOT_APPROVED: "Only approved service providers can be blocked or unblocked",
     CATEGORY_ALREADY_EXISTS: "Category already exists",
-    CATEGORY_NOT_FOUND: "Category not found"
+    CATEGORY_NOT_FOUND: "Category not found",
+    CATEGORY_IN_USE: "Category cannot be deleted because it is currently in use",
+    RESUBMISSION_NOT_ALLOWED: "Resubmission is only allowed for rejected applications"
   }
 };

@@ -1,5 +1,5 @@
 export const getOnboardingRedirectPath =
-  (status: string) => {
+  (status?: string) => {
 
     switch (status) {
 

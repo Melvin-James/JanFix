@@ -40,11 +40,15 @@ import { CreateCategoryUseCase } from "../../application/use-cases/category/Crea
 
 import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.js";
 
-import { createCategorySchema, updateCategorySchema } from "../validators/category/categoryValidator.js";
+import { createCategorySchema, updateCategorySchema, updateCategoryStatusSchema } from "../validators/category/categoryValidator.js";
 
 import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.js";
 
 import { UpdateCategoryUseCase } from "../../application/use-cases/category/UpdateCategoryUseCase.js";
+
+import { UpdateCategoryStatusUseCase } from "../../application/use-cases/category/UpdateCategoryStatusUseCase.js";
+
+import { DeleteCategoryUseCase } from "../../application/use-cases/category/DeleteCategoryUseCase.js";
 
 const router = Router();
 
@@ -76,6 +80,10 @@ const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
 
 const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository);
 
+const updateCategoryStatusUseCase = new UpdateCategoryStatusUseCase(categoryRepository);
+
+const deleteCategoryUseCase = new DeleteCategoryUseCase(categoryRepository, userRepository);
+
 const adminController = new AdminController(
 
     getProviderApplicationsUseCase,
@@ -101,7 +109,11 @@ const adminController = new AdminController(
     getCategoriesUseCase,
 
     updateCategoryUseCase,
+
+    updateCategoryStatusUseCase,
+    deleteCategoryUseCase,
 );
+
 
 
 router.get("/provider-applications", authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplications);
@@ -128,4 +140,12 @@ router.get("/categories", authenticate, authorizeRoles(Role.ADMIN), adminControl
 
 router.patch("/categories/:categoryId", authenticate, authorizeRoles(Role.ADMIN), validate(updateCategorySchema), adminController.updateCategory);
 
-export default router;
+router.patch("/categories/:categoryId/status", authenticate, authorizeRoles(Role.ADMIN), validate(updateCategoryStatusSchema), adminController.updateCategoryStatus);
+
+router.patch("/categories/:categoryId/block", authenticate, authorizeRoles(Role.ADMIN), adminController.blockCategory);
+
+router.patch("/categories/:categoryId/unblock", authenticate, authorizeRoles(Role.ADMIN), adminController.unblockCategory);
+
+router.delete("/categories/:categoryId", authenticate, authorizeRoles(Role.ADMIN), adminController.deleteCategory);
+
+export default router;
