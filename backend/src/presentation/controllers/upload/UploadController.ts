@@ -14,7 +14,7 @@ import type { UploadFileResponseDTO } from "../../../application/dto/upload/Uplo
 
 export class UploadController {
 
-    constructor(private uploadFileUseCase: IUploadFileUseCase) { }
+    constructor(private _uploadFileUseCase: IUploadFileUseCase) { }
 
     upload = asyncHandler(async (req: Request, res: Response) => {
 
@@ -27,7 +27,7 @@ export class UploadController {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid upload folder");
         }
 
-        const uploadedFile = await this.uploadFileUseCase.execute(file, folder);
+        const uploadedFile = await this._uploadFileUseCase.execute(file, folder);
 
         const response: UploadFileResponseDTO = {
             file: uploadedFile,
