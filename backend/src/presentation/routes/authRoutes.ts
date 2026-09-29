@@ -1,6 +1,7 @@
 import express from "express";
 import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
 import { AppMessages } from "../../shared/constants/messages.js";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
 
 // Validation and Middleware
 import validate from "../middlewares/validate.js";
@@ -67,35 +68,35 @@ const authController = new AuthController(
 
 const router = express.Router();
 
-router.post("/register", validate(registerSchema), authController.register);
+router.post(ApiEndpoints.AUTH.REGISTER, validate(registerSchema), authController.register);
 
-router.post("/google", authController.googleAuth);
+router.post(ApiEndpoints.AUTH.GOOGLE, authController.googleAuth);
 
-router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
+router.post(ApiEndpoints.AUTH.FORGOT_PASSWORD, validate(forgotPasswordSchema), authController.forgotPassword);
 
-router.post('/verify-reset-otp', validate(verifyResetOtpSchema), authController.verifyResetOtp);
+router.post(ApiEndpoints.AUTH.VERIFY_RESET_OTP, validate(verifyResetOtpSchema), authController.verifyResetOtp);
 
-router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
+router.post(ApiEndpoints.AUTH.RESET_PASSWORD, validate(resetPasswordSchema), authController.resetPassword);
 
-router.post("/verify-otp", validate(verifyOtpSchema), authController.verifyOtp);
+router.post(ApiEndpoints.AUTH.VERIFY_OTP, validate(verifyOtpSchema), authController.verifyOtp);
 
-router.post("/login", validate(loginSchema), authController.login);
+router.post(ApiEndpoints.AUTH.LOGIN, validate(loginSchema), authController.login);
 
-router.post("/logout", authController.logout);
+router.post(ApiEndpoints.AUTH.LOGOUT, authController.logout);
 
-router.get("/me", authenticate, (req: AuthRequest, res) => {
+router.get(ApiEndpoints.AUTH.ME, authenticate, (req: AuthRequest, res) => {
     res.status(HttpStatusCode.OK).json({ success: true, message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED, user: req.user, });
 });
 
-router.get("/admin-test", authenticate, authorizeRoles(Role.ADMIN), (req, res) => {
+router.get(ApiEndpoints.AUTH.ADMIN_TEST, authenticate, authorizeRoles(Role.ADMIN), (req, res) => {
     res.status(HttpStatusCode.OK).json({
         success: true,
         message: AppMessages.SUCCESS.WELCOME_ADMIN,
     });
 });
 
-router.post("/refresh-token", authController.refreshToken);
+router.post(ApiEndpoints.AUTH.REFRESH_TOKEN, authController.refreshToken);
 
-router.post("/resend-otp", validate(resendOtpSchema), authController.resendOtp);
+router.post(ApiEndpoints.AUTH.RESEND_OTP, validate(resendOtpSchema), authController.resendOtp);
 
 export default router;

@@ -10,6 +10,8 @@ import { S3StorageService } from "../../infrastructure/storage/S3StorageService.
 
 import { authenticate } from "../middlewares/authMiddleware.js";
 
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+
 const router = Router();
 
 const storageService = new S3StorageService();
@@ -18,6 +20,6 @@ const uploadUseCase = new UploadFileUseCase(storageService);
 
 const controller = new UploadController(uploadUseCase);
 
-router.post("/", authenticate, upload.single("file"), controller.upload);
+router.post(ApiEndpoints.UPLOAD.ROOT, authenticate, upload.single("file"), controller.upload);
 
 export default router;

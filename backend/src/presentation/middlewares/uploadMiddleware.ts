@@ -1,4 +1,5 @@
 import multer from "multer";
+import { AppMessages } from "../../shared/constants/messages.js";
 
 export const upload = multer({
 
@@ -24,7 +25,7 @@ export const upload = multer({
 
             return cb(
 
-                new Error("Unsupported file type")
+                new Error(AppMessages.ERROR.UNSUPPORTED_FILE_TYPE)
             );
         }
 

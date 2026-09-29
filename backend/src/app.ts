@@ -10,6 +10,8 @@ import adminRoutes from "./presentation/routes/adminRoutes.js";
 
 import errorMiddleware from "./presentation/middlewares/errorMiddleware.js";
 
+import { ApiEndpoints } from "./shared/constants/apiEndpoints.js";
+
 import cookieParser from "cookie-parser";
 
 import cors from "cors";
@@ -22,13 +24,13 @@ app.use(cookieParser());
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
-app.use("/api/v1/auth", authRoutes);
+app.use(ApiEndpoints.AUTH.BASE, authRoutes);
 
-app.use("/api/v1/provider",providerRoutes);
+app.use(ApiEndpoints.PROVIDER.BASE, providerRoutes);
 
-app.use("/api/v1/upload", uploadRoutes);
+app.use(ApiEndpoints.UPLOAD.BASE, uploadRoutes);
 
-app.use("/api/v1/admin", adminRoutes);
+app.use(ApiEndpoints.ADMIN.BASE, adminRoutes);
 
 app.use(errorMiddleware);
 

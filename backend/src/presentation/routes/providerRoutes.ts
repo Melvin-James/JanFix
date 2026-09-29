@@ -16,6 +16,8 @@ import validate from "../middlewares/validate.js";
 
 import { providerApplicationSchema } from "../validators/provider/providerApplicationSchema.js";
 
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+
 const router = Router();
 
 const userRepository = new UserRepository();
@@ -31,15 +33,15 @@ const providerController = new ProviderController(submitProviderApplicationUseCa
 
 // Submit application after review page
 
-router.post("/onboarding/submit", authenticate, validate(providerApplicationSchema), providerController.submit);
+router.post(ApiEndpoints.PROVIDER.ONBOARDING_SUBMIT, authenticate, validate(providerApplicationSchema), providerController.submit);
 
 // Resubmit application (for rejected providers)
 
-router.post("/onboarding/resubmit", authenticate, validate(providerApplicationSchema), providerController.resubmit);
+router.post(ApiEndpoints.PROVIDER.ONBOARDING_RESUBMIT, authenticate, validate(providerApplicationSchema), providerController.resubmit);
 
 // Get provider profile after submission / dashboard
 
-router.get("/profile", authenticate, providerController.getProfile);
+router.get(ApiEndpoints.PROVIDER.PROFILE, authenticate, providerController.getProfile);
 
 
 export default router;

@@ -131,7 +131,7 @@ export class AuthController {
 
       res.status(HttpStatusCode.OK).json({
         success: true,
-        message: "OTP verified successfully",
+        message: AppMessages.SUCCESS.RESET_OTP_VERIFIED,
         data: {
           resetToken,
         }
@@ -193,7 +193,7 @@ export class AuthController {
 
       res.status(HttpStatusCode.OK).json({
         success: true,
-        message: "OTP resent successfully"
+        message: AppMessages.SUCCESS.OTP_RESENT_SUCCESS
       })
     }
   )
