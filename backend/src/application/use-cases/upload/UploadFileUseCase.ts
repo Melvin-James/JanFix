@@ -8,6 +8,8 @@ import ApiError from "../../../shared/utils/apiError.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
+import { AppMessages } from "../../../shared/constants/messages.js";
+
 import type { UploadFolder } from "../../../domain/enums/UploadFolder.js";
 
 export class UploadFileUseCase implements IUploadFileUseCase {
@@ -32,7 +34,7 @@ export class UploadFileUseCase implements IUploadFileUseCase {
 
                 HttpStatusCode.BAD_REQUEST,
 
-                "No file uploaded"
+                AppMessages.ERROR.NO_FILE_UPLOADED
 
             );
         }

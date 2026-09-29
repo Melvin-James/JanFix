@@ -71,38 +71,31 @@ export class AdminController {
     ) { }
 
     getProviderApplications = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
+            const search = req.query.search as string | undefined;
+            const status = req.query.status as string | undefined;
+            const providerType = req.query.providerType as string | undefined;
 
-        async (
-            _req: AuthRequest,
-            res: Response
-        ): Promise<void> => {
+            const result = await this._getProviderApplicationUseCase.execute(
+                page,
+                pageSize,
+                { search, status, providerType }
+            );
 
-
-            const applications = await this._getProviderApplicationUseCase.execute();
-
-            res.status(
-                HttpStatusCode.OK
-            )
-                .json({
-                    success: true,
-                    applications
-                });
-
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                applications: result.items,
+                pagination: result.pagination,
+            });
         }
     );
 
     getProviderApplicationDetails = asyncHandler(
         async (req: AuthRequest, res: Response): Promise<void> => {
 
-            const userId = req.params.userId;
-
-            if (typeof userId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid user ID."
-                });
-                return;
-            }
+            const userId = req.params.userId as string;
 
             const application = await this._getProviderApplicationDetailUseCase.execute(userId);
 
@@ -116,21 +109,13 @@ export class AdminController {
     approveProviderApplication = asyncHandler(
         async (req: AuthRequest, res: Response): Promise<void> => {
 
-            const userId = req.params.userId;
-
-            if (typeof userId !== 'string') {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid user ID"
-                });
-                return;
-            }
+            const userId = req.params.userId as string;
 
             await this._approveProviderApplicationUseCase.execute(userId);
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
-                message: "Provider application approved succesfuly"
+                message: AppMessages.SUCCESS.PROVIDER_APPLICATION_APPROVED
             })
         }
     )
@@ -139,15 +124,7 @@ export class AdminController {
         async (req: AuthRequest, res: Response): Promise<void> => {
 
 
-            const userId = req.params.userId;
-
-            if (typeof userId !== 'string') {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid user ID."
-                });
-                return;
-            }
+            const userId = req.params.userId as string;
 
             const { rejectionReason } = req.body;
 
@@ -158,21 +135,29 @@ export class AdminController {
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
-                message: "Provider application rejected successfully."
+                message: AppMessages.SUCCESS.PROVIDER_APPLICATION_REJECTED
             });
         }
     )
 
     getServiceProviders = asyncHandler(
-        async (
-            _req: AuthRequest,
-            res: Response
-        ): Promise<void> => {
-            const providers = await this._getServiceProvidersUseCase.execute();
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
+            const search = req.query.search as string | undefined;
+            const providerType = req.query.providerType as string | undefined;
+            const status = req.query.status as string | undefined;
+
+            const result = await this._getServiceProvidersUseCase.execute(
+                page,
+                pageSize,
+                { search, providerType, status }
+            );
 
             res.status(HttpStatusCode.OK).json({
                 success: true,
-                providers
+                providers: result.items,
+                pagination: result.pagination,
             });
         }
     );
@@ -183,15 +168,7 @@ export class AdminController {
             res: Response
         ): Promise<void> => {
 
-            const userId = req.params.userId;
-
-            if (typeof userId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid user ID"
-                });
-                return;
-            }
+            const userId = req.params.userId as string;
 
             const provider = await this._getServiceProviderDetailsUseCase.execute(userId);
 
@@ -206,21 +183,8 @@ export class AdminController {
 
         async (req: Request, res: Response) => {
 
-            const userId = req.params.userId;
+            const userId = req.params.userId as string;
 
-            if (typeof userId !== "string") {
-
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-
-                    success: false,
-
-                    message: "Invalid service provider id",
-
-                });
-
-                return;
-
-            }
 
             const { status } = req.body
 
@@ -244,32 +208,32 @@ export class AdminController {
     )
 
     getUsersForManagement = asyncHandler(
+        async (req: Request, res: Response) => {
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
+            const search = req.query.search as string | undefined;
+            const role = req.query.role as string | undefined;
+            const verification = req.query.verification as string | undefined;
+            const authProvider = req.query.authProvider as string | undefined;
 
-        async (_req: Request, res: Response) => {
-
-            const users = await this._getUsersForManagementUseCase.execute();
+            const result = await this._getUsersForManagementUseCase.execute(
+                page,
+                pageSize,
+                { search, role, verification, authProvider }
+            );
 
             res.status(HttpStatusCode.OK).json({
-
                 success: true,
-
-                users
-
+                users: result.items,
+                pagination: result.pagination,
             });
         }
     );
 
     updateUserAccountStatus = asyncHandler(
         async (req: Request, res: Response) => {
-            const userId = req.params.userId;
+            const userId = req.params.userId as string;
 
-            if (typeof userId !== "string") {
-                res.status(HttpStatusCode.INVALID).json({
-                    success: false,
-                    message: "Invalid user id",
-                });
-                return;
-            }
 
             const { status } = req.body;
 
@@ -300,7 +264,28 @@ export class AdminController {
     )
 
     getCategories = asyncHandler(
-        async (_req: Request, res: Response): Promise<void> => {
+        async (req: Request, res: Response): Promise<void> => {
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
+            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : undefined;
+            const search = req.query.search as string | undefined;
+            const status = req.query.status as string | undefined;
+
+            if (page !== undefined && pageSize !== undefined) {
+                const result = await this._getCategoriesUseCase.execute(
+                    page,
+                    pageSize,
+                    { search, status }
+                );
+
+                if ("items" in result) {
+                    res.status(HttpStatusCode.OK).json({
+                        success: true,
+                        categories: result.items,
+                        pagination: result.pagination,
+                    });
+                    return;
+                }
+            }
 
             const categories = await this._getCategoriesUseCase.execute();
 
@@ -311,18 +296,11 @@ export class AdminController {
         }
     );
 
+
     updateCategory = asyncHandler(
         async(req: Request, res: Response): Promise<void> => {
 
-            const categoryId = req.params.categoryId;
-
-            if(typeof categoryId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid category ID",
-                });
-                return;
-            }
+            const categoryId = req.params.categoryId as string;
 
             const category = await this._updateCategoryUseCase.execute(
                 categoryId,
@@ -339,15 +317,7 @@ export class AdminController {
 
     updateCategoryStatus = asyncHandler(
         async (req: Request, res: Response): Promise<void> => {
-            const categoryId = req.params.categoryId;
-
-            if (typeof categoryId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid category ID",
-                });
-                return;
-            }
+            const categoryId = req.params.categoryId as string;
 
             let isActive: boolean;
             if (typeof req.body.isActive === "boolean") {
@@ -359,7 +329,7 @@ export class AdminController {
             } else {
                 res.status(HttpStatusCode.BAD_REQUEST).json({
                     success: false,
-                    message: "Invalid status or isActive value",
+                    message: AppMessages.ERROR.INVALID_STATUS_OR_IS_ACTIVE,
                 });
                 return;
             }
@@ -378,15 +348,7 @@ export class AdminController {
 
     blockCategory = asyncHandler(
         async (req: Request, res: Response): Promise<void> => {
-            const categoryId = req.params.categoryId;
-
-            if (typeof categoryId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid category ID",
-                });
-                return;
-            }
+            const categoryId = req.params.categoryId as string;
 
             const category = await this._updateCategoryStatusUseCase.execute(
                 categoryId,
@@ -402,15 +364,7 @@ export class AdminController {
 
     unblockCategory = asyncHandler(
         async (req: Request, res: Response): Promise<void> => {
-            const categoryId = req.params.categoryId;
-
-            if (typeof categoryId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid category ID",
-                });
-                return;
-            }
+            const categoryId = req.params.categoryId as string;
 
             const category = await this._updateCategoryStatusUseCase.execute(
                 categoryId,
@@ -426,15 +380,7 @@ export class AdminController {
 
     deleteCategory = asyncHandler(
         async (req: Request, res: Response): Promise<void> => {
-            const categoryId = req.params.categoryId;
-
-            if (typeof categoryId !== "string") {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid category ID",
-                });
-                return;
-            }
+            const categoryId = req.params.categoryId as string;
 
             await this._deleteCategoryUseCase.execute(categoryId);
 

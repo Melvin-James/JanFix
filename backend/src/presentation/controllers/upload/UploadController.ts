@@ -10,6 +10,8 @@ import ApiError from "../../../shared/utils/apiError.js";
 
 import { UploadFolder } from "../../../domain/enums/UploadFolder.js";
 
+import { AppMessages } from "../../../shared/constants/messages.js";
+
 import type { UploadFileResponseDTO } from "../../../application/dto/upload/UploadFileResponseDTO.js";
 
 export class UploadController {
@@ -24,7 +26,7 @@ export class UploadController {
 
         if (!Object.values(UploadFolder).includes(folder)) {
 
-            throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid upload folder");
+            throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.INVALID_UPLOAD_FOLDER);
         }
 
         const uploadedFile = await this._uploadFileUseCase.execute(file, folder);

@@ -110,4 +110,134 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     return count > 0;
   }
-}
+
+  async findPaginatedProviderApplications(
+    page: number,
+    pageSize: number,
+    filters?: { search?: string; status?: string; providerType?: string }
+  ) {
+    const query: any = { providerProfile: { $exists: true } };
+
+    if (filters?.status && filters.status !== "ALL") {
+      query["providerProfile.status.applicationStatus"] = filters.status;
+    }
+
+    if (filters?.providerType && filters.providerType !== "ALL") {
+      query["providerProfile.providerType"] = filters.providerType;
+    }
+
+    if (filters?.search && filters.search.trim() !== "") {
+      const searchRegex = new RegExp(filters.search.trim(), "i");
+      query.$or = [
+        { fullName: searchRegex },
+        { email: searchRegex },
+        { "providerProfile.organizationProfile.organizationName": searchRegex },
+        { "providerProfile.volunteerGroupProfile.groupName": searchRegex },
+      ];
+    }
+
+    const totalItems = await UserModel.countDocuments(query);
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    const skip = (page - 1) * pageSize;
+
+    const docs = await UserModel.find(query).skip(skip).limit(pageSize);
+
+    return {
+      items: docs.map(UserMapper.toEntity),
+      pagination: {
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+
+  async findPaginatedServiceProviders(
+    page: number,
+    pageSize: number,
+    filters?: { search?: string; providerType?: string; status?: string }
+  ) {
+    const query: any = {
+      providerProfile: { $exists: true },
+      "providerProfile.status.applicationStatus": ApplicationStatus.APPROVED,
+    };
+
+    if (filters?.status && filters.status !== "ALL") {
+      query.accountStatus = filters.status;
+    }
+
+    if (filters?.providerType && filters.providerType !== "ALL") {
+      query["providerProfile.providerType"] = filters.providerType;
+    }
+
+    if (filters?.search && filters.search.trim() !== "") {
+      const searchRegex = new RegExp(filters.search.trim(), "i");
+      query.$or = [
+        { fullName: searchRegex },
+        { email: searchRegex },
+        { "providerProfile.organizationProfile.organizationName": searchRegex },
+        { "providerProfile.volunteerGroupProfile.groupName": searchRegex },
+      ];
+    }
+
+    const totalItems = await UserModel.countDocuments(query);
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    const skip = (page - 1) * pageSize;
+
+    const docs = await UserModel.find(query).skip(skip).limit(pageSize);
+
+    return {
+      items: docs.map(UserMapper.toEntity),
+      pagination: {
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+
+  async findPaginatedUsersForManagement(
+    page: number,
+    pageSize: number,
+    filters?: { search?: string; role?: string; verification?: string; authProvider?: string }
+  ) {
+    const query: any = {
+      roles: { $in: [Role.USER] },
+    };
+
+    if (filters?.role && filters.role !== "ALL") {
+      query.roles = { $in: [filters.role] };
+    }
+
+    if (filters?.verification && filters.verification !== "ALL") {
+      query.isVerified = filters.verification === "VERIFIED";
+    }
+
+    if (filters?.authProvider && filters.authProvider !== "ALL") {
+      query.authProvider = filters.authProvider;
+    }
+
+    if (filters?.search && filters.search.trim() !== "") {
+      const searchRegex = new RegExp(filters.search.trim(), "i");
+      query.$or = [{ fullName: searchRegex }, { email: searchRegex }];
+    }
+
+    const totalItems = await UserModel.countDocuments(query);
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    const skip = (page - 1) * pageSize;
+
+    const docs = await UserModel.find(query).skip(skip).limit(pageSize);
+
+    return {
+      items: docs.map(UserMapper.toEntity),
+      pagination: {
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+}

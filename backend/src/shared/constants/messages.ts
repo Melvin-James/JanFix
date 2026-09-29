@@ -13,7 +13,11 @@ export const AppMessages = {
     OTP_SENT_SUCCESS: "OTP sent successfully",
     PASSWORD_RESET_SUCCESS: "Password reset successfully",
     CATEGORY_DELETED: "Category deleted successfully",
-    APPLICATION_RESUBMITTED: "Application resubmitted successfully"
+    APPLICATION_RESUBMITTED: "Application resubmitted successfully",
+    PROVIDER_APPLICATION_APPROVED: "Provider application approved successfully",
+    PROVIDER_APPLICATION_REJECTED: "Provider application rejected successfully",
+    RESET_OTP_VERIFIED: "OTP verified successfully",
+    OTP_RESENT_SUCCESS: "OTP resent successfully"
   },
   ERROR: {
     USER_ALREADY_EXISTS: "User already exists",
@@ -49,6 +53,10 @@ export const AppMessages = {
     CATEGORY_ALREADY_EXISTS: "Category already exists",
     CATEGORY_NOT_FOUND: "Category not found",
     CATEGORY_IN_USE: "Category cannot be deleted because it is currently in use",
-    RESUBMISSION_NOT_ALLOWED: "Resubmission is only allowed for rejected applications"
+    RESUBMISSION_NOT_ALLOWED: "Resubmission is only allowed for rejected applications",
+    INVALID_STATUS_OR_IS_ACTIVE: "Invalid status or isActive value",
+    NO_FILE_UPLOADED: "No file uploaded",
+    INVALID_UPLOAD_FOLDER: "Invalid upload folder",
+    UNSUPPORTED_FILE_TYPE: "Unsupported file type"
   }
 };

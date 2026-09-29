@@ -50,6 +50,8 @@ import { UpdateCategoryStatusUseCase } from "../../application/use-cases/categor
 
 import { DeleteCategoryUseCase } from "../../application/use-cases/category/DeleteCategoryUseCase.js";
 
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+
 const router = Router();
 
 const userRepository = new UserRepository();
@@ -111,41 +113,42 @@ const adminController = new AdminController(
     updateCategoryUseCase,
 
     updateCategoryStatusUseCase,
+    
     deleteCategoryUseCase,
 );
 
 
 
-router.get("/provider-applications", authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplications);
+router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATIONS, authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplications);
 
-router.get("/provider-applications/:userId", authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplicationDetails);
+router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATION_DETAILS, authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplicationDetails);
 
-router.patch("/provider-applications/:userId/approve", authenticate, authorizeRoles(Role.ADMIN), adminController.approveProviderApplication);
+router.patch(ApiEndpoints.ADMIN.APPROVE_PROVIDER_APPLICATION, authenticate, authorizeRoles(Role.ADMIN), adminController.approveProviderApplication);
 
-router.patch("/provider-applications/:userId/reject", authenticate, authorizeRoles(Role.ADMIN), validate(rejectProviderApplicationSchema), adminController.rejectProviderApplication);
+router.patch(ApiEndpoints.ADMIN.REJECT_PROVIDER_APPLICATION, authenticate, authorizeRoles(Role.ADMIN), validate(rejectProviderApplicationSchema), adminController.rejectProviderApplication);
 
-router.get("/service-providers", authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviders);
+router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDERS, authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviders);
 
-router.get("/service-providers/:userId", authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviderDetails);
+router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDER_DETAILS, authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviderDetails);
 
-router.patch("/service-providers/:userId/status", authenticate, authorizeRoles(Role.ADMIN), validate(updateServiceProviderStatusSchema), adminController.updateServiceProviderStatus);
+router.patch(ApiEndpoints.ADMIN.UPDATE_SERVICE_PROVIDER_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateServiceProviderStatusSchema), adminController.updateServiceProviderStatus);
 
-router.get("/users",authenticate, authorizeRoles(Role.ADMIN), adminController.getUsersForManagement)
+router.get(ApiEndpoints.ADMIN.USERS, authenticate, authorizeRoles(Role.ADMIN), adminController.getUsersForManagement);
 
-router.patch('/users/:userId/status', authenticate, authorizeRoles(Role.ADMIN), validate(updateUserAccountStatusSchema), adminController.updateUserAccountStatus);
+router.patch(ApiEndpoints.ADMIN.UPDATE_USER_ACCOUNT_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateUserAccountStatusSchema), adminController.updateUserAccountStatus);
 
-router.post("/categories", authenticate, authorizeRoles(Role.ADMIN), validate(createCategorySchema), adminController.createCategory);
+router.post(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), validate(createCategorySchema), adminController.createCategory);
 
-router.get("/categories", authenticate, authorizeRoles(Role.ADMIN), adminController.getCategories);
+router.get(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), adminController.getCategories);
 
-router.patch("/categories/:categoryId", authenticate, authorizeRoles(Role.ADMIN), validate(updateCategorySchema), adminController.updateCategory);
+router.patch(ApiEndpoints.ADMIN.UPDATE_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), validate(updateCategorySchema), adminController.updateCategory);
 
-router.patch("/categories/:categoryId/status", authenticate, authorizeRoles(Role.ADMIN), validate(updateCategoryStatusSchema), adminController.updateCategoryStatus);
+router.patch(ApiEndpoints.ADMIN.UPDATE_CATEGORY_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateCategoryStatusSchema), adminController.updateCategoryStatus);
 
-router.patch("/categories/:categoryId/block", authenticate, authorizeRoles(Role.ADMIN), adminController.blockCategory);
+router.patch(ApiEndpoints.ADMIN.BLOCK_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.blockCategory);
 
-router.patch("/categories/:categoryId/unblock", authenticate, authorizeRoles(Role.ADMIN), adminController.unblockCategory);
+router.patch(ApiEndpoints.ADMIN.UNBLOCK_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.unblockCategory);
 
-router.delete("/categories/:categoryId", authenticate, authorizeRoles(Role.ADMIN), adminController.deleteCategory);
+router.delete(ApiEndpoints.ADMIN.DELETE_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.deleteCategory);
 
-export default router;
+export default router;
