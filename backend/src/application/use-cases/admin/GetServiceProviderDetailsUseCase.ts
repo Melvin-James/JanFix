@@ -4,7 +4,7 @@ import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import type { ServiceProviderDetailsResponseDTO } from "../../dto/admin/ServiceProviderDetailsResponseDTO.js";
 import { ServiceProviderDetailsMapper } from "../../mappers/ServiceProviderDetailsMapper.js";
-import type { IGetServiceProviderDetailsUseCase } from "../usecase interfaces/IGetServiceProviderDetailsUseCase.js";
+import type { IGetServiceProviderDetailsUseCase } from "../usecase interfaces/admin/IGetServiceProviderDetailsUseCase.js";
 
 export class GetServiceProviderDetailsUseCase
     implements IGetServiceProviderDetailsUseCase

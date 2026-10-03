@@ -1,12 +1,20 @@
 // RegisterPage.tsx
 import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import { Eye, EyeOff } from "lucide-react";
+
 import { registerSchema, type RegisterFormData } from "../validations/registerSchema";
+
 import { registerUser } from "../services/authService";
+
 import axios from "axios";
+
 import FormError from "../../../components/UI/FormError";
 
 import { googleLogin } from "../services/authService";
@@ -27,7 +35,7 @@ function RegisterPage() {
 
   });
 
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const setUser = useAuthStore((state) => state.setUser);
 
 
 
@@ -109,14 +117,13 @@ function RegisterPage() {
           >
 
             <p
-              className={`text-sm text-center transition-colors ${
-                serverError ? "text-red-500" : "text-transparent select-none"
-              }`}
+              className={`text-sm text-center transition-colors ${serverError ? "text-red-500" : "text-transparent select-none"
+                }`}
             >
               {serverError || "\u00A0"}
             </p>
 
-             <div>
+            <div>
               <label className="block text-sm font-medium text-slate-700">
                 Full Name
               </label>
@@ -197,55 +204,73 @@ function RegisterPage() {
               <div className="h-px flex-1 bg-slate-200" />
             </div>
 
-             <GoogleLogin
-                onSuccess = {async (credentialResponse) => {
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
 
-                  try{
-                    setLoading(true);
-                    setServerError("");
+                try {
+                  setLoading(true);
+                  setServerError("");
 
-                    const credential = credentialResponse.credential;
+                  const credential = credentialResponse.credential;
 
-                    if(!credential){
-                      throw new Error("Google credential was not received");
-                    }
-
-                    const response = await googleLogin(credential);
-
-                    const {accessToken, user} = response.data;
-
-                    setAuth(accessToken, user);
-
-                    navigate("/home");
-                  } catch (err: any) {
-                    console.error(err);
-
-                    setServerError(
-                      err?.response?.data?.message ||
-                      "Google sign-up failed"
-                    );
-                  } finally {
-                    setLoading(false);
+                  if (!credential) {
+                    throw new Error("Google credential was not received");
                   }
-                }}
 
-                onError={() => {
-                  setServerError("Google sign-up failed");
-                }}
+                  const response = await googleLogin(credential);
 
-                width="100%"
-             ></GoogleLogin>
+                  const { user } = response.data;
+
+                  setUser(user);
+
+                  navigate("/home");
+
+                } catch (err: any) {
+
+                  console.error(err);
+
+                  setServerError(
+
+                    err?.response?.data?.message ||
+
+                    "Google sign-up failed"
+
+                  );
+
+                } finally {
+
+                  setLoading(false);
+
+                }
+
+              }}
+
+              onError={() => {
+
+                setServerError("Google sign-up failed");
+
+              }}
+
+              width="100%"
+
+            ></GoogleLogin>
 
 
             <p className="mt-4 text-center text-xs text-slate-500">
+
               Already have an account?{" "}
+
               <a href="/login" className="text-indigo-500">
+
                 Login
+
               </a>
+
             </p>
+
           </form>
 
-          
+
 
           <div className="mt-4 flex justify-center gap-5 text-xs text-slate-500">
             <a href="#">Privacy Policy</a>

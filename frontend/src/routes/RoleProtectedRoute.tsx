@@ -15,15 +15,13 @@ interface RoleProtectedRouteProps {
 
 function RoleProtectedRoute({ children, allowedRoles }: RoleProtectedRouteProps) {
 
-    const accessToken = useAuthStore((state) => state.accessToken);
-
     const user = useAuthStore((state) => state.user);
 
     const isAuthLoading = useAuthStore((state) => state.isAuthLoading);
 
     if (isAuthLoading) { return <LoadingSpinner /> }
 
-    if (!accessToken || !user) {
+    if (!user) {
 
         return (
             <Navigate

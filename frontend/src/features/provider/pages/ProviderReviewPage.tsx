@@ -19,8 +19,7 @@ function ProviderReviewPage() {
 
   const draft = useProviderOnboardingStore((state) => state.draft);
   const clearDraft = useProviderOnboardingStore((state) => state.clearDraft);
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const setUser = useAuthStore((state) => state.setUser);
   const user = useAuthStore((state) => state.user);
 
   // Determine whether this is a resubmission based on the current user's
@@ -41,7 +40,7 @@ function ProviderReviewPage() {
 
       const response = await apiCall(draft);
 
-      setAuth(accessToken!, response.data.user);
+      setUser(response.data.user);
       clearDraft();
 
       navigate("/provider/application-submitted");

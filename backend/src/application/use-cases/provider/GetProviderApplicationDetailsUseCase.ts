@@ -1,6 +1,6 @@
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
-import type { IGetProviderApplicationDetailsUseCase } from "../usecase interfaces/IGetProviderApplicationDetailsUseCase.js";
+import type { IGetProviderApplicationDetailsUseCase } from "../usecase interfaces/provider/IGetProviderApplicationDetailsUseCase.js";
 
 import type { ProviderApplicationDetailsResponseDTO } from "../../dto/admin/ProviderApplicationDetailsResponseDTO.js";
 

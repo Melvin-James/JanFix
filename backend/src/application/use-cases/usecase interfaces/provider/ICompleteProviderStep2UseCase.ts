@@ -1,4 +1,4 @@
-import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.js";
+import type { SubmitProviderApplicationDTO } from "../../../dto/provider/SubmitProviderApplicationDTO.js";
 
 export interface ICompleteProviderStep2UseCase {
 

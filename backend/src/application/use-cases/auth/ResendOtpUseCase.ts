@@ -18,7 +18,7 @@ import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 
 import type { ResendOtpDTO } from "../../dto/auth/ResendOtpDTO.js";
 
-import type { IResendOtpUseCase } from "../usecase interfaces/IResendOtpUseCase.js";
+import type { IResendOtpUseCase } from "../usecase interfaces/auth/IResendOtpUseCase.js";
 
 
 export class ResendOtpUseCase implements IResendOtpUseCase {

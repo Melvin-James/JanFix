@@ -11,7 +11,7 @@ import ApiError from "../../../shared/utils/apiError.js";
 import generateOtp from "../../../shared/utils/generateOtp.js";
 import type { IEmailService } from "../../../domain/interface/IEmailService.js";
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
-import type { IRegisterUserUseCase } from "../usecase interfaces/IRegisterUserUseCase.js";
+import type { IRegisterUserUseCase } from "../usecase interfaces/auth/IRegisterUserUseCase.js";
 
 import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 import { AuthProvider } from "../../../domain/enums/AuthProvider.js";

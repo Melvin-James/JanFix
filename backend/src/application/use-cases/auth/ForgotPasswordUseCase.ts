@@ -16,7 +16,7 @@ import type { IEmailService } from "../../../domain/interface/IEmailService.js";
 
 import type { ForgotPasswordDTO } from "../../dto/auth/ForgotPasswordDTO.js";
 
-import type { IForgotPasswordUseCase } from "../usecase interfaces/IForgotPasswordUseCase.js";
+import type { IForgotPasswordUseCase } from "../usecase interfaces/auth/IForgotPasswordUseCase.js";
 
 import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 

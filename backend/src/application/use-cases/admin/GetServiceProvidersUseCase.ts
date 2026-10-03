@@ -4,7 +4,8 @@ import type { ServiceProviderResponseDTO } from "../../dto/admin/ServiceProvider
 
 import { ServiceProviderMapper } from "../../mappers/ServiceProviderMapper.js";
 
-import type { IGetServiceProvidersUseCase } from "../usecase interfaces/IGetServiceProvidersUseCase.js";
+import type { IGetServiceProvidersUseCase } from "../usecase interfaces/admin/IGetServiceProvidersUseCase.js";
+
 import type { PaginatedResult } from "../../../shared/types/Pagination.js";
 
 export class GetServiceProvidersUseCase implements IGetServiceProvidersUseCase{
@@ -28,4 +29,4 @@ export class GetServiceProvidersUseCase implements IGetServiceProvidersUseCase{
             pagination: paginatedResult.pagination,
         };
     }
-}
+}

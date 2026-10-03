@@ -15,7 +15,6 @@ import { verifyResetOtpSchema } from "../validators/auth/verifyResetOtpValidator
 
 
 import { authenticate } from "../middlewares/authMiddleware.js";
-import type { AuthRequest } from "../../shared/types/AuthRequest.js";
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
 import { Role } from "../../domain/enums/Role.js";
 
@@ -35,6 +34,7 @@ import { ForgotPasswordUseCase } from "../../application/use-cases/auth/ForgotPa
 import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPasswordUseCase.js";
 import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.js";
 import { ResendOtpUseCase } from "../../application/use-cases/auth/ResendOtpUseCase.js";
+import { GetCurrentUserUseCase } from "../../application/use-cases/auth/GetCurrentUserUseCase.js";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();
@@ -52,6 +52,7 @@ const forgotPasswordUseCase = new ForgotPasswordUseCase(userRepository, otpRepos
 const resetPasswordUseCase = new ResetPasswordUseCase(userRepository, jwtService);
 const verifyResetOtpUseCase = new VerifyResetOtpUseCase(userRepository, otpRepository, jwtService);
 const resendOtpUseCase = new ResendOtpUseCase(userRepository, otpRepository, emailService);
+const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
 
 const authController = new AuthController(
     registerUserUseCase,
@@ -64,6 +65,7 @@ const authController = new AuthController(
     verifyResetOtpUseCase,
     resendOtpUseCase,
     googleAuthService,
+    getCurrentUserUseCase,
 );
 
 const router = express.Router();
@@ -84,9 +86,7 @@ router.post(ApiEndpoints.AUTH.LOGIN, validate(loginSchema), authController.login
 
 router.post(ApiEndpoints.AUTH.LOGOUT, authController.logout);
 
-router.get(ApiEndpoints.AUTH.ME, authenticate, (req: AuthRequest, res) => {
-    res.status(HttpStatusCode.OK).json({ success: true, message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED, user: req.user, });
-});
+router.get(ApiEndpoints.AUTH.ME, authenticate, authController.getCurrentUser);
 
 router.get(ApiEndpoints.AUTH.ADMIN_TEST, authenticate, authorizeRoles(Role.ADMIN), (req, res) => {
     res.status(HttpStatusCode.OK).json({

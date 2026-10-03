@@ -8,22 +8,24 @@ function AuthInitializer() {
 
     const setAuthLoading = useAuthStore((state) => state.setAuthLoading);
 
-    const setAuth = useAuthStore((state) => state.setAuth);
+    const setUser = useAuthStore((state) => state.setUser);
+
+    const clearAuth = useAuthStore((state) => state.clearAuth)
 
     useEffect(() => {
         const restoreSession = async () => {
 
             try {
 
-                const response = await axiosInstance.post("/auth/refresh-token");
+                const response = await axiosInstance.get("/auth/me");
 
-                const { accessToken, user } = response.data.data;
+                const { user } = response.data.data;
 
-                setAuth(accessToken, user);
+                setUser(user);
 
             } catch (error) {
 
-                // console.log("No active session");
+                clearAuth();
 
             }
             finally {
@@ -35,7 +37,7 @@ function AuthInitializer() {
 
         restoreSession();
 
-    }, []);
+    }, [setUser, clearAuth, setAuthLoading]);
 
     return null;
 

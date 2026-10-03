@@ -6,11 +6,11 @@ import asyncHandler from "../../../shared/utils/asyncHandler.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
-import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/ISubmitProviderApplicationUseCase.js";
+import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProviderApplicationUseCase.js";
 
-import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/IResubmitProviderApplicationUseCase.js";
+import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/IResubmitProviderApplicationUseCase.js";
 
-import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/IGetProviderProfileUseCase.js";
+import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProfileUseCase.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
 

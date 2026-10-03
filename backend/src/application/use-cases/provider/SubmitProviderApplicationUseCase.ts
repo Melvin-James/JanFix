@@ -1,6 +1,6 @@
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
-import type { ISubmitProviderApplicationUseCase } from "../usecase interfaces/ISubmitProviderApplicationUseCase.js";
+import type { ISubmitProviderApplicationUseCase } from "../usecase interfaces/provider/ISubmitProviderApplicationUseCase.js";
 
 import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.js";
 

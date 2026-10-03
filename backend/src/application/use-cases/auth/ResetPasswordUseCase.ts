@@ -12,7 +12,7 @@ import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import type { ResetPasswordDTO } from "../../dto/auth/ResetPasswordDTO.js";
 
-import type { IResetPasswordUseCase } from "../usecase interfaces/IResetPasswordUseCase.js";
+import type { IResetPasswordUseCase } from "../usecase interfaces/auth/IResetPasswordUseCase.js";
 
 export class ResetPasswordUseCase implements IResetPasswordUseCase {
 

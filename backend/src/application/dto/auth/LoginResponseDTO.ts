@@ -1,19 +1,8 @@
-import type { Role } from "../../../domain/enums/Role.js";
+import type { AuthUserDTO } from "./AuthUserDTO.js";
 
 export interface LoginResponseDTO {
 
     accessToken: string;
 
-    user: {
-
-        id: string;
-
-        fullName: string;
-
-        email: string;
-
-        roles: Role[];
-
-        isVerified: boolean;
-    };
+    user: AuthUserDTO
 }

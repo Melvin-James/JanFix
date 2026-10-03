@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 
-import type { IUploadFileUseCase } from "../../../application/use-cases/usecase interfaces/IUploadFileUseCase.js";
+import type { IUploadFileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IUploadFileUseCase.js";
 
 import asyncHandler from "../../../shared/utils/asyncHandler.js";
 

@@ -6,8 +6,6 @@ import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { LoginDTO } from "../../dto/auth/LoginDTO.js";
 
-import type { LoginResponseDTO } from "../../dto/auth/LoginResponseDTO.js";
-
 import ApiError from "../../../shared/utils/apiError.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
@@ -16,7 +14,9 @@ import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import { UserMapper } from "../../mappers/UserMapper.js";
 
-import type { ILoginUseCase } from "../usecase interfaces/ILoginUseCase.js";
+import type { ILoginUseCase } from "../usecase interfaces/auth/ILoginUseCase.js";
+
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 
 export class LoginUseCase implements ILoginUseCase {
     constructor(
@@ -24,7 +24,7 @@ export class LoginUseCase implements ILoginUseCase {
         private userRepository: IUserRepository,
         private jwtService: IJwtService
     ) { }
-    async execute(dto: LoginDTO): Promise<{ accessToken: string; refreshToken: string; user: LoginResponseDTO["user"]; }> {
+    async execute(dto: LoginDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserDTO; }> {
         const user = await this.userRepository.findByEmail(dto.email);
 
         if (!user) {
@@ -48,7 +48,7 @@ export class LoginUseCase implements ILoginUseCase {
         return {
             accessToken,
             refreshToken,
-            user: UserMapper.toAuthResponse(user) as any,
+            user: UserMapper.toAuthResponse(user),
         };
     }
 }

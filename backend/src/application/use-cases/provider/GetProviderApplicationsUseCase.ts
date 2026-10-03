@@ -1,6 +1,6 @@
 import type { IUserRepository, ProviderApplicationFilters } from "../../../domain/interface/IUserRepository.js";
 
-import type { IGetProviderApplicationsUseCase } from "../usecase interfaces/IGetProviderApplicationsUseCase.js";
+import type { IGetProviderApplicationsUseCase } from "../usecase interfaces/admin/IGetProviderApplicationsUseCase.js";
 
 import type { ProviderApplicationResponseDTO } from "../../dto/admin/ProviderApplicationResponseDTO.js";
 
@@ -29,4 +29,4 @@ export class GetProviderApplicationsUseCase implements IGetProviderApplicationsU
             pagination: paginatedResult.pagination,
         };
     }
-}
+}

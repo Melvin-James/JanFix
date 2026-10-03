@@ -6,21 +6,21 @@ import asyncHandler from "../../../shared/utils/asyncHandler.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
-import type { IGetProviderApplicationsUseCase } from "../../../application/use-cases/usecase interfaces/IGetProviderApplicationsUseCase.js";
+import type { IGetProviderApplicationsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProviderApplicationsUseCase.js";
 
-import type { IGetProviderApplicationDetailsUseCase } from "../../../application/use-cases/usecase interfaces/IGetProviderApplicationDetailsUseCase.js";
+import type { IGetProviderApplicationDetailsUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderApplicationDetailsUseCase.js";
 
-import type { IApproveProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/IApproveProviderApplicationUseCase.js";
+import type { IApproveProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveProviderApplicationUseCase.js";
 
-import type { IRejectProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/IRejectProviderApplicationUseCase.js";
+import type { IRejectProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectProviderApplicationUseCase.js";
 
-import type { IGetServiceProvidersUseCase } from "../../../application/use-cases/usecase interfaces/IGetServiceProvidersUseCase.js";
+import type { IGetServiceProvidersUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetServiceProvidersUseCase.js";
 
-import type { IGetServiceProviderDetailsUseCase } from "../../../application/use-cases/usecase interfaces/IGetServiceProviderDetailsUseCase.js";
+import type { IGetServiceProviderDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetServiceProviderDetailsUseCase.js";
 
-import type { IUpdateServiceProviderStatusUseCase } from "../../../application/use-cases/usecase interfaces/IUpdateServiceProviderStatusUseCase.js";
+import type { IUpdateServiceProviderStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateServiceProviderStatusUseCase.js";
 
-import type { IGetUsersForManagementUseCase } from "../../../application/use-cases/usecase interfaces/IGetUsersForManagementUseCase.js";
+import type { IGetUsersForManagementUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetUsersForManagementUseCase.js";
 
 import type { IUpdateUserAccountStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateUserAccountStatusUseCase.js";
 

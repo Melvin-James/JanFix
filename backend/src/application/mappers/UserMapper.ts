@@ -1,9 +1,10 @@
 import type { User } from "../../domain/entities/User.js";
+import type { AuthUserDTO } from "../dto/auth/AuthUserDTO.js";
 
 
 export class UserMapper {
 
-  static toAuthResponse(user: User) {
+  static toAuthResponse(user: User): AuthUserDTO {
 
     return {
 
@@ -17,7 +18,9 @@ export class UserMapper {
       
       isVerified: user.isVerified,
 
-      providerProfile: user.providerProfile,
+      ...(user.providerProfile && {
+        providerProfile: user.providerProfile,
+      }),
       
     };
   }

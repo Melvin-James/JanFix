@@ -1,4 +1,4 @@
-import type { IApproveProviderApplicationUseCase } from "../usecase interfaces/IApproveProviderApplicationUseCase.js";
+import type { IApproveProviderApplicationUseCase } from "../usecase interfaces/admin/IApproveProviderApplicationUseCase.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
