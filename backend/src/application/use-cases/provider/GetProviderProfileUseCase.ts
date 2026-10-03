@@ -1,6 +1,6 @@
 import type { ProviderProfile } from "../../../domain/entities/ProviderProfile.js";
 
-import type { IGetProviderProfileUseCase } from "../usecase interfaces/IGetProviderProfileUseCase.js";
+import type { IGetProviderProfileUseCase } from "../usecase interfaces/provider/IGetProviderProfileUseCase.js";
 
 import ApiError from "../../../shared/utils/apiError.js";
 

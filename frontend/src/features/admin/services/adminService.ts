@@ -27,7 +27,7 @@ export const getProviderApplicationDetails = async (userId: string): Promise<Pro
     const response = await axiosInstance.get(
 
         `/admin/provider-applications/${userId}`
-        
+
     )
 
     return response.data.application;
@@ -67,7 +67,7 @@ export const rejectProviderApplication = async (
         }
 
     );
-    
+
 };
 
 
@@ -105,7 +105,7 @@ export const updateServiceProviderStatus = async (
 
     const response = await axiosInstance.patch(
         `/admin/service-providers/${userId}/status`,
-        {status}
+        { status }
     );
 
     return response.data.provider;
@@ -126,11 +126,11 @@ export const updateUserAccountStatus = async (
 
     const response = await axiosInstance.patch(
         `/admin/users/${userId}/status`,
-        {status}
+        { status }
     );
 
     return response.data.user;
 
 };
 
-export * from "./categoryService";
+export * from "./categoryService";

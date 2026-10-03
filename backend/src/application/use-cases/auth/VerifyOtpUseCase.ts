@@ -9,7 +9,7 @@ import ApiError from "../../../shared/utils/apiError.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
-import type { IVerifyOtpUseCase } from "../usecase interfaces/IVerifyOtpUseCase.js";
+import type { IVerifyOtpUseCase } from "../usecase interfaces/auth/IVerifyOtpUseCase.js";
 import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {

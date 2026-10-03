@@ -1,4 +1,4 @@
-import type { IRejectProviderApplicationUseCase } from "../usecase interfaces/IRejectProviderApplicationUseCase.js";
+import type { IRejectProviderApplicationUseCase } from "../usecase interfaces/admin/IRejectProviderApplicationUseCase.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 

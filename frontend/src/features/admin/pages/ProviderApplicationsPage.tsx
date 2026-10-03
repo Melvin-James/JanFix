@@ -25,19 +25,21 @@ import {
 import { usePagination } from "../hooks";
 
 function ProviderApplicationsPage() {
-    
+
     const navigate = useNavigate();
 
     const [applications, setApplications] = useState<ProviderApplication[]>([]);
-    
+
     const [loading, setLoading] = useState(true);
-    
+
     const [error, setError] = useState("");
-    
+
     const [search, setSearch] = useState("");
-    
+
+
+
     const [providerTypeFilter, setProviderTypeFilter] = useState("ALL");
-    
+
     const [statusFilter, setStatusFilter] = useState("ALL");
 
     useEffect(() => {
@@ -63,17 +65,17 @@ function ProviderApplicationsPage() {
         const normalizedSearch = search.trim().toLowerCase();
 
         return applications.filter((application) => {
-            const matchesSearch = 
+            const matchesSearch =
                 normalizedSearch === "" ||
                 application.fullName.toLowerCase().includes(normalizedSearch) ||
                 application.email.toLowerCase().includes(normalizedSearch) ||
                 application.providerName?.toLowerCase().includes(normalizedSearch);
 
-            const matchesProviderType = 
+            const matchesProviderType =
                 providerTypeFilter === 'ALL' ||
                 application.providerType === providerTypeFilter;
 
-            const matchesStatus = 
+            const matchesStatus =
                 statusFilter === 'ALL' ||
                 application.applicationStatus === statusFilter;
 
@@ -121,7 +123,7 @@ function ProviderApplicationsPage() {
             <AdminCard>
                 <div className="border-b border-slate-200 px-6 py-4">
                     <div className="mb-4">
-                        <h2 className="font-medium text-slate-900"> 
+                        <h2 className="font-medium text-slate-900">
                             Applications
                         </h2>
 

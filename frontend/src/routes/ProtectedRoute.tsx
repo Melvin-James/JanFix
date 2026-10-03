@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {
 
-    const accessToken = useAuthStore((state) => state.accessToken);
+    const user = useAuthStore((state) => state.user);
 
     const isAuthLoading = useAuthStore((state) => state.isAuthLoading);
 
@@ -21,7 +21,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
         return <LoadingSpinner />;
     }
 
-    if (!accessToken) {
+    if (!user) {
         return <Navigate to="/login" replace />;
     }
 

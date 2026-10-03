@@ -4,7 +4,7 @@ import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
-import type { IUpdateServiceProviderStatusUseCase } from "../usecase interfaces/IUpdateServiceProviderStatusUseCase.js";
+import type { IUpdateServiceProviderStatusUseCase } from "../usecase interfaces/admin/IUpdateServiceProviderStatusUseCase.js";
 
 import type { UpdateServiceProviderStatusResponseDTO } from "../../dto/admin/UpdateServiceProviderStatusResponseDTO.js";
 

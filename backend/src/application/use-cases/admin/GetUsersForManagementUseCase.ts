@@ -1,6 +1,6 @@
 import type { IUserRepository, UserManagementFilters } from "../../../domain/interface/IUserRepository.js";
 
-import type { IGetUsersForManagementUseCase } from "../usecase interfaces/IGetUsersForManagementUseCase.js";
+import type { IGetUsersForManagementUseCase } from "../usecase interfaces/admin/IGetUsersForManagementUseCase.js";
 
 import type { UserManagementResponseDTO } from "../../dto/admin/UserManagementResponseDTO.js";
 
@@ -29,4 +29,4 @@ export class GetUsersForManagementUseCase implements IGetUsersForManagementUseCa
             pagination: paginatedResult.pagination,
         };
     }
-}
+}

@@ -73,7 +73,7 @@ function ServiceProvidersPage() {
     ) => {
         const nextStatus = currentStatus === "ACTIVE" ? "BLOCKED" : "ACTIVE";
 
-        if(currentStatus === "ACTIVE" && !window.confirm("Are you sure you want to block this service provider?")) {
+        if (currentStatus === "ACTIVE" && !window.confirm("Are you sure you want to block this service provider?")) {
             return;
         }
 
@@ -303,4 +303,4 @@ function ServiceProvidersPage() {
     );
 }
 
-export default ServiceProvidersPage;
+export default ServiceProvidersPage;

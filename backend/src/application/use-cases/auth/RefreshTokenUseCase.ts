@@ -8,11 +8,11 @@ import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
-import type { User } from "../../../domain/entities/User.js";
-
 import { UserMapper } from "../../mappers/UserMapper.js";
 
-import type { IRefreshTokenUseCase } from "../usecase interfaces/IRefreshTokenUseCase.js";
+import type { IRefreshTokenUseCase } from "../usecase interfaces/auth/IRefreshTokenUseCase.js";
+
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     constructor(
@@ -26,7 +26,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
         refreshToken: string
 
-    ): Promise<{ accessToken: string; user: User }> {
+    ): Promise<{ accessToken: string; user: AuthUserDTO }> {
 
         let decoded: { userId: string; };
 
@@ -56,6 +56,6 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
         const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles);
 
-        return { accessToken, user: UserMapper.toAuthResponse(user) as any };
+        return { accessToken, user: UserMapper.toAuthResponse(user) };
     }
 }

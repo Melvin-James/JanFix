@@ -13,6 +13,7 @@ export const AdminSearchBar: React.FC<AdminSearchBarProps> = ({
     placeholder = "Search...",
     className = "",
 }) => {
+    
     return (
         <input
             type="text"

@@ -14,20 +14,24 @@ import type { ResendOtpDTO } from "../../../application/dto/auth/ResendOtpDTO.js
 
 
 import { setAuthCookies } from "../../../shared/utils/setAuthCookies.js";
+import { setAccessTokenCookie } from "../../../shared/utils/setAccessTokenCookie.js";
+import { clearAuthCookies } from "../../../shared/utils/clearAuthCookies.js";
+
 
 import type { IGoogleAuthService } from "../../../domain/interface/IGoogleAuthService.js";
 
 // Use Cases
-import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/IRegisterUserUseCase.js";
-import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase interfaces/IVerifyOtpUseCase.js";
-import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/ILoginUseCase.js";
-import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/IRefreshTokenUseCase.js";
-import type { IGoogleAuthUseCase } from "../../../application/use-cases/usecase interfaces/IGoogleAuthUseCase.js";
-import type { IForgotPasswordUseCase } from "../../../application/use-cases/usecase interfaces/IForgotPasswordUseCase.js";
-import type { IResetPasswordUseCase } from "../../../application/use-cases/usecase interfaces/IResetPasswordUseCase.js";
+import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/auth/IRegisterUserUseCase.js";
+import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyOtpUseCase.js";
+import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/auth/ILoginUseCase.js";
+import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/auth/IRefreshTokenUseCase.js";
+import type { IGoogleAuthUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGoogleAuthUseCase.js";
+import type { IForgotPasswordUseCase } from "../../../application/use-cases/usecase interfaces/auth/IForgotPasswordUseCase.js";
+import type { IResetPasswordUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResetPasswordUseCase.js";
 import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyResetOtpDTO.js";
-import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/IVerifyResetOtpUseCase.js";
-import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/IResendOtpUseCase.js";
+import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyResetOtpUseCase.js";
+import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResendOtpUseCase.js";
+import type { IGetCurrentUserUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentUserUseCase.js";
 
 export class AuthController {
   constructor(
@@ -41,6 +45,7 @@ export class AuthController {
     private _verifyResetOtpUseCase: IVerifyResetOtpUseCase,
     private _resendOtpUseCase: IResendOtpUseCase,
     private _googleAuthService: IGoogleAuthService,
+    private _getCurrentUserUseCase: IGetCurrentUserUseCase,
   ) { }
 
   public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -70,7 +75,7 @@ export class AuthController {
 
       const result = await this._googleAuthUseCase.execute(googleUser);
 
-      setAuthCookies(res, result.refreshToken);
+      setAuthCookies(res, result.accessToken, result.refreshToken);
 
       res.status(HttpStatusCode.OK).json({
         success: true,
@@ -94,22 +99,31 @@ export class AuthController {
   });
 
   public login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+
     const dto: LoginDTO = req.body;
+
     const result = await this._loginUseCase.execute(dto);
 
-    setAuthCookies(res, result.refreshToken);
+    setAuthCookies(res, result.accessToken, result.refreshToken);
 
     res.status(HttpStatusCode.OK).json({
+
       success: true,
+
       message: AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
+
       data: {
-        accessToken: result.accessToken,
+
         user: result.user,
+
       },
+
     });
+
   });
 
   public forgotPassword = asyncHandler(
+
     async (req: Request, res: Response): Promise<void> => {
 
       const dto: ForgotPasswordDTO = req.body;
@@ -117,10 +131,15 @@ export class AuthController {
       await this._forgotPasswordUseCase.execute(dto);
 
       res.status(HttpStatusCode.OK).json({
+
         success: true,
+
         message: AppMessages.SUCCESS.OTP_SENT_SUCCESS
+
       })
+
     }
+    
   );
 
   public verifyResetOtp = asyncHandler(
@@ -142,7 +161,7 @@ export class AuthController {
   public resetPassword = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const dto: ResetPasswordDTO = req.body;
-      
+
       await this._resetPasswordUseCase.execute(dto);
 
       res.status(HttpStatusCode.OK).json({
@@ -161,22 +180,20 @@ export class AuthController {
 
     const result = await this._refreshTokenUseCase.execute(refreshToken);
 
+    setAccessTokenCookie(res, result.accessToken);
+
     res.status(HttpStatusCode.OK).json({
       success: true,
       message: AppMessages.SUCCESS.TOKEN_REFRESHED,
       data: {
-        accessToken: result.accessToken,
         user: result.user,
       },
     });
   });
 
   public logout = asyncHandler(async (_req: Request, res: Response): Promise<void> => {
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: false, // Update to true in production if HTTPS
-      sameSite: "strict",
-    });
+
+    clearAuthCookies(res);
 
     res.status(HttpStatusCode.OK).json({
       success: true,
@@ -197,4 +214,19 @@ export class AuthController {
       })
     }
   )
+
+  public getCurrentUser = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+
+      const user = await this._getCurrentUserUseCase.execute(req.user!.userId);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED,
+        data: {
+          user,
+        },
+      });
+    }
+  );
 }

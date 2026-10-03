@@ -14,7 +14,7 @@ import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 
 import type { VerifyResetOtpDTO } from "../../dto/auth/VerifyResetOtpDTO.js";
 
-import type { IVerifyResetOtpUseCase } from "../usecase interfaces/IVerifyResetOtpUseCase.js";
+import type { IVerifyResetOtpUseCase } from "../usecase interfaces/auth/IVerifyResetOtpUseCase.js";
 
 import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 

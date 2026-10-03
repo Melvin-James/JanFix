@@ -2,7 +2,7 @@ import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
 
 import type { IStorageService } from "../../services/IStorageService.js";
 
-import type { IUploadFileUseCase } from "../usecase interfaces/IUploadFileUseCase.js";
+import type { IUploadFileUseCase } from "../usecase interfaces/provider/IUploadFileUseCase.js";
 
 import ApiError from "../../../shared/utils/apiError.js";
 

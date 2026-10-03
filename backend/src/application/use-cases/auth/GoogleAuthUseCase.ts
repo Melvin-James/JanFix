@@ -12,13 +12,14 @@ import { Role } from "../../../domain/enums/Role.js";
 
 import { UserMapper } from "../../mappers/UserMapper.js";
 
-import type { IGoogleAuthUseCase } from "../usecase interfaces/IGoogleAuthUseCase.js";
+import type { IGoogleAuthUseCase } from "../usecase interfaces/auth/IGoogleAuthUseCase.js";
 
 import type { GoogleUser } from "../../../domain/interface/IGoogleAuthService.js";
 
-import type { LoginResponseDTO } from "../../dto/auth/LoginResponseDTO.js";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 
 import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
+
 import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
 
 export class GoogleAuthUseCase implements IGoogleAuthUseCase{
@@ -30,7 +31,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
     async execute(googleUser: GoogleUser): Promise<{
         accessToken: string;
         refreshToken: string;
-        user: LoginResponseDTO["user"];
+        user: AuthUserDTO;
     }> {
         
         if(!googleUser.emailVerified) {

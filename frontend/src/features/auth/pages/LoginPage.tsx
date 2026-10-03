@@ -39,7 +39,7 @@ function LoginPage() {
 
   const [serverError, setServerError] = useState<string>("");
 
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const onSubmit = async (data: LoginFormData) => {
 
@@ -51,9 +51,9 @@ function LoginPage() {
 
       const response = await loginUser(data);
 
-      const { accessToken, user } = response.data;
+      const { user } = response.data;
 
-      setAuth(accessToken, user);
+      setUser(user);
 
     } catch (err: any) {
 
@@ -179,9 +179,9 @@ function LoginPage() {
 
                     const response = await googleLogin(credential);
 
-                    const {accessToken, user } = response.data;
+                    const {user } = response.data;
 
-                    setAuth(accessToken, user);
+                    setUser(user);
 
                   } catch (err: any) {
 
