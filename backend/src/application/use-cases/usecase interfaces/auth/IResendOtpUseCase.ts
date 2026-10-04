@@ -1,4 +1,4 @@
-import type { ResendOtpDTO } from "../../dto/auth/ResendOtpDTO.js";
+import type { ResendOtpDTO } from "../../../dto/auth/ResendOtpDTO.js";
 
 export interface IResendOtpUseCase {
 

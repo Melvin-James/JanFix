@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
-import type { ZodSchema } from "zod";
+import { ZodError, type ZodSchema } from "zod";
 import ApiError from "../../shared/utils/apiError.js";
 
 const validate =
@@ -10,10 +10,13 @@ const validate =
                 req.body = schema.parse(req.body);
 
                 next();
-            } catch (error: any) {
-                const message = error.issues?.[0]?.message || "Validation Error";
+            } catch (error) {
+                if (error instanceof ZodError) {
+                    const message = error.issues?.[0]?.message || "Validation Error";
+                    return next(new ApiError(HttpStatusCode.BAD_REQUEST, message));
+                }
 
-                next(new ApiError(HttpStatusCode.BAD_REQUEST, message));
+                next(error);
             }
         };
 

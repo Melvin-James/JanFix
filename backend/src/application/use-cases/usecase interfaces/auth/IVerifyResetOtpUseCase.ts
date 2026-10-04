@@ -1,4 +1,4 @@
-import type { VerifyResetOtpDTO } from "../../dto/auth/VerifyResetOtpDTO.js";
+import type { VerifyResetOtpDTO } from "../../../dto/auth/VerifyResetOtpDTO.js";
 
 export interface IVerifyResetOtpUseCase {
 

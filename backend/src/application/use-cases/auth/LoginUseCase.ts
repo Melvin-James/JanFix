@@ -12,7 +12,7 @@ import type { IUserRepository } from "../../../domain/interface/IUserRepository.
 
 import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
-import { UserMapper } from "../../mappers/UserMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.js";
 
 import type { ILoginUseCase } from "../usecase interfaces/auth/ILoginUseCase.js";
 
@@ -33,6 +33,13 @@ export class LoginUseCase implements ILoginUseCase {
 
         if (!user.isVerified) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.PLEASE_VERIFY_ACCOUNT);
+        }
+
+        if (!user.password) {
+            if (user.authProvider === "GOOGLE") {
+                throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.GOOGLE_ACCOUNT_USE_GOOGLE_LOGIN);
+            }
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
         }
 
         const isPasswordValid = await compareData(dto.password, user.password);

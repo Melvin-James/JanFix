@@ -6,6 +6,10 @@ import type { IJwtService } from "../../domain/interface/IJwtService.js";
 
 import type { Role } from "../../domain/enums/Role.js";
 
+import type { AccessTokenPayload } from "../../shared/types/AccessTokenPayload.js";
+
+import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.js";
+
 class JwtService implements IJwtService {
 
     generateAccessToken(userId: string, roles: Role[]): string {
@@ -16,24 +20,24 @@ class JwtService implements IJwtService {
         return jwt.sign({ userId, }, env.JWT_REFRESH_SECRET, { expiresIn: "7d", });
     }
 
-    generateResetToken(userId: string): string{
-        return jwt.sign({userId}, env.JWT_RESET_SECRET, {expiresIn: "10m"});
+    generateResetToken(userId: string): string {
+        return jwt.sign({ userId }, env.JWT_RESET_SECRET, { expiresIn: "10m" });
     }
 
-    verifyAccessToken(token: string) {
-        return jwt.verify(token, env.JWT_ACCESS_SECRET);
+    verifyAccessToken(token: string): AccessTokenPayload {
+        return jwt.verify(token, env.JWT_ACCESS_SECRET) as AccessTokenPayload;
     }
 
-    verifyRefreshToken(token: string) {
-        return jwt.verify(token, env.JWT_REFRESH_SECRET);
+    verifyRefreshToken(token: string): RefreshTokenPayload {
+        return jwt.verify(token, env.JWT_REFRESH_SECRET) as RefreshTokenPayload;
     }
 
     verifyResetToken(token: string): string {
-        const decoded = jwt.verify( token, env.JWT_RESET_SECRET) as {userId: string};
+        const decoded = jwt.verify(token, env.JWT_RESET_SECRET) as { userId: string };
 
         return decoded.userId;
     }
-    
+
 }
 
 export default JwtService;

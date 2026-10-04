@@ -1,242 +1,161 @@
-import { useEffect, useRef, useState, type ClipboardEvent, type KeyboardEvent } from "react";
-
-import { useForm } from "react-hook-form";
-
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
-import { resendOtp, verifyOtp } from "../services/authService";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { verifyOtpSchema, type VerifyOtpFormData } from "../validations/verifyOtpSchema";
-
+import { verifyOtp, resendOtp } from "../services/authService";
+import AuthLayout from "../components/AuthLayout";
+import OtpInput from "../../../components/UI/OtpInput";
+import useCountdown from "../../../hooks/useCountdown";
 
 function VerifyOtpPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const email: string | undefined = location.state?.email;
 
-    const { handleSubmit, setValue } = useForm<VerifyOtpFormData>({
-
-        resolver:
-            zodResolver(
-                verifyOtpSchema
-            ),
-
-        defaultValues: {
-
-            otp: "",
-        },
+    // Preserve email across accidental page refreshes
+    const stateEmail = location.state?.email as string | undefined;
+    const [email, setEmail] = useState<string>(() => {
+        if (stateEmail) {
+            sessionStorage.setItem("pending_otp_email", stateEmail);
+            return stateEmail;
+        }
+        return sessionStorage.getItem("pending_otp_email") || "";
     });
 
-    const [digits, setDigits] = useState<string[]>(["", "", "", "", "", ""]);
+    const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
-    const [error, setError] = useState<string>("");
-    const [secondsLeft, setSecondsLeft] = useState(30);
+    const [error, setError] = useState("");
 
-    const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-
-    // countdown for resend
-    useEffect(() => {
-        if (secondsLeft <= 0) return;
-        const t = setInterval(() => setSecondsLeft((s) => s - 1), 1000);
-        return () => clearInterval(t);
-    }, [secondsLeft]);
-
-    // keep RHF value in sync
-    useEffect(() => {
-        setValue("otp", digits.join(""));
-    }, [digits, setValue]);
-
-    const focusInput = (i: number) => {
-        const el = inputsRef.current[i];
-        if (el) el.focus();
-    };
+    const { secondsLeft, isRunning, start: startCountdown } = useCountdown(30);
 
     useEffect(() => {
+        if (stateEmail) {
+            setEmail(stateEmail);
+            sessionStorage.setItem("pending_otp_email", stateEmail);
+        }
+    }, [stateEmail]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
 
         if (!email) {
-
-            navigate("/register");
-        }
-
-    }, [email, navigate]);
-
-    const handleChange = (i: number, value: string) => {
-        const v = value.replace(/\D/g, "").slice(-1); // last typed digit only
-        const next = [...digits];
-        next[i] = v;
-        setDigits(next);
-        if (v && i < 5) focusInput(i + 1);
-    };
-
-    const handleKeyDown = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Backspace") {
-            if (digits[i]) {
-                const next = [...digits];
-                next[i] = "";
-                setDigits(next);
-            } else if (i > 0) {
-                focusInput(i - 1);
-            }
-        } else if (e.key === "ArrowLeft" && i > 0) focusInput(i - 1);
-        else if (e.key === "ArrowRight" && i < 5) focusInput(i + 1);
-    };
-
-    const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-        if (!pasted) return;
-        const next = ["", "", "", "", "", ""];
-        for (let i = 0; i < pasted.length; i++) next[i] = pasted[i];
-        setDigits(next);
-        focusInput(Math.min(pasted.length, 5));
-    };
-
-    const onSubmit = async (data: VerifyOtpFormData) => {
-        setError("");
-        if(!email){
-            setError("missing email address");
+            setError("Email address is missing. Please go back to registration.");
             return;
         }
+
+        if (otp.length < 6) {
+            setError("Please enter the complete 6-digit verification code.");
+            return;
+        }
+
         try {
             setLoading(true);
-            await verifyOtp({ email, otp: data.otp });
+            await verifyOtp({ email, otp });
+            sessionStorage.removeItem("pending_otp_email");
             navigate("/login");
-        } catch (err: any) {
-            setError(err?.response?.data?.message || err?.message || "Invalid or expired code.");
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || "Invalid or expired code.");
+            } else if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Verification failed.");
+            }
         } finally {
             setLoading(false);
         }
     };
 
     const handleResend = async () => {
-        if (secondsLeft > 0 || resending) return;
+        if (isRunning || resending) return;
+        setError("");
+
+        if (!email) {
+            setError("Missing email address");
+            return;
+        }
+
         try {
             setResending(true);
-            setError("");
-
-            if(!email) {
-                setError("Missing email address");
-                return;
+            await resendOtp({ email, purpose: "VERIFY_ACCOUNT" });
+            setOtp("");
+            startCountdown(30);
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || "Failed to resend code.");
+            } else if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Failed to resend code.");
             }
-            
-            await resendOtp({email, purpose: "VERIFY_ACCOUNT"})
-            setDigits(["", "", "", "", "", ""]);
-            setSecondsLeft(30);
-            focusInput(0);
-        } catch (err: any) {
-            setError(err?.response?.data?.message || "Failed to resend code.");
         } finally {
             setResending(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex bg-white">
-            {/* LEFT visual */}
-            <div className="hidden md:flex md:w-1/2 relative">
-                <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage:
-                            "url(https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1600&q=80)",
-                    }}
-                />
-                <div className="absolute inset-0 bg-blue-700/70 mix-blend-multiply" />
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-600/30 to-blue-900/60" />
-                <div className="relative z-10 mt-auto p-10 text-white">
-                    <h2 className="text-3xl font-semibold">JanFix</h2>
-                    <p className="mt-2 max-w-sm text-sm text-white/80">
-                        Empowering citizens to build smarter cities through real-time reporting and
-                        transparent governance.
-                    </p>
-                </div>
-            </div>
+        <AuthLayout
+            title="Verify Your Account"
+            subtitle={`We've sent a 6-digit code to ${email || "your email"}. Enter it below to complete your registration.`}
+            heroImage="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1600&q=80"
+        >
+            <form
+                onSubmit={handleSubmit}
+                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-6"
+                noValidate
+            >
+                <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-3">
+                        Verification Code
+                    </label>
 
-            {/* RIGHT form */}
-            <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-12">
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="w-full max-w-md"
-                    noValidate
-                >
-                    <h1 className="text-2xl font-bold text-gray-900">Verify Your Account</h1>
-                    <p className="mt-2 text-sm text-gray-500">
-                        We&apos;ve sent a 6-digit code to{" "}
-                        <span className="font-medium text-gray-700">{email || "your email"}</span>.
-                        Enter it below to complete your registration.
-                    </p>
-
-                    <div className="mt-8">
-                        <label className="block text-xs font-medium text-gray-500 mb-2">
-                            Verification Code
-                        </label>
-
-                        <div className="flex items-center justify-between gap-2 sm:gap-3">
-                            {digits.map((d, i) => (
-                                <input
-                                    key={i}
-                                    ref={(el) => { inputsRef.current[i] = el; }}
-                                    type="text"
-                                    inputMode="numeric"
-                                    autoComplete="one-time-code"
-                                    maxLength={1}
-                                    value={d}
-                                    onChange={(e) => handleChange(i, e.target.value)}
-                                    onKeyDown={(e) => handleKeyDown(i, e)}
-                                    onPaste={handlePaste}
-                                    className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg border border-gray-300 bg-white text-center text-xl font-semibold text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                />
-                            ))}
-                        </div>
-
-                        {/* reserved error line — keeps layout stable */}
-                        <div className="min-h-[20px] mt-2 text-xs text-red-500">
-                            {error || "\u00A0"}
-                        </div>
-
-                        <div className="mt-1 flex items-center justify-between text-sm">
-                            <span className="text-gray-500">Didn&apos;t receive code?</span>
-                            <button
-                                type="button"
-                                onClick={handleResend}
-                                disabled={secondsLeft > 0 || resending}
-                                className="font-semibold text-blue-600 disabled:text-blue-400 disabled:cursor-not-allowed"
-                            >
-                                {resending ? "Sending..." : "Resend OTP"}{" "}
-                                <span className="text-gray-400 font-normal">
-                                    {secondsLeft > 0 ? `(${secondsLeft}s)` : ""}
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
+                    <OtpInput
+                        value={otp}
+                        onChange={setOtp}
                         disabled={loading}
-                        className="mt-8 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
-                    >
-                        {loading ? "Verifying..." : (
-                            <>
-                                Create Account
-                                <span aria-hidden>→</span>
-                            </>
-                        )}
-                    </button>
+                    />
 
-                    <div className="mt-6 border-t border-gray-200 pt-4 text-center">
-                        <Link
-                            to="/register"
-                            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
-                        >
-                            <span aria-hidden>←</span> Back to Signup
-                        </Link>
+                    <div className="min-h-[20px] mt-2 text-xs text-red-500">
+                        {error || "\u00A0"}
                     </div>
-                </form>
-            </div>
-        </div>
+
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Didn&apos;t receive code?</span>
+                        <button
+                            type="button"
+                            onClick={handleResend}
+                            disabled={isRunning || resending}
+                            className="font-semibold text-blue-600 disabled:text-blue-400 disabled:cursor-not-allowed hover:underline transition"
+                        >
+                            {resending ? "Sending..." : "Resend OTP"}{" "}
+                            {isRunning && (
+                                <span className="text-gray-400 font-normal">
+                                    ({secondsLeft}s)
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={loading || otp.length < 6}
+                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                >
+                    {loading ? "Verifying..." : "Create Account →"}
+                </button>
+
+                <div className="border-t border-gray-200 pt-4 text-center">
+                    <Link
+                        to="/register"
+                        className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition"
+                    >
+                        <span>←</span> Back to Signup
+                    </Link>
+                </div>
+            </form>
+        </AuthLayout>
     );
 }
 

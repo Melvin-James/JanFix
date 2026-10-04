@@ -60,6 +60,7 @@ export class AuthController {
         fullName: createdUser.fullName,
         email: createdUser.email,
         roles: createdUser.roles,
+        isVerified: createdUser.isVerified,
       },
     });
   });
