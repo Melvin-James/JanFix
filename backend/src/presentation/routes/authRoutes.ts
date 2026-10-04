@@ -34,7 +34,7 @@ import { ForgotPasswordUseCase } from "../../application/use-cases/auth/ForgotPa
 import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPasswordUseCase.js";
 import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.js";
 import { ResendOtpUseCase } from "../../application/use-cases/auth/ResendOtpUseCase.js";
-import { GetCurrentUserUseCase } from "../../application/use-cases/auth/GetCurrentUserUseCase.js";
+import { GetCurrentSessionUseCase } from "../../application/use-cases/auth/GetCurrentSessionUseCase.js";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();
@@ -52,7 +52,8 @@ const forgotPasswordUseCase = new ForgotPasswordUseCase(userRepository, otpRepos
 const resetPasswordUseCase = new ResetPasswordUseCase(userRepository, jwtService);
 const verifyResetOtpUseCase = new VerifyResetOtpUseCase(userRepository, otpRepository, jwtService);
 const resendOtpUseCase = new ResendOtpUseCase(userRepository, otpRepository, emailService);
-const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
+// Session-aware use case — handles access token + refresh token fallback internally
+const getSessionUseCase = new GetCurrentSessionUseCase(jwtService, userRepository);
 
 const authController = new AuthController(
     registerUserUseCase,
@@ -65,7 +66,7 @@ const authController = new AuthController(
     verifyResetOtpUseCase,
     resendOtpUseCase,
     googleAuthService,
-    getCurrentUserUseCase,
+    getSessionUseCase,
 );
 
 const router = express.Router();
@@ -86,7 +87,8 @@ router.post(ApiEndpoints.AUTH.LOGIN, validate(loginSchema), authController.login
 
 router.post(ApiEndpoints.AUTH.LOGOUT, authController.logout);
 
-router.get(ApiEndpoints.AUTH.ME, authenticate, authController.getCurrentUser);
+// /auth/me is session-aware — no authenticate middleware, the use case handles token resolution
+router.get(ApiEndpoints.AUTH.ME, authController.getCurrentUser);
 
 router.get(ApiEndpoints.AUTH.ADMIN_TEST, authenticate, authorizeRoles(Role.ADMIN), (req, res) => {
     res.status(HttpStatusCode.OK).json({

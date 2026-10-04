@@ -29,4 +29,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 
 }));
 
-if (import.meta.env.DEV) { (window as any).authStore = useAuthStore; }
+// Expose store for debugging in development
+declare global {
+  interface Window {
+    authStore: typeof useAuthStore;
+  }
+}
+
+if (import.meta.env.DEV) { window.authStore = useAuthStore; }

@@ -4,7 +4,7 @@ import type { ProviderType } from "../types/providerTypes";
 
 import type { UploadedFile  } from "../types/uploadedFile";
 
-interface ProviderDraft {
+export interface ProviderDraft {
 
     providerType?: ProviderType;
 

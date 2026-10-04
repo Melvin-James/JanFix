@@ -31,7 +31,7 @@ import type { IResetPasswordUseCase } from "../../../application/use-cases/useca
 import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyResetOtpDTO.js";
 import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyResetOtpUseCase.js";
 import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResendOtpUseCase.js";
-import type { IGetCurrentUserUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentUserUseCase.js";
+import type { IGetCurrentSessionUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentSessionUseCase.js";
 
 export class AuthController {
   constructor(
@@ -45,7 +45,7 @@ export class AuthController {
     private _verifyResetOtpUseCase: IVerifyResetOtpUseCase,
     private _resendOtpUseCase: IResendOtpUseCase,
     private _googleAuthService: IGoogleAuthService,
-    private _getCurrentUserUseCase: IGetCurrentUserUseCase,
+    private _getSessionUseCase: IGetCurrentSessionUseCase,
   ) { }
 
   public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -78,11 +78,11 @@ export class AuthController {
 
       setAuthCookies(res, result.accessToken, result.refreshToken);
 
+      // Do NOT expose tokens in the JSON response — they live only in HTTP-only cookies
       res.status(HttpStatusCode.OK).json({
         success: true,
         message: AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
         data: {
-          accessToken: result.accessToken,
           user: result.user,
         },
       });
@@ -173,7 +173,7 @@ export class AuthController {
   )
 
   public refreshToken = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshToken as string | undefined;
 
     if (!refreshToken) {
       throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.REFRESH_TOKEN_MISSING);
@@ -216,16 +216,30 @@ export class AuthController {
     }
   )
 
+  /**
+   * Session-aware /auth/me endpoint.
+   * Does NOT require the authenticate middleware — it handles session restoration
+   * internally, using the access token if valid, or the refresh token if the access
+   * token has expired. Sets a new access cookie when refreshing.
+   */
   public getCurrentUser = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
 
-      const user = await this._getCurrentUserUseCase.execute(req.user!.userId);
+      const accessToken = req.cookies.accessToken as string | undefined;
+      const refreshToken = req.cookies.refreshToken as string | undefined;
+
+      const result = await this._getSessionUseCase.execute(accessToken, refreshToken);
+
+      // If the session was restored via refresh token, issue a new access cookie
+      if (result.newAccessToken) {
+        setAccessTokenCookie(res, result.newAccessToken);
+      }
 
       res.status(HttpStatusCode.OK).json({
         success: true,
         message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED,
         data: {
-          user,
+          user: result.user,
         },
       });
     }

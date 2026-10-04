@@ -1,8 +1,19 @@
+import type { Document } from "mongoose";
 import type { User } from "../../domain/entities/User.js";
+import type { UserDocument, UploadedFileDoc } from "../models/UserModel.js";
+
+const mapFile = (file: UploadedFileDoc) => ({
+  key: file.key,
+  url: file.url,
+  originalName: file.originalName,
+  mimeType: file.mimeType,
+  size: file.size,
+});
 
 export class UserMapper {
 
-  static toEntity(document: any): User {
+  static toEntity(doc: Document): User {
+    const document = doc as UserDocument;
 
     return {
 
@@ -12,7 +23,7 @@ export class UserMapper {
 
       email: document.email,
 
-      password: document.password,
+      ...(document.password !== undefined && { password: document.password }),
 
       roles: document.roles,
 
@@ -22,90 +33,52 @@ export class UserMapper {
 
       accountStatus: document.accountStatus,
 
-      googleId: document.googleId,
+      ...(document.googleId !== undefined && { googleId: document.googleId }),
 
       ...(document.providerProfile && {
-        providerProfile:
-        {
+        providerProfile: {
           identity: {
-            providerType: document.providerProfile.identity?.providerType,
-            providerName: document.providerProfile.identity?.providerName,
-            responsiblePersonName:
-              document.providerProfile.identity?.responsiblePersonName,
-            address: document.providerProfile.identity?.address,
-            phone: document.providerProfile.identity?.phone,
+            ...(document.providerProfile.identity?.providerType !== undefined && { providerType: document.providerProfile.identity.providerType }),
+            ...(document.providerProfile.identity?.providerName !== undefined && { providerName: document.providerProfile.identity.providerName }),
+            ...(document.providerProfile.identity?.responsiblePersonName !== undefined && { responsiblePersonName: document.providerProfile.identity.responsiblePersonName }),
+            ...(document.providerProfile.identity?.address !== undefined && { address: document.providerProfile.identity.address }),
+            ...(document.providerProfile.identity?.phone !== undefined && { phone: document.providerProfile.identity.phone }),
           },
 
           documents: {
-            identityProof:
-              document.providerProfile.documents?.identityProof
-                ? {
-                  key: document.providerProfile.documents.identityProof.key,
-                  url: document.providerProfile.documents.identityProof.url,
-                  originalName:
-                    document.providerProfile.documents.identityProof.originalName,
-                  mimeType: document.providerProfile.documents.identityProof.mimeType,
-                  size: document.providerProfile.documents.identityProof.size,
-                }
-                : undefined,
+            ...(document.providerProfile.documents?.identityProof && {
+              identityProof: mapFile(document.providerProfile.documents.identityProof),
+            }),
 
-            profileImage:
-              document.providerProfile.documents?.profileImage
-                ? {
-                  key: document.providerProfile.documents.profileImage.key,
-                  url: document.providerProfile.documents.profileImage.url,
-                  originalName:
-                    document.providerProfile.documents.profileImage.originalName,
-                  mimeType: document.providerProfile.documents.profileImage.mimeType,
-                  size: document.providerProfile.documents.profileImage.size,
-                }
-                : undefined,
+            ...(document.providerProfile.documents?.profileImage && {
+              profileImage: mapFile(document.providerProfile.documents.profileImage),
+            }),
 
-            previousCommunityPhotos:
-              document.providerProfile.documents?.previousCommunityPhotos?.map(
-                (file: any) => ({
-                  key: file.key,
-                  url: file.url,
-                  originalName: file.originalName,
-                  mimeType: file.mimeType,
-                  size: file.size,
-                })
-              ),
+            ...(document.providerProfile.documents?.ngoRegistrationDocument && {
+              ngoRegistrationDocument: mapFile(document.providerProfile.documents.ngoRegistrationDocument),
+            }),
 
-            ngoRegistrationDocument:
-              document.providerProfile.documents?.ngoRegistrationDocument
-                ? {
-                  key: document.providerProfile.documents.ngoRegistrationDocument.key,
-                  url: document.providerProfile.documents.ngoRegistrationDocument.url,
-                  originalName: document.providerProfile.documents.ngoRegistrationDocument.originalName,
-                  mimeType: document.providerProfile.documents.ngoRegistrationDocument.mimeType,
-                  size: document.providerProfile.documents.ngoRegistrationDocument.size,
-                }
-                : undefined,
+            ...(document.providerProfile.documents?.logo && {
+              logo: mapFile(document.providerProfile.documents.logo),
+            }),
 
-            logo:
-              document.providerProfile.documents?.logo
-                ? {
-                  key: document.providerProfile.documents.logo.key,
-                  url: document.providerProfile.documents.logo.url,
-                  originalName:
-                    document.providerProfile.documents.logo.originalName,
-                  mimeType: document.providerProfile.documents.logo.mimeType,
-                  size: document.providerProfile.documents.logo.size,
-                }
-                : undefined,
+            ...(document.providerProfile.documents?.previousCommunityPhotos && {
+              previousCommunityPhotos: document.providerProfile.documents.previousCommunityPhotos.map(mapFile),
+            }),
           },
 
           workPreferences: {
-            categoriesWillingToWork:
-              document.providerProfile.workPreferences?.categoriesWillingToWork,
-
-            websiteLinks: document.providerProfile.workPreferences?.websiteLinks,
+            ...(document.providerProfile.workPreferences?.categoriesWillingToWork !== undefined && {
+              categoriesWillingToWork: document.providerProfile.workPreferences.categoriesWillingToWork,
+            }),
+            ...(document.providerProfile.workPreferences?.websiteLinks !== undefined && {
+              websiteLinks: document.providerProfile.workPreferences.websiteLinks,
+            }),
           },
 
           ...(document.providerProfile.volunteerGroupProfile && {
             volunteerGroupProfile: {
-              memberCount: document.providerProfile.volunteerGroupProfile.memberCount
+              memberCount: document.providerProfile.volunteerGroupProfile.memberCount,
             },
           }),
 
@@ -117,13 +90,19 @@ export class UserMapper {
 
           status: {
             applicationStatus: document.providerProfile.status.applicationStatus,
-            providerStatus: document.providerProfile.status.providerStatus,
+            ...(document.providerProfile.status.providerStatus !== undefined && {
+              providerStatus: document.providerProfile.status.providerStatus,
+            }),
             submittedAt: document.providerProfile.status.submittedAt,
-            reviewedAt: document.providerProfile.status.reviewedAt,
-            rejectionReason: document.providerProfile.status.rejectionReason,
+            ...(document.providerProfile.status.reviewedAt !== undefined && {
+              reviewedAt: document.providerProfile.status.reviewedAt,
+            }),
+            ...(document.providerProfile.status.rejectionReason !== undefined && {
+              rejectionReason: document.providerProfile.status.rejectionReason,
+            }),
           },
         },
-      })
+      }),
     }
   }
 }

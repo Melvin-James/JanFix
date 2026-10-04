@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 export interface UsePaginationOptions<T> {
     items: T[];
     itemsPerPage?: number;
-    resetDependencies?: any[];
+    resetDependencies?: React.DependencyList;
 }
 
 export interface UsePaginationResult<T> {

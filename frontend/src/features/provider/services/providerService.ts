@@ -4,6 +4,8 @@ import type { AuthUser } from "../../auth/types/authUser";
 
 import type { ProviderProfile } from "../types/providerProfile";
 
+import type { ProviderDraft } from "../store/providerOnboardingStore";
+
 export const getProviderProfile =
     async (): Promise<{
         success: boolean;
@@ -20,7 +22,7 @@ export const getProviderProfile =
 
 
 export const submitProviderApplication =
-    async (data: any): Promise<{
+    async (data: ProviderDraft): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -41,7 +43,7 @@ export const submitProviderApplication =
 
 
 export const resubmitProviderApplication =
-    async (data: unknown): Promise<{
+    async (data: ProviderDraft): Promise<{
         success: boolean;
         message: string;
         data: {
