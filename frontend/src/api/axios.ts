@@ -38,7 +38,12 @@ axiosInstance.interceptors.response.use(
 
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean; };
 
-    if (error.response?.status !== 401 || originalRequest._retry || originalRequest.url?.includes("/auth/refresh-token")) {
+    if (
+      error.response?.status !== 401 ||
+      originalRequest._retry ||
+      originalRequest.url?.includes("/auth/refresh-token") ||
+      originalRequest.url?.includes("/auth/me")
+    ) {
 
       return Promise.reject(error);
 

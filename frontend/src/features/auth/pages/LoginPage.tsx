@@ -1,6 +1,8 @@
 // LoginPage.tsx
 import { useForm } from "react-hook-form";
 
+import axios from "axios";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useState } from "react";
@@ -55,9 +57,15 @@ function LoginPage() {
 
       setUser(user);
 
-    } catch (err: any) {
+    } catch (error: unknown) {
 
-      setServerError(err?.response?.data?.message || "Invalid email or password");
+      if (axios.isAxiosError(error)) {
+        setServerError(error.response?.data?.message || "Invalid email or password");
+      } else if (error instanceof Error) {
+        setServerError(error.message);
+      } else {
+        setServerError("Invalid email or password");
+      }
 
     } finally {
 
@@ -141,7 +149,7 @@ function LoginPage() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              <FormError message={errors.password?.message as string} />
+              <FormError message={errors.password?.message} />
             </div>
 
             {/* Server error — reserved height to prevent shift */}
@@ -183,14 +191,20 @@ function LoginPage() {
 
                     setUser(user);
 
-                  } catch (err: any) {
+                  } catch (error: unknown) {
 
-                    console.error(err);
+                    console.error(error);
 
-                    setServerError(
-                      err?.response?.data?.message ||
-                      "Google sign-in failed"
-                    );
+                    if (axios.isAxiosError(error)) {
+                      setServerError(
+                        error.response?.data?.message ||
+                        "Google sign-in failed"
+                      );
+                    } else if (error instanceof Error) {
+                      setServerError(error.message);
+                    } else {
+                      setServerError("Google sign-in failed");
+                    }
                   } finally {
 
                     setLoading(false);
