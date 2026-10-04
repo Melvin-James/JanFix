@@ -1,12 +1,16 @@
+import type { QueryFilter } from "mongoose";
+
 import type { ICategoryRepository } from "../../domain/interface/ICategoryRepository.js";
 
 import type { Category } from "../../domain/entities/Category.js";
 
-import { CategoryModel } from "../models/CategoryModel.js";
+import { CategoryModel, type CategoryDocument } from "../models/CategoryModel.js";
 
 import { BaseRepository } from "./base/BaseRepository.js";
 
 import { CategoryMapper } from "../mappers/CategoryMapper.js";
+
+type CategoryFilter = QueryFilter<CategoryDocument>;
 
 export class CategoryRepository extends BaseRepository<Category> implements ICategoryRepository {
     constructor() {
@@ -39,7 +43,7 @@ export class CategoryRepository extends BaseRepository<Category> implements ICat
         pageSize: number,
         filters?: { search?: string; status?: string }
     ) {
-        const query: any = {};
+        const query: CategoryFilter = {};
 
         if (filters?.status && filters.status !== "ALL") {
             query.isActive = filters.status === "ACTIVE";

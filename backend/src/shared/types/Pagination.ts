@@ -14,5 +14,9 @@ export interface PaginationQueryParams {
     page?: number;
     pageSize?: number;
     search?: string;
-    [key: string]: any;
+    status?: string;
+    role?: string;
+    verification?: string;
+    authProvider?: string;
+    providerType?: string;
 }

@@ -1,8 +1,11 @@
+
+import type { QueryFilter } from "mongoose";
+
 import type { IUserRepository } from "../../domain/interface/IUserRepository.js";
 
 import type { User } from "../../domain/entities/User.js";
 
-import UserModel from "../models/UserModel.js";
+import UserModel, { type UserDocument } from "../models/UserModel.js";
 
 import { BaseRepository } from "./base/BaseRepository.js";
 
@@ -17,6 +20,12 @@ import { AppMessages } from "../../shared/constants/messages.js";
 import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
 
 import { Role } from "../../domain/enums/Role.js";
+
+import { AccountStatus } from "../../domain/enums/AccountStatus.js";
+
+import { AuthProvider } from "../../domain/enums/AuthProvider.js";
+
+type UserFilter = QueryFilter<UserDocument>;
 
 export class UserRepository extends BaseRepository<User> implements IUserRepository {
 
@@ -116,7 +125,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     pageSize: number,
     filters?: { search?: string; status?: string; providerType?: string }
   ) {
-    const query: any = { providerProfile: { $exists: true } };
+    const query: UserFilter = { providerProfile: { $exists: true } };
 
     if (filters?.status && filters.status !== "ALL") {
       query["providerProfile.status.applicationStatus"] = filters.status;
@@ -158,13 +167,13 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     pageSize: number,
     filters?: { search?: string; providerType?: string; status?: string }
   ) {
-    const query: any = {
+    const query: UserFilter = {
       providerProfile: { $exists: true },
       "providerProfile.status.applicationStatus": ApplicationStatus.APPROVED,
     };
 
     if (filters?.status && filters.status !== "ALL") {
-      query.accountStatus = filters.status;
+      query.accountStatus = filters.status as AccountStatus;
     }
 
     if (filters?.providerType && filters.providerType !== "ALL") {
@@ -203,12 +212,12 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     pageSize: number,
     filters?: { search?: string; role?: string; verification?: string; authProvider?: string }
   ) {
-    const query: any = {
+    const query: UserFilter = {
       roles: { $in: [Role.USER] },
     };
 
     if (filters?.role && filters.role !== "ALL") {
-      query.roles = { $in: [filters.role] };
+      query.roles = { $in: [filters.role as Role] };
     }
 
     if (filters?.verification && filters.verification !== "ALL") {
@@ -216,7 +225,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     }
 
     if (filters?.authProvider && filters.authProvider !== "ALL") {
-      query.authProvider = filters.authProvider;
+      query.authProvider = filters.authProvider as AuthProvider;
     }
 
     if (filters?.search && filters.search.trim() !== "") {

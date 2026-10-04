@@ -1,11 +1,10 @@
+import type { Document } from "mongoose";
+
 export abstract class BaseRepository<T> {
 
   constructor(
-
-    protected model: any,
-
-    protected toEntity: (document: any) => T
-
+    protected model: { create(data: unknown): Promise<Document>; findById(id: string): Promise<Document | null>; findByIdAndUpdate(id: string, data: unknown, opts: { new: boolean }): Promise<Document | null>; findByIdAndDelete(id: string): Promise<Document | null> },
+    protected toEntity: (document: Document) => T
   ) { }
 
   async create(data: Partial<T>): Promise<T> {
@@ -47,7 +46,6 @@ export abstract class BaseRepository<T> {
       return null;
     
     }
-
 
     return this.toEntity(updatedDocument);
     

@@ -2,7 +2,7 @@ import { hashData } from "../../../shared/utils/hashUtil.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
 import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
-import type { RegisterResponseDTO } from "../../dto/auth/RegisterResponseDTO.js";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 import { RegisterUserMapper } from "../../mappers/RegisterUserMapper.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 import { Role } from "../../../domain/enums/Role.js";
@@ -25,7 +25,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
         private emailService: IEmailService
     ) { }
 
-    async execute(dto: RegisterUserDTO): Promise<RegisterResponseDTO> {
+    async execute(dto: RegisterUserDTO): Promise<AuthUserDTO> {
 
         const existingUser = await this.userRepository.findByEmail(dto.email);
 
