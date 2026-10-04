@@ -3,7 +3,7 @@ import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
 import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
 import type { RegisterResponseDTO } from "../../dto/auth/RegisterResponseDTO.js";
-import { UserMapper } from "../../mappers/UserMapper.js";
+import { RegisterUserMapper } from "../../mappers/RegisterUserMapper.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 import { Role } from "../../../domain/enums/Role.js";
 import type { User } from "../../../domain/entities/User.js";
@@ -29,42 +29,49 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
         const existingUser = await this.userRepository.findByEmail(dto.email);
 
-        if (existingUser) {
+        if (existingUser && existingUser.isVerified) {
             throw new ApiError(HttpStatusCode.CONFLICT, AppMessages.ERROR.USER_ALREADY_EXISTS);
         }
 
         const otp = generateOtp();
-
         const hashedOtp = await hashData(otp);
-
         const hashedPassword = await hashData(dto.password);
 
-        const user: User = {
+        let targetUser: User;
 
-            fullName: dto.fullName,
+        if (!existingUser) {
+            const user: User = {
+                fullName: dto.fullName,
+                email: dto.email,
+                password: hashedPassword,
+                roles: [Role.USER],
+                isVerified: false,
+                authProvider: AuthProvider.LOCAL,
+                accountStatus: AccountStatus.ACTIVE,
+            };
+            targetUser = await this.userRepository.create(user);
+        } else {
+            // Unverified user retrying registration - update details
+            existingUser.fullName = dto.fullName;
+            existingUser.password = hashedPassword;
+            targetUser = await this.userRepository.updateUser(existingUser);
+        }
 
-            email: dto.email,
+        await this.otpRepository.saveOtp(targetUser.email, hashedOtp, OtpPurpose.VERIFY_ACCOUNT);
 
-            password: hashedPassword,
+        try {
+            await this.emailService.sendOtpEmail(
+                targetUser.email,
+                otp
+            );
+        } catch (error) {
+            console.error("Failed to send registration OTP email:", error);
+            throw new ApiError(
+                HttpStatusCode.INTERNAL_SERVER_ERROR,
+                "Failed to send verification code email. Please try again."
+            );
+        }
 
-            roles: [Role.USER],
-            
-            isVerified: false,
-
-            authProvider: AuthProvider.LOCAL,
-
-            accountStatus: AccountStatus.ACTIVE,
-        };
-
-        const createdUser = await this.userRepository.create(user);
-
-        await this.otpRepository.saveOtp(createdUser.email, hashedOtp, OtpPurpose.VERIFY_ACCOUNT);
-
-        await this.emailService.sendOtpEmail(
-            createdUser.email,
-            otp
-        );
-
-        return UserMapper.toAuthResponse(createdUser);
+        return RegisterUserMapper.toResponse(targetUser);
     }
-}
+}

@@ -1,6 +1,6 @@
-import type { User } from "../../../domain/entities/User.js";
+import type { User } from "../../../../domain/entities/User.js";
 
-import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.js";
+import type { SubmitProviderApplicationDTO } from "../../../dto/provider/SubmitProviderApplicationDTO.js";
 
 
 export interface IResubmitProviderApplicationUseCase {

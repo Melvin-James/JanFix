@@ -8,11 +8,12 @@ import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
-import { UserMapper } from "../../mappers/UserMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.js";
 
 import type { IRefreshTokenUseCase } from "../usecase interfaces/auth/IRefreshTokenUseCase.js";
 
 import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
+import type { RefreshTokenPayload } from "../../../shared/types/RefreshTokenPayload.js";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     constructor(
@@ -35,10 +36,8 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
             decoded =
                 this.jwtService.verifyRefreshToken(
                     refreshToken
-                ) as {
-
-                    userId: string;
-                };
+                ) as RefreshTokenPayload;
+    
 
         } catch {
 

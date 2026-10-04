@@ -1,5 +1,9 @@
-import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
+import type { RegisterResponseDTO } from "../../../dto/auth/RegisterResponseDTO.js";
+
+import type { RegisterUserDTO } from "../../../dto/auth/RegisterUserDTO.js";
 
 export interface IRegisterUserUseCase {
-    execute(dto: RegisterUserDTO): Promise<any>;
+    
+    execute(dto: RegisterUserDTO): Promise<RegisterResponseDTO>;
+
 }

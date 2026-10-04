@@ -1,6 +1,6 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
+import type { UploadedFile } from "../../../../domain/entities/UploadedFile.js";
 
-import type { UploadFolder } from "../../../domain/enums/UploadFolder.js";
+import type { UploadFolder } from "../../../../domain/enums/UploadFolder.js";
 
 export interface IUploadFileUseCase {
 

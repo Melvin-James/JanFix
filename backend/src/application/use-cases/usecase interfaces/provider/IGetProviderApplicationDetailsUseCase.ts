@@ -1,4 +1,4 @@
-import type { ProviderApplicationDetailsResponseDTO } from "../../dto/admin/ProviderApplicationDetailsResponseDTO.js";
+import type { ProviderApplicationDetailsResponseDTO } from "../../../dto/admin/ProviderApplicationDetailsResponseDTO.js";
 
 export interface IGetProviderApplicationDetailsUseCase {
 

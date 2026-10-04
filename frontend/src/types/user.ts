@@ -1,0 +1,1 @@
+export type UserRole = "USER" | "SERVICE_PROVIDER" | "ADMIN";

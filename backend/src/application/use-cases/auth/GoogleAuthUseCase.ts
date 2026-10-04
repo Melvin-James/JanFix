@@ -10,7 +10,7 @@ import type { IJwtService } from "../../../domain/interface/IJwtService.js";
 
 import { Role } from "../../../domain/enums/Role.js";
 
-import { UserMapper } from "../../mappers/UserMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.js";
 
 import type { IGoogleAuthUseCase } from "../usecase interfaces/auth/IGoogleAuthUseCase.js";
 
@@ -97,7 +97,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
 
             refreshToken,
 
-            user: UserMapper.toAuthResponse(user) as any,
+            user: UserMapper.toAuthResponse(user),
         };
     }
 }

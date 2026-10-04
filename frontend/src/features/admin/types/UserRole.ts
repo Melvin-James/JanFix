@@ -1,1 +1,1 @@
-export type UserRole = "USER" | "SERVICE_PROVIDER" | "ADMIN";
+export type { UserRole } from "../../../types/user";

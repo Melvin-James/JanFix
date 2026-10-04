@@ -6,7 +6,7 @@ import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
-import { UserMapper } from "../../mappers/UserMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.js";
 
 import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 

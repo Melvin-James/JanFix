@@ -14,7 +14,7 @@ import type { IGetProviderProfileUseCase } from "../../../application/use-cases/
 
 import { AppMessages } from "../../../shared/constants/messages.js";
 
-import { UserMapper } from "../../../application/mappers/UserMapper.js";
+import { UserMapper } from "../../../application/mappers/LoginMapper.js";
 
 export class ProviderController {
 
