@@ -1,59 +1,100 @@
 import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useState } from "react";
+
 import { useNavigate, Link } from "react-router-dom";
+
 import axios from "axios";
 
 import { registerSchema, type RegisterFormData } from "../validations/registerSchema";
+
 import { registerUser } from "../services/authService";
+
 import AuthLayout from "../components/AuthLayout";
+
 import FormField from "../../../components/UI/FormField";
-import PasswordField from "../../../components/UI/PasswordField";
+
+import PasswordField from "../components/PasswordField";
+
 import GoogleAuthButton from "../components/GoogleAuthButton";
 
 function RegisterPage() {
+    
     const {
+        
         register,
+        
         handleSubmit,
+        
         formState: { errors },
+    
     } = useForm<RegisterFormData>({
+        
         resolver: zodResolver(registerSchema),
+        
         shouldUnregister: true,
+    
     });
 
     const [loading, setLoading] = useState(false);
+    
     const [serverError, setServerError] = useState("");
+    
     const navigate = useNavigate();
 
     const onSubmit = async (data: RegisterFormData) => {
+
         setServerError("");
+        
         try {
+
             setLoading(true);
+            
             await registerUser(data);
-            navigate("/verify-otp", { state: { email: data.email } });
+
+            sessionStorage.setItem("pending_otp_email", data.email);
+
+            navigate("/verify-otp");
+        
         } catch (err: unknown) {
+            
             if (axios.isAxiosError(err)) {
+                
                 setServerError(
+                    
                     err.response?.data?.message || "Registration failed. Please try again."
+                
                 );
+            
             } else if (err instanceof Error) {
+                
                 setServerError(err.message);
+            
             } else {
+                
                 setServerError("Something went wrong");
+            
             }
+        
         } finally {
+            
             setLoading(false);
+        
         }
+    
     };
 
     return (
         <AuthLayout
             title="Join the Movement for a Better City"
             subtitle="Create your JanFix account to report issues, track solutions, and help improve your community."
+            heroImage="https://images.unsplash.com/photo-1694937502023-f5297fd89d36?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         >
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4"
+                className="w-full max-w-[430px] rounded-lg border border-slate-300 bg-slate-50 px-8 py-9 shadow-sm"
                 noValidate
             >
                 <p
@@ -96,7 +137,7 @@ function RegisterPage() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-md bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 transition"
+                    className="mt-2 w-full rounded-md bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
                 >
                     {loading ? "Creating Account..." : "Continue"}
                 </button>
@@ -106,9 +147,9 @@ function RegisterPage() {
                     onLoadingChange={setLoading}
                 />
 
-                <p className="mt-4 text-center text-xs text-slate-500">
+                <p className="pt-4 text-center text-sm text-gray-500">
                     Already have an account?{" "}
-                    <Link to="/login" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                    <Link to="/login" className="font-medium text-blue-600 hover:underline">
                         Login
                     </Link>
                 </p>

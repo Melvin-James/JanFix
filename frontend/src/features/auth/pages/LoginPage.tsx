@@ -9,23 +9,23 @@ import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
-import { Eye, EyeOff } from "lucide-react";
-
 import { loginUser } from "../services/authService";
 
 import { useAuthStore } from "../../../store/authStore";
 
 import { loginSchema, type LoginFormData } from "../validations/loginSchema";
 
-import FormError from "../../../components/UI/FormError";
+import AuthLayout from "../components/AuthLayout";
 
-import { GoogleLogin } from "@react-oauth/google";
+import FormField from "../../../components/UI/FormField";
 
-import { googleLogin } from "../services/authService";
+import PasswordField from "../components/PasswordField";
+
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 function LoginPage() {
 
-  const {register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
 
     resolver: zodResolver(loginSchema),
 
@@ -37,7 +37,6 @@ function LoginPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(false);
 
   const [serverError, setServerError] = useState<string>("");
 
@@ -70,165 +69,75 @@ function LoginPage() {
     } finally {
 
       setLoading(false);
-      
+
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white">
-      {/* Left visual */}
-      <div
-        className="hidden md:flex relative w-1/2 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1600&q=80')",
-        }}
+    <AuthLayout
+      title="Fix Your City, Together"
+      subtitle="Log in to report issues, track progress, and be part of a
+            transparent system that turns problems into action."
+      heroImage="https://images.unsplash.com/photo-1695692929091-cdafc96ec082?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    >
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-[430px] rounded-lg border border-slate-300 bg-slate-50 px-8 py-9 shadow-sm"
+        noValidate
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
-        <div className="relative z-10 mt-auto p-10 text-white">
-          <h2 className="text-3xl font-bold">JanFix</h2>
-          <p className="mt-2 text-sm text-white/80 max-w-sm">
-            Empowering citizens to build smarter cities through real-time
-            reporting and transparent governance.
-          </p>
-        </div>
-      </div>
 
-      {/* Right form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-10">
-        <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Fix Your City, Together.
-          </h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Log in to report issues, track progress, and be part of a
-            transparent system that turns problems into action.
-          </p>
+        <p
+          className={`text-sm text-center transition-colors ${serverError ? "text-red-500" : "text-transparent select-none"
+            }`}
+        >
+          {serverError || "\u00A0"}
+        </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-1" noValidate>
-            {/* Email */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="name@company.com"
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                {...register("email")}
-              />
-              <FormError message={errors.email?.message} />
-            </div>
+        <FormField
+          label="Email Address"
+          type="email"
+          placeholder="name@example.com"
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs font-medium text-blue-600 hover:underline"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-              <div className="relative mt-1">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <FormError message={errors.password?.message} />
-            </div>
+        <PasswordField
+          label="Password"
+          placeholder="••••••••"
+          error={errors.password?.message}
+          {...register("password")}
+        />
 
-            {/* Server error — reserved height to prevent shift */}
-            <p className="min-h-[18px] text-xs text-red-500 leading-[18px]">
-              {serverError || "\u00A0"}
-            </p>
+        <Link
+          to="/forgot-password"
+          className="text-xs font-medium text-blue-600 hover:underline"
+        >
+          Forgot Password?
+        </Link>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-2 w-full rounded-md bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-2 w-full rounded-md bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+        >{loading ? "Logging in..." : "Login"}</button>
 
-            <div className="flex items-center gap-3 py-3">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-xs text-gray-400">OR</span>
-              <div className="h-px flex-1 bg-gray-200" />
-            </div>
+        <GoogleAuthButton
+          onError={setServerError}
+          onLoadingChange={setLoading}
+        />
 
-            <GoogleLogin
-                onSuccess={async (credentialResponse) => {
+        <p className="pt-4 text-center text-sm text-gray-500">
+          Don't have an account?{" "}
+          <Link to="/register" className="font-medium text-blue-600 hover:underline">
+            Sign up
+          </Link>
+        </p>
 
-                  try {
+      </form>
 
-                    setLoading(true);
-                    setServerError("");
-
-                    const credential = credentialResponse.credential;
-
-                    if(!credential) {
-                      throw new Error("Google credential was not received");
-                    }
-
-                    const response = await googleLogin(credential);
-
-                    const {user } = response.data;
-
-                    setUser(user);
-
-                  } catch (error: unknown) {
-
-                    console.error(error);
-
-                    if (axios.isAxiosError(error)) {
-                      setServerError(
-                        error.response?.data?.message ||
-                        "Google sign-in failed"
-                      );
-                    } else if (error instanceof Error) {
-                      setServerError(error.message);
-                    } else {
-                      setServerError("Google sign-in failed");
-                    }
-                  } finally {
-
-                    setLoading(false);
-                  }
-                }} 
-
-                onError={() => {
-                  setServerError("Google sign-in failed");
-                }}
-
-                width="100%"
-            ></GoogleLogin>
-
-            <p className="pt-4 text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link to="/register" className="font-medium text-blue-600 hover:underline">
-                Sign up
-              </Link>
-            </p>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+    </AuthLayout>
+  )
 }
 
 export default LoginPage;

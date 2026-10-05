@@ -1,136 +1,203 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import axios from "axios";
 
+import { verifyOtpSchema, type VerifyOtpFormData } from "../validations/verifyOtpSchema";
+
 import { verifyOtp, resendOtp } from "../services/authService";
+
 import AuthLayout from "../components/AuthLayout";
-import OtpInput from "../../../components/UI/OtpInput";
+
+import OtpInput from "../components/OtpInput";
+
 import useCountdown from "../../../hooks/useCountdown";
 
 function VerifyOtpPage() {
-    const location = useLocation();
+
     const navigate = useNavigate();
 
-    // Preserve email across accidental page refreshes
-    const stateEmail = location.state?.email as string | undefined;
-    const [email, setEmail] = useState<string>(() => {
-        if (stateEmail) {
-            sessionStorage.setItem("pending_otp_email", stateEmail);
-            return stateEmail;
-        }
-        return sessionStorage.getItem("pending_otp_email") || "";
+    const [email, setEmail] = useState("");
+
+    const [loading, setLoading] = useState(false);
+
+    const [resending, setResending] = useState(false);
+
+    const [serverError, setServerError] = useState("");
+
+    const {
+
+        secondsLeft,
+
+        isRunning,
+
+        start: startCountdown,
+
+
+    } = useCountdown(30);
+
+    const {
+
+        setValue,
+
+        watch,
+
+        handleSubmit,
+
+        formState: { errors },
+
+    } = useForm<VerifyOtpFormData>({
+        resolver: zodResolver(verifyOtpSchema),
+        defaultValues: {
+            otp: "",
+        },
+        mode: "onSubmit",
     });
 
-    const [otp, setOtp] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [resending, setResending] = useState(false);
-    const [error, setError] = useState("");
-
-    const { secondsLeft, isRunning, start: startCountdown } = useCountdown(30);
+    const otp = watch("otp");
 
     useEffect(() => {
-        if (stateEmail) {
-            setEmail(stateEmail);
-            sessionStorage.setItem("pending_otp_email", stateEmail);
-        }
-    }, [stateEmail]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-
-        if (!email) {
-            setError("Email address is missing. Please go back to registration.");
+        const pendingEmail = sessionStorage.getItem("pending_otp_email");
+        
+        if(!pendingEmail) {
+            navigate("/register", {replace: true});
             return;
         }
 
-        if (otp.length < 6) {
-            setError("Please enter the complete 6-digit verification code.");
-            return;
-        }
+        setEmail(pendingEmail);
 
-        try {
-            setLoading(true);
-            await verifyOtp({ email, otp });
-            sessionStorage.removeItem("pending_otp_email");
-            navigate("/login");
-        } catch (err: unknown) {
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || "Invalid or expired code.");
-            } else if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError("Verification failed.");
-            }
-        } finally {
-            setLoading(false);
+        startCountdown(30);
+
+    }, [email, navigate, startCountdown]);
+
+
+    const handleOtpChange = (value: string) => {
+        setValue("otp", value, {
+            shouldValidate: false,
+            shouldDirty: true,
+        });
+
+        if (serverError) {
+            setServerError("");
         }
     };
 
     const handleResend = async () => {
-        if (isRunning || resending) return;
-        setError("");
 
-        if (!email) {
-            setError("Missing email address");
+        if (!email || isRunning || resending) {
             return;
         }
 
         try {
+
             setResending(true);
-            await resendOtp({ email, purpose: "VERIFY_ACCOUNT" });
-            setOtp("");
+
+            setServerError("");
+
+            await resendOtp({
+                email,
+                purpose: "VERIFY_ACCOUNT",
+            });
+
+            setValue("otp", "", {
+                shouldValidate: false,
+                shouldDirty: false,
+            });
+
             startCountdown(30);
-        } catch (err: unknown) {
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || "Failed to resend code.");
-            } else if (err instanceof Error) {
-                setError(err.message);
+        } catch (error: unknown) {
+
+            if (axios.isAxiosError(error)) {
+                setServerError(
+                    error.response?.data?.message ||
+                    "Failed to resend code."
+                );
+            } else if (error instanceof Error) {
+                setServerError(error.message);
             } else {
-                setError("Failed to resend code.");
+                setServerError("Failed to resend code.");
             }
         } finally {
             setResending(false);
         }
     };
 
+
+    const onSubmit = async (data: VerifyOtpFormData) => {
+        try {
+            setLoading(true);
+            setServerError("");
+
+            await verifyOtp({ email, otp: data.otp });
+
+            sessionStorage.removeItem("pending_otp_email");
+
+            navigate("/login");
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                setServerError(
+                    error.response?.data?.message ||
+                    "Something went wrong."
+                );
+            } else if (error instanceof Error) {
+                setServerError(error.message);
+            } else {
+                setServerError("Something went wrong");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const validationError = errors.otp?.message;
+
     return (
         <AuthLayout
-            title="Verify Your Account"
-            subtitle={`We've sent a 6-digit code to ${email || "your email"}. Enter it below to complete your registration.`}
+            title="Verify Code"
+            subtitle={`We've sent a 6-digit code to ${email || "your email"}. Enter it below to complete verification`}
             heroImage="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1600&q=80"
         >
             <form
-                onSubmit={handleSubmit}
-                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-6"
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
                 noValidate
             >
+
                 <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-3">
-                        Verification Code
+                    <label className="mb-3 block text-xs font-medium text-gray-500">
+                        Verification code
                     </label>
 
                     <OtpInput
                         value={otp}
-                        onChange={setOtp}
+                        onChange={handleOtpChange}
                         disabled={loading}
                     />
 
-                    <div className="min-h-[20px] mt-2 text-xs text-red-500">
-                        {error || "\u00A0"}
+                    <div className="mt-2 min-h-[20px] text-xs text-red-500">
+                        {validationError || serverError || "\u00A0"}
                     </div>
 
                     <div className="mt-2 flex items-center justify-between text-sm">
-                        <span className="text-gray-500">Didn&apos;t receive code?</span>
+                        <span className="text-gray-500">
+                            Didn&apos;t receive code?
+                        </span>
+
                         <button
                             type="button"
                             onClick={handleResend}
                             disabled={isRunning || resending}
-                            className="font-semibold text-blue-600 disabled:text-blue-400 disabled:cursor-not-allowed hover:underline transition"
+                            className="font-semibold text-blue-600 transition hover:underline disabled:cursor-not-allowed disabled:text-blue-400"
                         >
                             {resending ? "Sending..." : "Resend OTP"}{" "}
                             {isRunning && (
-                                <span className="text-gray-400 font-normal">
+                                <span className="font-normal text-gray-400">
                                     ({secondsLeft}s)
                                 </span>
                             )}
@@ -140,23 +207,15 @@ function VerifyOtpPage() {
 
                 <button
                     type="submit"
-                    disabled={loading || otp.length < 6}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                    disabled={loading}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
                 >
-                    {loading ? "Verifying..." : "Create Account →"}
+                    {loading ? "Verifying..." : "Verify Code"}
                 </button>
 
-                <div className="border-t border-gray-200 pt-4 text-center">
-                    <Link
-                        to="/register"
-                        className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition"
-                    >
-                        <span>←</span> Back to Signup
-                    </Link>
-                </div>
             </form>
         </AuthLayout>
-    );
+    )
 }
 
 export default VerifyOtpPage;
