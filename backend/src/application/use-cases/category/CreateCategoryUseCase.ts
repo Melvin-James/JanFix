@@ -24,8 +24,12 @@ export class CreateCategoryUseCase implements ICreateCategoryUseCase {
 
     async execute(data: CreateCategoryDTO): Promise<CategoryResponseDTO> {
 
+        const normalizedName = data.name.trim();
+
+        const normalizedDescription = data.description.trim();
+
         const existingCategory = await this.categoryRepository.findByName(
-            data.name
+            normalizedName
         );
 
         if(existingCategory) {
@@ -33,8 +37,8 @@ export class CreateCategoryUseCase implements ICreateCategoryUseCase {
         }
 
         const category: Category = {
-            name: data.name,
-            description: data.description,
+            name: normalizedName,
+            description: normalizedDescription,
             isActive: true,
             createdAt: new Date(),
             updatedAt: new Date(),

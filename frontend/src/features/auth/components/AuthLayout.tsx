@@ -10,7 +10,7 @@ export interface AuthLayoutProps {
 export function AuthLayout({
     title,
     subtitle,
-    heroImage = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1600&q=80",
+    heroImage,
     children,
 }: AuthLayoutProps) {
     return (

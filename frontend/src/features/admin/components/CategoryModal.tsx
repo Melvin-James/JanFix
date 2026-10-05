@@ -94,13 +94,14 @@ export function CategoryModal({
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="px-6 py-5 space-y-4">
-            {serverError && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-                {serverError}
-              </div>
-            )}
-
+          <div className="space-y-4 px-6 py-5">
+            <div className="min-h">
+              {serverError && (
+                <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+                  {serverError}
+                </div>
+              )}
+            </div>
             <div>
               <label
                 htmlFor="categoryName"
@@ -120,9 +121,13 @@ export function CategoryModal({
                 placeholder="e.g. Plumbing, Electrical, Cleaning"
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
-              {nameError && (
-                <p className="mt-1 text-xs text-red-600">{nameError}</p>
-              )}
+              <div className="min-h-5">
+                {nameError && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {nameError}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div>
@@ -144,9 +149,13 @@ export function CategoryModal({
                 placeholder="Describe what services belong to this category..."
                 className="w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
-              {descriptionError && (
-                <p className="mt-1 text-xs text-red-600">{descriptionError}</p>
-              )}
+              <div className="min-h-5">
+                {descriptionError && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {descriptionError}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -170,8 +179,8 @@ export function CategoryModal({
                   ? "Saving..."
                   : "Creating..."
                 : isEditing
-                ? "Save Changes"
-                : "Create Category"}
+                  ? "Save Changes"
+                  : "Create Category"}
             </button>
           </div>
         </form>

@@ -1,6 +1,6 @@
 import { forwardRef, useState, type InputHTMLAttributes } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import FormError from "./FormError";
+import FormError from "../../../components/UI/FormError";
 
 export interface PasswordFieldProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
@@ -16,7 +16,7 @@ const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
                 <label className="block text-sm font-medium text-slate-700">
                     {label}
                 </label>
-                <div className="relative mt-1">
+                <div className="relative mt-2">
                     <input
                         {...inputProps}
                         ref={ref}
