@@ -1,350 +1,195 @@
-import { useForm, Controller } from "react-hook-form";
-
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 
 import ProviderOnboardingLayout from "../components/ProviderOnboardingLayout";
-
 import CommonProviderFields from "../components/CommonProviderFields";
-
 import VolunteerGroupFields from "../components/VolunteerGroupFields";
-
 import OrganizationFields from "../components/OrganizationFields";
-
 import CategorySelector from "../components/CategorySelector";
-
-
+import WebsiteLinksField from "../components/WebsiteLinksField";
 import FormError from "../../../components/UI/FormError";
 
-
 import {
-
-    providerStep2Schema,
-
-    type ProviderStep2FormData,
-
+  providerStep2Schema,
+  type ProviderStep2FormData,
 } from "../validations/providerStep2Schema";
 
-
 import { ProviderType } from "../types/providerTypes";
-
-
 import { useProviderOnboardingStore } from "../store/providerOnboardingStore";
 
-import WebsiteLinksField from "../components/WebsiteLinksField";
-
 function ProviderStep2Page() {
+  const navigate = useNavigate();
 
+  const draft = useProviderOnboardingStore((state) => state.draft);
 
-    const navigate = useNavigate();
+  const updateDraft = useProviderOnboardingStore(
+    (state) => state.updateDraft,
+  );
 
+  const {
+    register,
+    control,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProviderStep2FormData>({
+    resolver: zodResolver(providerStep2Schema),
 
-    const draft =
-        useProviderOnboardingStore(
-            state => state.draft
-        );
+    defaultValues: {
+      ...draft,
+      websiteLinks: draft.websiteLinks ?? [],
+    },
+  });
 
+  const providerType = draft.providerType;
 
-    const updateDraft =
-        useProviderOnboardingStore(
-            state => state.updateDraft
-        );
-
-
-    const {
-
-        register,
-
-        control,
-
-        setValue,
-
-        handleSubmit,
-
-        formState: { errors },
-
-    } = useForm<ProviderStep2FormData>({
-
-        resolver:
-            zodResolver(
-                providerStep2Schema
-            ),
-
-
-        defaultValues: {
-
-            ...draft,
-            websiteLinks: draft.websiteLinks ?? [],
-
-        },
-
+  const onSubmit = (data: ProviderStep2FormData) => {
+    updateDraft({
+      ...data,
     });
 
+    navigate("/provider/onboarding/review");
+  };
 
+  const heading =
+    providerType === ProviderType.VOLUNTEER_GROUP
+      ? "Tell Us About Your Volunteer Group"
+      : providerType === ProviderType.NGO
+        ? "Tell Us About Your Organization"
+        : "Complete Your Profile";
 
-    const providerType =
-        draft.providerType;
+  const description =
+    providerType === ProviderType.VOLUNTEER_GROUP
+      ? "Help us understand your volunteer community and the civic activities you participate in."
+      : providerType === ProviderType.NGO
+        ? "Help us understand your organization and the community initiatives you focus on."
+        : "Help us build a trusted civic community by sharing a few details about yourself.";
 
+  const securityMessage =
+    providerType === ProviderType.VOLUNTEER_GROUP
+      ? "JanFix supports collaborative community participation and civic improvement initiatives."
+      : providerType === ProviderType.NGO
+        ? "Your information helps us maintain a trusted and collaborative community platform."
+        : "Your information is securely stored and only used to maintain a safe and trusted community platform.";
 
+  return (
+    <ProviderOnboardingLayout currentStep={2}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto w-full max-w-3xl"
+      >
+        <header className="mb-7">
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            {heading}
+          </h1>
 
-    const onSubmit = (
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            {description}
+          </p>
+        </header>
 
-        data: ProviderStep2FormData
+        <div className="space-y-6">
+          <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <CommonProviderFields
+              register={register}
+              control={control}
+              errors={errors}
+            />
+          </section>
 
-    ) => {
+          {providerType === ProviderType.VOLUNTEER_GROUP && (
+            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+              <VolunteerGroupFields
+                register={register}
+                control={control}
+                errors={errors}
+              />
+            </section>
+          )}
 
+          {providerType === ProviderType.NGO && (
+            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+              <OrganizationFields
+                register={register}
+                control={control}
+                errors={errors}
+              />
+            </section>
+          )}
 
-        updateDraft({
-
-            ...data,
-
-        });
-
-
-        navigate(
-
-            "/provider/onboarding/review"
-
-        );
-
-    };
-
-
-
-    return (
-
-        <ProviderOnboardingLayout currentStep={2}>
-
-
-            <form
-
-                onSubmit={
-                    handleSubmit(onSubmit)
-                }
-
-                className="max-w-3xl"
+          <section aria-labelledby="provider-categories">
+            <h2
+              id="provider-categories"
+              className="mb-3 text-xs font-semibold text-slate-700"
             >
+              How would you like to help?
+            </h2>
 
+            <Controller
+              name="categoriesWillingToWork"
+              control={control}
+              defaultValue={[]}
+              render={({ field }) => (
+                <CategorySelector
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
 
-                <h1 className="text-3xl font-bold text-slate-900">
-
-                    Profile Setup
-
-                </h1>
-
-
-
-                <p className="mt-2 text-slate-500">
-
-                    Provide your details and
-                    supporting documents.
-
-                </p>
-
-
-
-                <div className="mt-8">
-
-
-                    <CommonProviderFields
-
-                        register={register}
-
-                        control={control}
-
-                        errors={errors}
-
-                    />
-
-
-                </div>
-                
-
-
-
-
-                {
-
-                    providerType ===
-                    ProviderType.VOLUNTEER_GROUP && (
-
-
-                        <div className="mt-8">
-
-
-                            <VolunteerGroupFields
-
-                                register={register}
-
-                                control={control}
-
-                                errors={errors}
-
-                            />
-
-
-                        </div>
-
-                    )
-
+            <div className="min-h-7" aria-live="polite">
+              <FormError
+                message={
+                  errors.categoriesWillingToWork?.message as string
                 }
-
-
-
-
-
-                {
-
-                    providerType ===
-                    ProviderType.NGO && (
-
-
-                        <div className="mt-8">
-
-
-                            <OrganizationFields
-
-                                register={register}
-
-                                control={control}
-
-                                errors={errors}
-
-                            />
-
-
-                        </div>
-
-                    )
-
-                }
-
-
-
-
-
-                <div className="mt-6">
-
-
-                    <label
-
-                        className="
-                        block
-                        text-sm
-                        font-medium
-                        text-slate-700
-                        mb-3
-                        "
-
-                    >
-
-
-                        Categories Willing To Work
-
-
-                    </label>
-
-
-
-
-                    <Controller
-
-
-                        name="categoriesWillingToWork"
-
-
-                        control={control}
-
-
-                        defaultValue={[]}
-
-
-                        render={({ field }) => (
-
-
-                            <CategorySelector
-
-
-                                value={field.value}
-
-
-                                onChange={field.onChange}
-
-
-                            />
-
-
-                        )}
-
-                    />
-
-
-
-
-                    <FormError
-
-
-                        message={
-
-                            errors
-                                .categoriesWillingToWork
-                                ?.message as string
-
-                        }
-
-
-                    />
-
-                    <div className="mt-8">
-                        <WebsiteLinksField
-                            control={control}
-                            register={register}
-                            setValue={setValue}
-                            errors={errors}
-                        />
-                    </div>
-                </div>
-
-
-
-
-                <button
-
-
-                    type="submit"
-
-
-                    className="
-                    mt-8
-                    rounded-lg
-                    bg-blue-600
-                    px-6
-                    py-3
-                    text-white
-                    font-medium
-                    hover:bg-blue-700
-                    "
-
-                >
-
-
-                    Continue
-
-
-                </button>
-
-
-
-            </form>
-
-
-        </ProviderOnboardingLayout>
-
-    );
-
+              />
+            </div>
+          </section>
+
+          <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <WebsiteLinksField
+              control={control}
+              register={register}
+              setValue={setValue}
+              errors={errors}
+            />
+          </section>
+
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md bg-blue-50 px-4 py-3 text-blue-700">
+            <ShieldCheck
+              size={18}
+              strokeWidth={1.8}
+              className="mt-0.5 shrink-0"
+              aria-hidden="true"
+            />
+
+            <p className="text-xs leading-5">{securityMessage}</p>
+          </div>
+        </div>
+
+        <div className="mt-7 flex items-center justify-between gap-4 border-t border-slate-200 pt-6">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back
+          </button>
+
+          <button
+            type="submit"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-blue-600 px-6 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            Continue
+            <ArrowRight size={16} aria-hidden="true" />
+          </button>
+        </div>
+      </form>
+    </ProviderOnboardingLayout>
+  );
 }
-
-
 
 export default ProviderStep2Page;
