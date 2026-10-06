@@ -1,30 +1,23 @@
 import type { FieldErrors, UseFormRegister, Control } from "react-hook-form";
-
-import FormField from "../../../components/UI/FormField";
-
-import type { ProviderStep2FormData, } from "../validations/providerStep2Schema";
-
-import FileUploadField from "./FileUploadField";
-
 import { Controller } from "react-hook-form";
 
+import FormField from "../../../components/UI/FormField";
 import FormError from "../../../components/UI/FormError";
 
+import type { ProviderStep2FormData } from "../validations/providerStep2Schema";
+
+import FileUploadField from "./FileUploadField";
 import CommunityPhotosField from "./CommunityPhotosField";
 
-
 interface CommonProviderFieldsProps {
-
     register: UseFormRegister<ProviderStep2FormData>;
-
     control: Control<ProviderStep2FormData>;
-
     errors: FieldErrors<ProviderStep2FormData>;
 }
 
 function CommonProviderFields({ register, control, errors }: CommonProviderFieldsProps) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-5">
             <FormField
                 label="Provider Name"
                 error={errors.providerName?.message as string}
@@ -52,26 +45,22 @@ function CommonProviderFields({ register, control, errors }: CommonProviderField
             <Controller
                 name="identityProof"
                 control={control}
-                render={({field})=>(
+                render={({ field }) => (
                     <FileUploadField
-                        label='Identity Proof'
-                        folder='provider/identity-proofs'
+                        label="Identity Proof"
+                        folder="provider/identity-proofs"
                         value={field.value}
                         onChange={field.onChange}
                     />
                 )}
             />
 
-            <FormError
-                message={
-                    errors.identityProof?.message as string
-                }
-            />
+            <FormError message={errors.identityProof?.message as string} />
 
             <Controller
                 name="profileImage"
                 control={control}
-                render={({field}) => (
+                render={({ field }) => (
                     <FileUploadField
                         label="Profile Image"
                         folder="provider/profile-images"
@@ -84,16 +73,15 @@ function CommonProviderFields({ register, control, errors }: CommonProviderField
             <Controller
                 name="previousCommunityPhotos"
                 control={control}
-                render={({field}) => (
+                render={({ field }) => (
                     <CommunityPhotosField
                         value={field.value}
                         onChange={field.onChange}
                     />
                 )}
             />
-            
         </div>
-    )
+    );
 }
 
-export default CommonProviderFields
+export default CommonProviderFields;

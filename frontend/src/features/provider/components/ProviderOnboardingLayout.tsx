@@ -1,54 +1,33 @@
 import type { ReactNode } from "react";
 
+import ProviderOnboardingFooter from "./ProviderOnboardingFooter";
+import ProviderOnboardingNavbar from "./ProviderOnboardingNavbar";
 import ProviderOnboardingSidebar from "./ProviderOnboardingSidebar";
 
-import ProviderOnboardingNavbar from "./ProviderOnboardingNavbar";
-
 interface ProviderOnboardingLayoutProps {
-
-    children: ReactNode;
-
-    currentStep: 1 | 2 | 3;
+  children: ReactNode;
+  currentStep: 1 | 2 | 3;
 }
 
 function ProviderOnboardingLayout({
-
-    children,
-
-    currentStep,
-
+  children,
+  currentStep,
 }: ProviderOnboardingLayoutProps) {
+  return (
+    <div className="grid min-h-screen grid-rows-[auto_1fr_auto] bg-[#f8faff] text-slate-900">
+      <ProviderOnboardingNavbar currentStep={currentStep} />
 
-    return (
+      <div className="min-w-0 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
+        <ProviderOnboardingSidebar currentStep={currentStep} />
 
-        <div className="min-h-screen bg-slate-50">
+        <main className="min-w-0 px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-8">
+          {children}
+        </main>
+      </div>
 
-            {/* Navbar */}
-
-            <ProviderOnboardingNavbar
-                currentStep={currentStep}
-            />
-
-            <div className="flex">
-
-                {/* Sidebar */}
-
-                <ProviderOnboardingSidebar
-                    currentStep={currentStep}
-                />
-
-                {/* Page Content */}
-
-                <main className="flex-1 p-8">
-
-                    {children}
-
-                </main>
-
-            </div>
-
-        </div>
-    );
+      <ProviderOnboardingFooter />
+    </div>
+  );
 }
 
 export default ProviderOnboardingLayout;

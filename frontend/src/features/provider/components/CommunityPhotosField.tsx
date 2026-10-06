@@ -1,148 +1,184 @@
-import { useState } from "react";
+import {
+  useId,
+  useState,
+  type ChangeEvent,
+} from "react";
+
+import {
+  ImagePlus,
+  LoaderCircle,
+  Trash2,
+} from "lucide-react";
 
 import type { UploadedFile } from "../types/uploadedFile";
-
 import { uploadFile } from "../services/uploadService";
 
-interface CommunityPhotosFieldProps{
-    
-    value?: UploadedFile[];
-
-    onChange: (files:UploadedFile[]) => void;
-
+interface CommunityPhotosFieldProps {
+  value?: UploadedFile[];
+  onChange: (files: UploadedFile[]) => void;
 }
 
 function CommunityPhotosField({
-    value = [],
-    onChange,
+  value = [],
+  onChange,
 }: CommunityPhotosFieldProps) {
-    const [loading, setLoading] = useState(false);
+  const inputId = useId();
 
-    const [error, setError] = 
-        useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-    const handleFileChange = async(
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const selectedFiles = 
-            Array.from(event.target.files ?? []);
+  const [error, setError] = useState<string | null>(null);
 
-            if(!selectedFiles.length){
-                return;
-            }
+  const handleFileChange = async (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const selectedFiles = Array.from(
+      event.target.files ?? [],
+    );
 
-            const remainingSlots = 
-                5 - value.length;
+    if (!selectedFiles.length) {
+      return;
+    }
 
-            if(selectedFiles.length > remainingSlots) {
-                setError(
-                    `You can upload a maximum of 5 photos. You can add ${remainingSlots} more`
-                );
+    const remainingSlots = 5 - value.length;
 
-                event.target.value = "";
+    if (selectedFiles.length > remainingSlots) {
+      setError(
+        `You can upload a maximum of 5 photos. You can add ${remainingSlots} more`,
+      );
 
-                return;
-            }
+      event.target.value = "";
+      return;
+    }
 
-            try{
-                setLoading(true);
+    try {
+      setLoading(true);
+      setError(null);
 
-                setError(null);
+      const uploadedFiles: UploadedFile[] = [];
 
-                const uploadedFiles: UploadedFile[] = [];
-
-                for(const file of selectedFiles){
-                    const uploadedFile = 
-                        await uploadFile(
-                            file,
-                            "provider/community-photos"
-                        );
-                    
-                    uploadedFiles.push(
-                        uploadedFile
-                    );
-                }
-
-                onChange([
-                    ...value,
-                    ...uploadedFiles,
-                ]);
-
-            } catch (error){
-
-                console.error(error);
-
-                setError(
-                    "Failed to upload one or more photos."
-                );
-            } finally {
-
-                setLoading(false);
-
-                event.target.value = "";
-
-            }
-    };
-
-    const removePhoto = (
-        index: number
-    ) => {
-
-        onChange(
-            value.filter(
-                (_, i) => i !== index
-            )
+      for (const file of selectedFiles) {
+        const uploadedFile = await uploadFile(
+          file,
+          "provider/community-photos",
         );
-    };
 
-    return (
-        <div className="space-y-3">
-            <label className="block text-sm font-medium text-slate-700">
-                Previous Community Photos
-            </label>
+        uploadedFiles.push(uploadedFile);
+      }
 
-            <p className="text-sm text-slate-500">
-                Upload up to 5 photos showing your previous community work.
-            </p>
+      onChange([...value, ...uploadedFiles]);
+    } catch (error) {
+      console.error(error);
 
-            {value.length < 5 && (
-                <input
-                    type="file"
-                    accept="image/jpeg,image/png"
-                    multiple
-                    onChange={handleFileChange}
-                    disabled={loading}
-                    className="block w-full text-sm text-slate-600"
+      setError("Failed to upload one or more photos.");
+    } finally {
+      setLoading(false);
+      event.target.value = "";
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    onChange(value.filter((_, itemIndex) => itemIndex !== index));
+  };
+
+  return (
+    <div>
+      <div>
+        <label
+          htmlFor={inputId}
+          className="block text-sm font-semibold text-slate-900"
+        >
+          Previous Community Work
+        </label>
+
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          Upload up to 5 photos showing your previous community
+          work.
+        </p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {value.length < 5 && (
+          <div>
+            <input
+              id={inputId}
+              type="file"
+              accept="image/jpeg,image/png"
+              multiple
+              onChange={handleFileChange}
+              disabled={loading}
+              className="sr-only"
+            />
+
+            <label
+              htmlFor={inputId}
+              className={`flex aspect-square min-h-28 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed text-center transition-colors ${
+                loading
+                  ? "cursor-wait border-blue-300 bg-blue-50"
+                  : "border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50"
+              }`}
+            >
+              {loading ? (
+                <LoaderCircle
+                  size={20}
+                  className="animate-spin text-blue-600"
+                  aria-hidden="true"
                 />
-            )} 
+              ) : (
+                <ImagePlus
+                  size={20}
+                  className="text-blue-600"
+                  aria-hidden="true"
+                />
+              )}
 
-            {loading && (
-                <p className="text-sm text-blue-600">
-                    Uploading...
-                </p>
-            )}
+              <span className="mt-2 px-2 text-xs font-medium text-slate-600">
+                {loading ? "Uploading..." : "Add photo"}
+              </span>
+            </label>
+          </div>
+        )}
 
-            {error && (
-                <p className="text-sm text-red-600">
-                    {error}
-                </p>
-            )}
+        {value.map((file, index) => (
+          <div
+            key={file.key}
+            className="group relative flex aspect-square min-h-28 min-w-0 flex-col items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 p-3 text-center"
+          >
+            <ImagePlus
+              size={22}
+              className="text-slate-400"
+              aria-hidden="true"
+            />
 
-            {value.length > 0 && (
-                <div className="space-y-2">
-                    {value.map((file,index) => (
-                        <div key={file.key} className="flex items-center justify-between rounded-md border px-3 py-2">
-                            <span className="text-sm text-green-600">
-                                ✓ {file.originalName}
-                            </span>
+            <span className="mt-2 w-full truncate text-xs text-slate-600">
+              {file.originalName}
+            </span>
 
-                            <button type="button" onClick={() => removePhoto(index)}>Remove</button>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    )
+            <button
+              type="button"
+              onClick={() => removePhoto(index)}
+              aria-label={`Remove ${file.originalName}`}
+              title="Remove photo"
+              className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full border border-slate-200 bg-white text-red-600 shadow-sm transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+            >
+              <Trash2 size={15} aria-hidden="true" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="min-h-7 pt-2" aria-live="polite">
+        {error ? (
+          <p className="text-xs leading-5 text-red-600">
+            {error}
+          </p>
+        ) : (
+          <p className="text-xs leading-5 text-slate-500">
+            {value.length} of 5 photos uploaded
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default CommunityPhotosField;
