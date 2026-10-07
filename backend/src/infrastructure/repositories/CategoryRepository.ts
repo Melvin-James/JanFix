@@ -22,7 +22,9 @@ export class CategoryRepository extends BaseRepository<Category> implements ICat
 
     async findByName(name: string): Promise<Category | null> {
 
-        const category = await CategoryModel.findOne({name:{$regex: `^{escapedName}$`, $options: "i",},});
+        const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        const category = await CategoryModel.findOne({name:{$regex: `^${escapedName}$`, $options: "i",},});
         
         if(!category) {
             return null;

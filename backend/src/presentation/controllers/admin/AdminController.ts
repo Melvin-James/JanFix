@@ -32,8 +32,6 @@ import type { IUpdateCategoryUseCase } from "../../../application/use-cases/usec
 
 import type { IUpdateCategoryStatusUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryStatusUseCase.js";
 
-import type { IDeleteCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IDeleteCategoryUseCase.js";
-
 import { AppMessages } from "../../../shared/constants/messages.js";
 
 export class AdminController {
@@ -65,8 +63,6 @@ export class AdminController {
         private readonly _updateCategoryUseCase: IUpdateCategoryUseCase,
 
         private readonly _updateCategoryStatusUseCase: IUpdateCategoryStatusUseCase,
-
-        private readonly _deleteCategoryUseCase: IDeleteCategoryUseCase,
 
     ) { }
 
@@ -374,19 +370,6 @@ export class AdminController {
             res.status(HttpStatusCode.OK).json({
                 success: true,
                 category,
-            });
-        }
-    );
-
-    deleteCategory = asyncHandler(
-        async (req: Request, res: Response): Promise<void> => {
-            const categoryId = req.params.categoryId as string;
-
-            await this._deleteCategoryUseCase.execute(categoryId);
-
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                message: AppMessages.SUCCESS.CATEGORY_DELETED,
             });
         }
     );

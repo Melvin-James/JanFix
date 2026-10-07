@@ -1,12 +1,6 @@
 import axiosInstance from "../../../api/axios";
-import type {
-  Category,
-  CategoriesListResponse,
-  CategoryResponse,
-  CreateCategoryPayload,
-  UpdateCategoryPayload,
-  DeleteCategoryResponse,
-} from "../types/Category";
+
+import type { Category, CategoriesListResponse, CategoryResponse, CreateCategoryPayload, UpdateCategoryPayload, } from "../types/Category";
 
 export const getCategories = async (): Promise<Category[]> => {
   const response = await axiosInstance.get<CategoriesListResponse>(
@@ -60,13 +54,3 @@ export const unblockCategory = async (categoryId: string): Promise<Category> => 
   );
   return response.data.category;
 };
-
-export const deleteCategory = async (categoryId: string): Promise<DeleteCategoryResponse> => {
-  const response = await axiosInstance.delete<DeleteCategoryResponse>(
-    `/admin/categories/${categoryId}`
-  );
-  return response.data;
-};
-
-
-

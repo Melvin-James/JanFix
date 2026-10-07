@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { Category } from "../types/Category";
+import { categorySchema, type CategoryFormData } from "../validations/categorySchema";
 
 export interface CategoryModalProps {
   isOpen: boolean;
   categoryToEdit?: Category | null;
   onClose: () => void;
-  onSave: (payload: { name: string; description: string }) => Promise<void>;
+  onSave: (payload: CategoryFormData) => Promise<void>;
 }
 
 export function CategoryModal({
@@ -14,45 +15,49 @@ export function CategoryModal({
   onClose,
   onSave,
 }: CategoryModalProps) {
-  const [name, setName] = useState(categoryToEdit?.name ?? "");
-  const [description, setDescription] = useState(categoryToEdit?.description ?? "");
+  
+  const [name, setName] = useState("");
+
+  const [description, setDescription] = useState("");
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [nameError, setNameError] = useState("");
-  const [descriptionError, setDescriptionError] = useState("");
+
+  const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
+  
   const [serverError, setServerError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setName(categoryToEdit?.name ?? "");
+      setDescription(categoryToEdit?.description ?? "");
+      setErrors({});
+      setServerError("");
+    }
+  }, [isOpen, categoryToEdit]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+    setServerError("");
 
-    let hasError = false;
-    const trimmedName = name.trim();
-    const trimmedDescription = description.trim();
+    // Validate using Zod
+    const validationResult = categorySchema.safeParse({ name, description });
 
-    if (!trimmedName) {
-      setNameError("Category name is required");
-      hasError = true;
-    } else {
-      setNameError("");
+    if (!validationResult.success) {
+      const fieldErrors = validationResult.error.flatten().fieldErrors;
+      setErrors({
+        name: fieldErrors.name?.[0],
+        description: fieldErrors.description?.[0],
+      });
+      return;
     }
-
-    if (!trimmedDescription) {
-      setDescriptionError("Category description is required");
-      hasError = true;
-    } else {
-      setDescriptionError("");
-    }
-
-    if (hasError) return;
 
     try {
       setIsSubmitting(true);
-      setServerError("");
-      await onSave({
-        name: trimmedName,
-        description: trimmedDescription,
-      });
+      // Pass the safely parsed and trimmed data
+      await onSave(validationResult.data);
       onClose();
     } catch (err: unknown) {
       console.error("Failed to save category:", err);
@@ -95,18 +100,16 @@ export function CategoryModal({
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 px-6 py-5">
-            <div className="min-h">
+            <div className="min-h-5">
               {serverError && (
                 <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
                   {serverError}
                 </div>
               )}
             </div>
+            
             <div>
-              <label
-                htmlFor="categoryName"
-                className="mb-1 block text-sm font-medium text-slate-700"
-              >
+              <label htmlFor="categoryName" className="mb-1 block text-sm font-medium text-slate-700">
                 Category Name
               </label>
               <input
@@ -115,26 +118,19 @@ export function CategoryModal({
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
-                  if (nameError) setNameError("");
+                  if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
                   if (serverError) setServerError("");
                 }}
                 placeholder="e.g. Plumbing, Electrical, Cleaning"
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
               <div className="min-h-5">
-                {nameError && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {nameError}
-                  </p>
-                )}
+                {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
               </div>
             </div>
 
             <div>
-              <label
-                htmlFor="categoryDescription"
-                className="mb-1 block text-sm font-medium text-slate-700"
-              >
+              <label htmlFor="categoryDescription" className="mb-1 block text-sm font-medium text-slate-700">
                 Description
               </label>
               <textarea
@@ -143,18 +139,14 @@ export function CategoryModal({
                 value={description}
                 onChange={(e) => {
                   setDescription(e.target.value);
-                  if (descriptionError) setDescriptionError("");
+                  if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }));
                   if (serverError) setServerError("");
                 }}
                 placeholder="Describe what services belong to this category..."
                 className="w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
               <div className="min-h-5">
-                {descriptionError && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {descriptionError}
-                  </p>
-                )}
+                {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
               </div>
             </div>
           </div>
@@ -168,19 +160,14 @@ export function CategoryModal({
             >
               Cancel
             </button>
-
             <button
               type="submit"
               disabled={isSubmitting}
               className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 cursor-pointer"
             >
               {isSubmitting
-                ? isEditing
-                  ? "Saving..."
-                  : "Creating..."
-                : isEditing
-                  ? "Save Changes"
-                  : "Create Category"}
+                ? isEditing ? "Saving..." : "Creating..."
+                : isEditing ? "Save Changes" : "Create Category"}
             </button>
           </div>
         </form>

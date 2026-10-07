@@ -48,8 +48,6 @@ import { UpdateCategoryUseCase } from "../../application/use-cases/category/Upda
 
 import { UpdateCategoryStatusUseCase } from "../../application/use-cases/category/UpdateCategoryStatusUseCase.js";
 
-import { DeleteCategoryUseCase } from "../../application/use-cases/category/DeleteCategoryUseCase.js";
-
 import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
 
 const router = Router();
@@ -84,8 +82,6 @@ const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository);
 
 const updateCategoryStatusUseCase = new UpdateCategoryStatusUseCase(categoryRepository);
 
-const deleteCategoryUseCase = new DeleteCategoryUseCase(categoryRepository, userRepository);
-
 const adminController = new AdminController(
 
     getProviderApplicationsUseCase,
@@ -114,7 +110,6 @@ const adminController = new AdminController(
 
     updateCategoryStatusUseCase,
     
-    deleteCategoryUseCase,
 );
 
 
@@ -148,7 +143,5 @@ router.patch(ApiEndpoints.ADMIN.UPDATE_CATEGORY_STATUS, authenticate, authorizeR
 router.patch(ApiEndpoints.ADMIN.BLOCK_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.blockCategory);
 
 router.patch(ApiEndpoints.ADMIN.UNBLOCK_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.unblockCategory);
-
-router.delete(ApiEndpoints.ADMIN.DELETE_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.deleteCategory);
 
 export default router;

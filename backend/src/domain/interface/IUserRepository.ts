@@ -54,7 +54,5 @@ export interface IUserRepository {
         pageSize: number,
         filters?: UserManagementFilters
     ): Promise<PaginatedResult<User>>;
-    
-    isCategoryInUse(categoryName: string, categoryId?: string): Promise<boolean>;
 
-}
+}

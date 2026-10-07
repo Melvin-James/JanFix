@@ -109,17 +109,6 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     return users.map(UserMapper.toEntity);
   }
 
-  async isCategoryInUse(categoryName: string, categoryId?: string): Promise<boolean> {
-    const searchValues = categoryId ? [categoryName, categoryId] : [categoryName];
-    const count = await UserModel.countDocuments({
-      "providerProfile.workPreferences.categoriesWillingToWork": {
-        $in: searchValues,
-      },
-    });
-
-    return count > 0;
-  }
-
   async findPaginatedProviderApplications(
     page: number,
     pageSize: number,
@@ -249,4 +238,4 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       },
     };
   }
-}
+}
