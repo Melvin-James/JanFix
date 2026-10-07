@@ -6,7 +6,6 @@ import {
   createCategory,
   updateCategory,
   updateCategoryStatus,
-  deleteCategory,
 } from "../services/categoryService";
 import type { Category } from "../types/Category";
 
@@ -43,7 +42,6 @@ function CategoryManagementPage() {
 
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -152,48 +150,6 @@ function CategoryManagementPage() {
       return () => clearTimeout(timer);
     }
   }, [successMessage]);
-
-  const handleOpenDeleteModal = (cat: Category) => {
-    setCategoryToDelete(cat);
-    setDeleteError("");
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!categoryToDelete) return;
-
-    try {
-      setIsDeleting(true);
-      setDeleteError("");
-      const res = await deleteCategory(categoryToDelete.id);
-      setCategories((prev) => prev.filter((cat) => cat.id !== categoryToDelete.id));
-      setIsDeleteModalOpen(false);
-      setCategoryToDelete(null);
-      setSuccessMessage(res.message || "Category deleted successfully.");
-    } catch (err: unknown) {
-      console.error("Failed to delete category:", err);
-      if (
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        err.response &&
-        typeof err.response === "object" &&
-        "data" in err.response &&
-        err.response.data &&
-        typeof err.response.data === "object" &&
-        "message" in err.response.data &&
-        typeof err.response.data.message === "string"
-      ) {
-        setDeleteError(err.response.data.message);
-      } else {
-        setDeleteError("Failed to delete category. Please try again.");
-      }
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-
 
   if (loading) {
     return <AdminLoadingState message="Loading categories..." />;
@@ -327,18 +283,10 @@ function CategoryManagementPage() {
                   <BlockUnblockButton
                     status={cat.isActive ? "ACTIVE" : "BLOCKED"}
                     onClick={() => handleToggleCategoryStatus(cat)}
-                    disabled={updatingCategoryId === cat.id || (isDeleting && categoryToDelete?.id === cat.id)}
+                    disabled={updatingCategoryId === cat.id || (categoryToDelete?.id === cat.id)}
                     isUpdating={updatingCategoryId === cat.id}
                     title={cat.isActive ? "Block category" : "Unblock category"}
                     variant="bordered"
-                  />
-                  <AdminActionButton
-                    icon={<Trash2 className="h-4 w-4" />}
-                    label="Delete"
-                    title="Delete category"
-                    onClick={() => handleOpenDeleteModal(cat)}
-                    variant="danger"
-                    disabled={updatingCategoryId === cat.id || (isDeleting && categoryToDelete?.id === cat.id)}
                   />
                 </div>
               </td>
@@ -375,24 +323,6 @@ function CategoryManagementPage() {
         onSave={handleSaveCategory}
       />
 
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        title="Delete Category"
-        message={`Are you sure you want to delete "${categoryToDelete?.name}"? This action cannot be undone.`}
-        confirmLabel={isDeleting ? "Deleting..." : "Delete Category"}
-        cancelLabel="Cancel"
-        variant="danger"
-        isLoading={isDeleting}
-        errorMessage={deleteError}
-        onConfirm={handleConfirmDelete}
-        onClose={() => {
-          if (!isDeleting) {
-            setIsDeleteModalOpen(false);
-            setCategoryToDelete(null);
-            setDeleteError("");
-          }
-        }}
-      />
     </div>
   );
 }

@@ -36,7 +36,6 @@ export const ApiEndpoints = {
     UPDATE_CATEGORY_STATUS: "/categories/:categoryId/status",
     BLOCK_CATEGORY: "/categories/:categoryId/block",
     UNBLOCK_CATEGORY: "/categories/:categoryId/unblock",
-    DELETE_CATEGORY: "/categories/:categoryId",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",
