@@ -10,6 +10,8 @@ import type { ServiceProvider, ProviderStatus } from "../types/ServiceProvider";
 
 import { ProviderType } from "../../provider/types/providerTypes";
 
+import { ConfirmationModal } from "../components";
+
 import {
     AdminActionButton,
     AdminCard,
@@ -25,9 +27,12 @@ import {
     BlockUnblockButton,
     StatusBadge,
 } from "../components";
+
+
 import { usePagination } from "../hooks";
 
 function ServiceProvidersPage() {
+
     const navigate = useNavigate();
 
     const [providers, setProviders] = useState<ServiceProvider[]>([]);
@@ -67,16 +72,38 @@ function ServiceProvidersPage() {
         fetchProviders();
     }, []);
 
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        providerId: string;
+        nextStatus: ServiceProvider["providerStatus"];
+    }>({
+        isOpen: false,
+        providerId: "",
+        nextStatus: "ACTIVE"
+    });
+
     const handleStatusChange = async (
         providerId: string,
         currentStatus: ServiceProvider["providerStatus"]
     ) => {
         const nextStatus = currentStatus === "ACTIVE" ? "BLOCKED" : "ACTIVE";
 
-        if (currentStatus === "ACTIVE" && !window.confirm("Are you sure you want to block this service provider?")) {
+        if (currentStatus === "ACTIVE") {
+            setConfirmModal({
+                isOpen: true,
+                providerId,
+                nextStatus,
+            });
             return;
         }
 
+        executeStatusUpdate(providerId, nextStatus);
+    }
+
+    const executeStatusUpdate = async (
+        providerId: string,
+        nextStatus: ServiceProvider["providerStatus"]
+    ) => {
         try {
             setUpdatingProviderId(providerId);
 
@@ -85,13 +112,20 @@ function ServiceProvidersPage() {
                 nextStatus
             );
 
-            setProviders((currentProviders) => currentProviders.map((provider) => provider.id === providerId ? { ...provider, providerStatus: updatedProvider.providerStatus } : provider));
+            setProviders((currentProviders) =>
+                currentProviders.map((provider) =>
+                    provider.id === providerId
+                        ? { ...provider, providerStatus: updatedProvider.providerStatus }
+                        : provider
+                )
+            );
+            setConfirmModal((prev) => ({ ...prev, isOpen: false }));
         } catch {
             setError("Failed to update service provider status");
         } finally {
             setUpdatingProviderId(null);
         }
-    };
+    }
 
     const filteredProviders = useMemo(() => {
         const normalizedSearch = search.trim().toLowerCase();
@@ -299,6 +333,18 @@ function ServiceProvidersPage() {
                     onPageChange={setCurrentPage}
                 />
             </AdminCard>
+
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
+                title="Block Service Provider"
+                message="Are you sure you want to block this service provider? They will no longer receive user requests or be visible in listings."
+                confirmLabel="Block Provider"
+                loadingLabel="Blocking..."
+                variant="danger"
+                isLoading={updatingProviderId === confirmModal.providerId}
+                onConfirm={() => executeStatusUpdate(confirmModal.providerId, confirmModal.nextStatus)}
+                onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }

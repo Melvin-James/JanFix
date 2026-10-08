@@ -1,3 +1,4 @@
+// frontend/src/features/admin/components/ConfirmationModal.tsx
 import { AlertTriangle } from "lucide-react";
 
 export interface ConfirmationModalProps {
@@ -6,6 +7,7 @@ export interface ConfirmationModalProps {
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  loadingLabel?: string;
   variant?: "danger" | "primary";
   isLoading?: boolean;
   errorMessage?: string;
@@ -19,6 +21,7 @@ export function ConfirmationModal({
   message,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  loadingLabel,
   variant = "danger",
   isLoading = false,
   errorMessage,
@@ -72,7 +75,7 @@ export function ConfirmationModal({
             disabled={isLoading}
             className={`rounded-md px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer ${confirmBtnStyles}`}
           >
-            {isLoading ? "Deleting..." : confirmLabel}
+            {isLoading ? (loadingLabel || "Processing...") : confirmLabel}
           </button>
         </div>
       </div>

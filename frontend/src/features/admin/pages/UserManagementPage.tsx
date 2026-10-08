@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 
+import { ConfirmationModal } from "../components";
+
 import { getUsersForManagement, updateUserAccountStatus } from "../services/adminService";
+
 import type { ManagedUser } from "../types/UserManagement";
+
 import {
     AdminCard,
     AdminEmptyState,
@@ -16,6 +20,7 @@ import {
     BlockUnblockButton,
     StatusBadge,
 } from "../components";
+
 import { usePagination } from "../hooks";
 
 function UserManagementPage() {
@@ -96,6 +101,16 @@ function UserManagementPage() {
         resetDependencies: [search, roleFilter, verificationFilter, authProviderFilter],
     });
 
+    const [confirmModal, setconfirmModal] = useState<{
+        isOpen: boolean;
+        userId: string;
+        nextStatus: ManagedUser["accountStatus"]
+    }>({
+        isOpen: false,
+        userId: "",
+        nextStatus: "ACTIVE"
+    })
+
     const handleStatusChange = async (
         userId: string,
         currentStatus: ManagedUser["accountStatus"]
@@ -103,15 +118,21 @@ function UserManagementPage() {
         const nextStatus = currentStatus === 'ACTIVE' ? "BLOCKED" : "ACTIVE";
 
         if (nextStatus === "BLOCKED") {
-            const confirmed = window.confirm(
-                "Are you sure you want to block this user account?"
-            );
-
-            if (!confirmed) {
-                return;
-            }
+            setconfirmModal({
+                isOpen: true,
+                userId,
+                nextStatus,
+            });
+            return;
         }
 
+        await executeStatusUpdate(userId, nextStatus);
+    }
+
+    const executeStatusUpdate = async (
+        userId: string,
+        nextStatus: ManagedUser["accountStatus"]
+    ) => {
         try {
             setUpdatingUserId(userId);
 
@@ -124,12 +145,13 @@ function UserManagementPage() {
                         : user
                 )
             );
+            setconfirmModal((prev) => ({ ...prev, isOpen: false }));
         } catch {
             setError("Failed to update user account status.");
         } finally {
             setUpdatingUserId(null);
         }
-    };
+    }
 
     if (loading) {
         return <AdminLoadingState message="Loading users..." />;
@@ -306,6 +328,18 @@ function UserManagementPage() {
                     totalItems={filteredUsers.length}
                 />
             </AdminCard>
+
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
+                title="Block User Account"
+                message="Are you sure you want to block this user account? They will lose access to platform services until unblocked."
+                confirmLabel="Block User"
+                loadingLabel="Blocking..."
+                variant="danger"
+                isLoading={updatingUserId === confirmModal.userId}
+                onConfirm={() => executeStatusUpdate(confirmModal.userId, confirmModal.nextStatus)}
+                onClose={() => setconfirmModal((prev) => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }
