@@ -102,7 +102,7 @@ export function CategoryModal({
           <div className="space-y-4 px-6 py-5">
             <div className="min-h-5">
               {serverError && (
-                <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+                <div className="mt-1 text-xm text-blue-600">
                   {serverError}
                 </div>
               )}
@@ -125,7 +125,7 @@ export function CategoryModal({
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
               <div className="min-h-5">
-                {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+                {errors.name && <p className="mt-1 text-xs text-blue-600">{errors.name}</p>}
               </div>
             </div>
 
@@ -146,7 +146,7 @@ export function CategoryModal({
                 className="w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
               <div className="min-h-5">
-                {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
+                {errors.description && <p className="mt-1 text-xs text-blue-600">{errors.description}</p>}
               </div>
             </div>
           </div>

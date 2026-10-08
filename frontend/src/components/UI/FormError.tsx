@@ -9,7 +9,7 @@ function FormError({
 
   return (
 
-    <p className="mt-3 min-h-[19px] text-xs text-red-500 leading-[1px]">
+    <p className="mt-3 min-h-[19px] text-xs text-blue-600 leading-[1px]">
 
       {message ?? "\u00A0"}
 

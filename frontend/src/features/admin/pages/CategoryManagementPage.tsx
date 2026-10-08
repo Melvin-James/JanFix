@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, CheckCircle2 } from "lucide-react";
+import { Plus, Pencil, CheckCircle2 } from "lucide-react";
+
+import { ConfirmationModal } from "../components";
 
 import {
   getCategories,
@@ -24,7 +26,6 @@ import {
   AdminLoadingState,
   AdminErrorState,
   CategoryModal,
-  ConfirmationModal,
 } from "../components";
 
 import { usePagination } from "../hooks";
@@ -40,9 +41,6 @@ function CategoryManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
 
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
@@ -120,27 +118,47 @@ function CategoryManagementPage() {
     }
   };
 
-  const handleToggleCategoryStatus = async (cat: Category) => {
-    const isCurrentlyActive = cat.isActive;
-    const nextState = !isCurrentlyActive;
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    category: Category | null;
+  }>({
+    isOpen: false,
+    category: null,
+  });
 
-    if (isCurrentlyActive && !window.confirm("Are you sure you want to block this category?")) {
+  const handleToggleCategoryStatus = (cat: Category) => {
+    const isCurrentlyActive = cat.isActive;
+
+    if (isCurrentlyActive) {
+      setConfirmModal({
+        isOpen: true,
+        category: cat,
+      });
       return;
     }
+    executeStatusToggle(cat);
+  };
+
+  const executeStatusToggle = async (cat: Category) => {
+    const nextState = !cat.isActive;
 
     try {
       setUpdatingCategoryId(cat.id);
+
       const updated = await updateCategoryStatus(cat.id, nextState);
+
       setCategories((prev) =>
         prev.map((c) => (c.id === updated.id ? updated : c))
       );
+
+      setConfirmModal({ isOpen: false, category: null });
     } catch (err) {
       console.error("Failed to update category status:", err);
-      setError("Failed to update category status. Please try again.");
+      setError("Failed to update category status. Please try again");
     } finally {
       setUpdatingCategoryId(null);
     }
-  };
+  }
 
   useEffect(() => {
     if (successMessage) {
@@ -283,7 +301,7 @@ function CategoryManagementPage() {
                   <BlockUnblockButton
                     status={cat.isActive ? "ACTIVE" : "BLOCKED"}
                     onClick={() => handleToggleCategoryStatus(cat)}
-                    disabled={updatingCategoryId === cat.id || (categoryToDelete?.id === cat.id)}
+                    disabled={updatingCategoryId === cat.id}
                     isUpdating={updatingCategoryId === cat.id}
                     title={cat.isActive ? "Block category" : "Unblock category"}
                     variant="bordered"
@@ -321,6 +339,18 @@ function CategoryManagementPage() {
         categoryToEdit={categoryToEdit}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveCategory}
+      />
+
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        title="Deactivate Category"
+        message="Are you sure you want to deactivate this category? New service requests cannot be created under inactive categories."
+        confirmLabel="Deactivate"
+        loadingLabel="Deactivating..."
+        variant="danger"
+        isLoading={updatingCategoryId === confirmModal.category?.id}
+        onConfirm={() => confirmModal.category && executeStatusToggle(confirmModal.category)}
+        onClose={() => setConfirmModal({ isOpen: false, category: null })}
       />
 
     </div>
