@@ -1,4 +1,5 @@
 import type { User } from "../entities/User.js";
+
 import type { PaginatedResult } from "../../shared/types/Pagination.js";
 
 export interface ProviderApplicationFilters {

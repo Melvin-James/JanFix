@@ -21,9 +21,8 @@ import {
     StatusBadge,
 } from "../components";
 
-import { usePagination } from "../hooks";
-
 function UserManagementPage() {
+
     const [users, setUsers] = useState<ManagedUser[]>([]);
 
     const [search, setSearch] = useState("");
@@ -42,64 +41,99 @@ function UserManagementPage() {
 
     const [error, setError] = useState("");
 
+    const usersPerPage = 10;
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const [totalPages, setTotalPages] = useState(0);
+
+    const [totalItems, setTotalItems] = useState(0);
+
+    const [initialLoading, setInitialLoading] = useState(true);
+
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
     useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setDebouncedSearch(search.trim());
+            setCurrentPage(1);
+        }, 400);
+
+        return () => clearTimeout(timeoutId);
+    }, [search]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, roleFilter, verificationFilter, authProviderFilter]);
+
+    useEffect(() => {
+
+        let cancelled = false;
+
         const fetchUsers = async () => {
             try {
                 setLoading(true);
                 setError("");
-                const data = await getUsersForManagement();
-                setUsers(data);
+
+                const data = await getUsersForManagement({
+                    page: currentPage,
+                    pageSize: usersPerPage,
+                    search: debouncedSearch || undefined,
+                    role: roleFilter,
+                    verification: verificationFilter,
+                    authProvider: authProviderFilter,
+                });
+
+                if (cancelled) return;
+
+                setUsers(data.items);
+
+                setTotalPages(data.pagination.totalPages);
+
+                setTotalItems(data.pagination.totalItems);
+
             } catch {
-                setError("Failed to load users.");
+
+                if (!cancelled) {
+
+                    setError("Failed to load users.");
+
+                }
+
             } finally {
-                setLoading(false);
+
+                if (!cancelled) {
+
+                    setLoading(false);
+
+                    setInitialLoading(false);
+
+                }
+
             }
+
         };
 
         fetchUsers();
-    }, []);
 
-    const filteredUsers = users.filter((user) => {
-        const query = search.trim().toLowerCase();
+        return () => {
+            cancelled = true;
+        };
 
-        const matchesSearch =
-            !query ||
-            user.fullName.toLowerCase().includes(query) ||
-            user.email.toLowerCase().includes(query);
-
-        const matchesRole = roleFilter === "ALL" || user.roles.includes(roleFilter);
-
-        const matchesVerification =
-            verificationFilter === "ALL" ||
-            (verificationFilter === "VERIFIED" && user.isVerified) ||
-            (verificationFilter === "NOT_VERIFIED" && !user.isVerified);
-
-        const matchesAuthProvider =
-            authProviderFilter === "ALL" ||
-            user.authProvider === authProviderFilter;
-
-        return (
-            matchesSearch &&
-            matchesRole &&
-            matchesVerification &&
-            matchesAuthProvider
-        );
-    });
-
-    const usersPerPage = 5;
-
-    const {
+    }, [
         currentPage,
-        totalPages,
-        startIndex,
-        endIndex,
-        paginatedItems: paginatedUsers,
-        setCurrentPage,
-    } = usePagination({
-        items: filteredUsers,
-        itemsPerPage: usersPerPage,
-        resetDependencies: [search, roleFilter, verificationFilter, authProviderFilter],
-    });
+        debouncedSearch,
+        roleFilter,
+        verificationFilter,
+        authProviderFilter,
+    ]);
+
+    const startIndex = totalItems === 0
+        ? 0
+        : (currentPage - 1) * usersPerPage;
+
+    const endIndex = startIndex + users.length;
+
 
     const [confirmModal, setconfirmModal] = useState<{
         isOpen: boolean;
@@ -153,7 +187,7 @@ function UserManagementPage() {
         }
     }
 
-    if (loading) {
+    if (initialLoading) {
         return <AdminLoadingState message="Loading users..." />;
     }
 
@@ -173,7 +207,7 @@ function UserManagementPage() {
                     <div className="mb-4">
                         <h2 className="font-medium text-slate-900">Users</h2>
                         <p className="mt-1 text-xs text-slate-500">
-                            Showing {paginatedUsers.length} of {users.length} users
+                            Showing {users.length} of {users.length} users
                         </p>
                     </div>
 
@@ -188,10 +222,12 @@ function UserManagementPage() {
 
                         <AdminFilterSelect
                             value={roleFilter}
-                            onChange={(value) =>
+                            onChange={(value) => {
                                 setRoleFilter(
                                     value as "ALL" | "USER" | "SERVICE_PROVIDER"
-                                )
+                                );
+                                setCurrentPage(1);
+                            }
                             }
                             options={[
                                 { value: "ALL", label: "All Roles" },
@@ -202,10 +238,12 @@ function UserManagementPage() {
 
                         <AdminFilterSelect
                             value={verificationFilter}
-                            onChange={(value) =>
+                            onChange={(value) => {
                                 setVerificationFilter(
                                     value as "ALL" | "VERIFIED" | "NOT_VERIFIED"
                                 )
+                                setCurrentPage(1);
+                            }
                             }
                             options={[
                                 { value: "ALL", label: "All Verification" },
@@ -216,10 +254,12 @@ function UserManagementPage() {
 
                         <AdminFilterSelect
                             value={authProviderFilter}
-                            onChange={(value) =>
+                            onChange={(value) => {
                                 setAuthProviderFilter(
                                     value as "ALL" | "LOCAL" | "GOOGLE"
                                 )
+                                setCurrentPage(1);
+                            }
                             }
                             options={[
                                 { value: "ALL", label: "All Auth Providers" },
@@ -241,7 +281,7 @@ function UserManagementPage() {
                     ]}
                     minWidth="min-w-[1000px]"
                 >
-                    {paginatedUsers.map((user) => (
+                    {users.map((user) => (
                         <tr key={user.id} className="hover:bg-slate-50">
                             {/* User */}
                             <td className="px-6 py-4">
@@ -309,7 +349,7 @@ function UserManagementPage() {
                     ))}
                 </AdminTable>
 
-                {filteredUsers.length === 0 && (
+                {!loading && !error && users.length === 0 && (
                     <AdminEmptyState
                         message={
                             users.length === 0
@@ -325,8 +365,9 @@ function UserManagementPage() {
                     onPageChange={setCurrentPage}
                     startIndex={startIndex}
                     endIndex={endIndex}
-                    totalItems={filteredUsers.length}
+                    totalItems={totalItems}
                 />
+
             </AdminCard>
 
             <ConfirmationModal

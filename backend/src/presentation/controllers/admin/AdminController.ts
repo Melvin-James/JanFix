@@ -205,11 +205,17 @@ export class AdminController {
 
     getUsersForManagement = asyncHandler(
         async (req: Request, res: Response) => {
+
             const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+
             const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
+
             const search = req.query.search as string | undefined;
+
             const role = req.query.role as string | undefined;
+
             const verification = req.query.verification as string | undefined;
+            
             const authProvider = req.query.authProvider as string | undefined;
 
             const result = await this._getUsersForManagementUseCase.execute(

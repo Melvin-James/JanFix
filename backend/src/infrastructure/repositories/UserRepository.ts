@@ -69,9 +69,9 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
   }
 
   async findUsersWithProviderApplications(): Promise<User[]> {
-    
+
     const users = await UserModel.find({
-      providerProfile: {$exists: true}
+      providerProfile: { $exists: true }
     });
 
     return users.map(
@@ -84,7 +84,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     const users = await UserModel.find({
 
-      providerProfile:{
+      providerProfile: {
 
         $exists: true
 
@@ -99,11 +99,11 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
   }
 
   async findUsersForManagement(): Promise<User[]> {
-    
+
     const users = await UserModel.find({
 
-      roles: {$in: [Role.USER]},
-      
+      roles: { $in: [Role.USER] },
+
     });
 
     return users.map(UserMapper.toEntity);
@@ -138,7 +138,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
     const skip = (page - 1) * pageSize;
 
-    const docs = await UserModel.find(query).skip(skip).limit(pageSize);
+    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(pageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),
@@ -183,7 +183,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
     const skip = (page - 1) * pageSize;
 
-    const docs = await UserModel.find(query).skip(skip).limit(pageSize);
+    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(pageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),
@@ -218,15 +218,20 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     }
 
     if (filters?.search && filters.search.trim() !== "") {
+
       const searchRegex = new RegExp(filters.search.trim(), "i");
+
       query.$or = [{ fullName: searchRegex }, { email: searchRegex }];
+
     }
 
     const totalItems = await UserModel.countDocuments(query);
+
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
     const skip = (page - 1) * pageSize;
 
-    const docs = await UserModel.find(query).skip(skip).limit(pageSize);
+    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(pageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),
