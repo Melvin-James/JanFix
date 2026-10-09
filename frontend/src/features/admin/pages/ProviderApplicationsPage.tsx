@@ -22,6 +22,7 @@ import {
     AdminTable,
     StatusBadge,
 } from "../components";
+
 import { usePagination } from "../hooks";
 
 function ProviderApplicationsPage() {

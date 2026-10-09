@@ -1,4 +1,7 @@
 import axiosInstance from "../../../api/axios";
+
+import type { GetUsersParams, PaginatedResponse } from "../types/Pagination";
+
 import type { AccountStatus } from "../types/AccountStatus";
 
 import type { ProviderApplication, ProviderApplicationsDetails } from "../types/ProviderApplication";
@@ -8,6 +11,7 @@ import type { ProviderStatus, ServiceProvider } from "../types/ServiceProvider";
 import type { ServiceProviderDetails } from "../types/ServiceProviderDetails";
 
 import type { UpdateServiceProviderStatusResponse } from "../types/UpdateServiceProviderStatusResponse";
+
 import type { UpdateUserAccountStatusResponse } from "../types/UpdateUserAccountStatusResponse";
 
 import type { ManagedUser } from "../types/UserManagement";
@@ -112,12 +116,30 @@ export const updateServiceProviderStatus = async (
 };
 
 
-export const getUsersForManagement = async (): Promise<ManagedUser[]> => {
+export const getUsersForManagement = async (params: GetUsersParams): Promise<PaginatedResponse<ManagedUser>> => {
 
-    const response = await axiosInstance.get("/admin/users");
+    const response = await axiosInstance.get("/admin/users", {params: {
 
-    return response.data.users;
-}
+        page: params.page,
+
+        pageSize: params.pageSize,
+
+        search: params.search || undefined,
+
+        role: params.role || undefined,
+
+        verification: params.verification || undefined,
+
+        authProvider: params.authProvider || undefined,
+        
+    },
+});
+
+    return {
+        items: response.data.users,
+        pagination: response.data.pagination,
+    };
+};
 
 export const updateUserAccountStatus = async (
     userId: string,

@@ -10,6 +10,8 @@ import { authenticate } from "../middlewares/authMiddleware.js";
 
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
 
+import { searchRateLimit } from "../middlewares/searchRateLimit.js";
+
 import { Role } from "../../domain/enums/Role.js";
 
 import { GetProviderApplicationDetailsUseCase } from "../../application/use-cases/provider/GetProviderApplicationDetailsUseCase.js";
@@ -128,7 +130,7 @@ router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDER_DETAILS, authenticate, authorizeR
 
 router.patch(ApiEndpoints.ADMIN.UPDATE_SERVICE_PROVIDER_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateServiceProviderStatusSchema), adminController.updateServiceProviderStatus);
 
-router.get(ApiEndpoints.ADMIN.USERS, authenticate, authorizeRoles(Role.ADMIN), adminController.getUsersForManagement);
+router.get(ApiEndpoints.ADMIN.USERS, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getUsersForManagement);
 
 router.patch(ApiEndpoints.ADMIN.UPDATE_USER_ACCOUNT_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateUserAccountStatusSchema), adminController.updateUserAccountStatus);
 
