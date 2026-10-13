@@ -2,12 +2,36 @@ import axiosInstance from "../../../api/axios";
 
 import type { Category, CategoriesListResponse, CategoryResponse, CreateCategoryPayload, UpdateCategoryPayload, } from "../types/Category";
 
-export const getCategories = async (): Promise<Category[]> => {
+import type { GetCategoriesParams, PaginatedResponse } from "../types/Pagination";
+
+export function getCategories(): Promise<Category[]>;
+
+export function getCategories(
+  params: GetCategoriesParams
+): Promise<PaginatedResponse<Category>>;
+
+export async function getCategories(
+  params?: GetCategoriesParams
+): Promise<Category[] | PaginatedResponse<Category>> {
+  if(params) {
+    const response = await axiosInstance.get<{
+      success: boolean;
+      categories: Category[];
+      pagination: PaginatedResponse<Category>["pagination"];
+    }>("/admin/categories", {params});
+
+    return {
+      items: response.data.categories,
+      pagination: response.data.pagination,
+    };
+  }
+
   const response = await axiosInstance.get<CategoriesListResponse>(
     "/admin/categories"
   );
+
   return response.data.categories;
-};
+}
 
 export const createCategory = async (
   payload: CreateCategoryPayload

@@ -1,6 +1,7 @@
 import mongoose, { type Document } from "mongoose";
 
 import { Role } from "../../domain/enums/Role.js";
+
 import { AuthProvider } from "../../domain/enums/AuthProvider.js";
 
 import { providerProfileSchema } from "../database/schemas/providerProfileSchema.js";
@@ -8,7 +9,9 @@ import { providerProfileSchema } from "../database/schemas/providerProfileSchema
 import { AccountStatus } from "../../domain/enums/AccountStatus.js";
 
 import type { ProviderType } from "../../domain/enums/ProviderType.js";
+
 import type { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
+
 import type { ProviderStatus } from "../../domain/enums/ProviderStatus.js";
 
 // ─── Typed sub-document shapes ─────────────────────────────────────────────

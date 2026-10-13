@@ -3,7 +3,6 @@ import { ProviderType } from "../../provider/types/providerTypes";
 import type { UploadedFile } from "../../provider/types/uploadedFile";
 
 export type ApplicatonStatus = 
-    | "SUBMITTED"
     | "UNDER_REVIEW"
     | "APPROVED"
     | "REJECTED";

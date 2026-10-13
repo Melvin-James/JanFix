@@ -19,6 +19,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface GetUsersParams {
+    
     page: number;
 
     pageSize: number;
@@ -30,4 +31,39 @@ export interface GetUsersParams {
     verification?: string;
 
     authProvider?: string;
+}
+
+export interface GetProviderApplicationsParams {
+    
+    page: number;
+
+    pageSize: number;
+    
+    search?: string;
+    
+    status?: string;
+    
+    providerType?: string;
+
+}
+
+export interface GetServiceProviderParams {
+
+    page: number;
+    
+    pageSize: number;
+    
+    search?: string;
+    
+    providerType?: string;
+    
+    status?: string;
+
+}
+
+export interface GetCategoriesParams {
+    page: number;
+    pageSize: number;
+    search?: string;
+    status?: "ACTIVE" | "INACTIVE";
 }
