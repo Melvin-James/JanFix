@@ -55,6 +55,7 @@ export const AppMessages = {
     INVALID_STATUS_OR_IS_ACTIVE: "Invalid status or isActive value",
     NO_FILE_UPLOADED: "No file uploaded",
     INVALID_UPLOAD_FOLDER: "Invalid upload folder",
-    UNSUPPORTED_FILE_TYPE: "Unsupported file type"
+    UNSUPPORTED_FILE_TYPE: "Unsupported file type",
+    ACCOUNT_BLOCKED: "Your account has been blocked. Please contact support",
   }
 };
