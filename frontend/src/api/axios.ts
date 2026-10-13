@@ -38,6 +38,27 @@ axiosInstance.interceptors.response.use(
 
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean; };
 
+    const responseData = error.response?.data;
+
+    const errorMessage =
+      typeof responseData === 'object' &&
+        responseData !== null &&
+        "message" in responseData &&
+        typeof responseData.message === 'string'
+        ? responseData.message
+        : undefined;
+
+    if (
+      error.response?.status === 403 &&
+      errorMessage === "Your account has been blocked. Please contact support."
+    ) {
+      useAuthStore.getState().clearAuth();
+
+      window.location.replace("/login");
+
+      return Promise.reject(error);
+    }
+
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||

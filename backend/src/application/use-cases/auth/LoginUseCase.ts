@@ -18,6 +18,8 @@ import type { ILoginUseCase } from "../usecase interfaces/auth/ILoginUseCase.js"
 
 import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 
+import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+
 export class LoginUseCase implements ILoginUseCase {
     constructor(
 
@@ -29,6 +31,13 @@ export class LoginUseCase implements ILoginUseCase {
 
         if (!user) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
+        }
+
+        if(user.accountStatus === AccountStatus.BLOCKED) {
+            throw new ApiError(
+                HttpStatusCode.FORBIDDEN,
+                AppMessages.ERROR.ACCOUNT_BLOCKED
+            )
         }
 
         if (!user.isVerified) {
