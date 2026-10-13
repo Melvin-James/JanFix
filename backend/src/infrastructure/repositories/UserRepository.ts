@@ -21,11 +21,12 @@ import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
 
 import { Role } from "../../domain/enums/Role.js";
 
-import { AccountStatus } from "../../domain/enums/AccountStatus.js";
-
 import { AuthProvider } from "../../domain/enums/AuthProvider.js";
 
 type UserFilter = QueryFilter<UserDocument>;
+
+const escapedRegex = (value: string): string => 
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export class UserRepository extends BaseRepository<User> implements IUserRepository {
 
@@ -114,6 +115,13 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     pageSize: number,
     filters?: { search?: string; status?: string; providerType?: string }
   ) {
+
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+
+    const safePageSize = Number.isInteger(pageSize) && pageSize > 0
+      ? Math.min(pageSize, 100)
+      : 10;
+
     const query: UserFilter = { providerProfile: { $exists: true } };
 
     if (filters?.status && filters.status !== "ALL") {
@@ -121,75 +129,89 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     }
 
     if (filters?.providerType && filters.providerType !== "ALL") {
-      query["providerProfile.providerType"] = filters.providerType;
+      query["providerProfile.identity.providerType"] = filters.providerType;
     }
 
     if (filters?.search && filters.search.trim() !== "") {
-      const searchRegex = new RegExp(filters.search.trim(), "i");
+      
+      const searchRegex = new RegExp(escapedRegex(filters.search.trim()), "i");
+
       query.$or = [
         { fullName: searchRegex },
         { email: searchRegex },
-        { "providerProfile.organizationProfile.organizationName": searchRegex },
-        { "providerProfile.volunteerGroupProfile.groupName": searchRegex },
+        { "providerProfile.identity.providerName": searchRegex },
+        { "providerProfile.identity.responsiblePersonName": searchRegex },
       ];
     }
 
     const totalItems = await UserModel.countDocuments(query);
-    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-    const skip = (page - 1) * pageSize;
 
-    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(pageSize);
+    const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+
+    const skip = (safePage - 1) * safePageSize;
+
+    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(safePageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),
       pagination: {
-        page,
-        pageSize,
+        page: safePage,
+        pageSize: safePageSize,
         totalItems,
         totalPages,
       },
     };
   }
 
+  
   async findPaginatedServiceProviders(
     page: number,
     pageSize: number,
     filters?: { search?: string; providerType?: string; status?: string }
   ) {
+
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+
+    const safePageSize = Number.isInteger(pageSize) && pageSize > 0
+      ? Math.min(pageSize, 100)
+      : 10;
+
     const query: UserFilter = {
       providerProfile: { $exists: true },
       "providerProfile.status.applicationStatus": ApplicationStatus.APPROVED,
     };
 
     if (filters?.status && filters.status !== "ALL") {
-      query.accountStatus = filters.status as AccountStatus;
+      query["providerProfile.status.providerStatus"] = filters.status;
     }
 
     if (filters?.providerType && filters.providerType !== "ALL") {
-      query["providerProfile.providerType"] = filters.providerType;
+      query["providerProfile.identity.providerType"] = filters.providerType;
     }
 
     if (filters?.search && filters.search.trim() !== "") {
-      const searchRegex = new RegExp(filters.search.trim(), "i");
+      const searchRegex = new RegExp(escapedRegex(filters.search.trim()), "i");
       query.$or = [
         { fullName: searchRegex },
         { email: searchRegex },
-        { "providerProfile.organizationProfile.organizationName": searchRegex },
-        { "providerProfile.volunteerGroupProfile.groupName": searchRegex },
+        { "providerProfile.identity.providerName": searchRegex },
+        { "providerProfile.identity.responsiblePersonName": searchRegex },
       ];
     }
 
     const totalItems = await UserModel.countDocuments(query);
-    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-    const skip = (page - 1) * pageSize;
 
-    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(pageSize);
+    const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+
+    const skip = (safePage - 1) * safePageSize;
+
+    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(safePageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),
       pagination: {
-        page,
-        pageSize,
+        page: safePage,
+        pageSize: safePageSize,
         totalItems,
         totalPages,
       },

@@ -267,12 +267,35 @@ export class AdminController {
 
     getCategories = asyncHandler(
         async (req: Request, res: Response): Promise<void> => {
-            const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
-            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : undefined;
+
+            const hasPaginationParams = 
+                req.query.page !== undefined ||
+                req.query.pageSize !== undefined;
+
             const search = req.query.search as string | undefined;
+
             const status = req.query.status as string | undefined;
 
-            if (page !== undefined && pageSize !== undefined) {
+            if(hasPaginationParams) {
+                const parsedPage = Number.parseInt(
+                    req.query.page as string,
+                    10
+                );
+
+                const parsedPageSize = Number.parseInt(
+                    req.query.pageSize as string,
+                    10
+                );
+
+                const page = 
+                    Number.isInteger(parsedPage) && parsedPage > 0
+                    ? parsedPage
+                    : 1;
+
+                const pageSize = Number.isInteger(parsedPageSize) && parsedPageSize > 0
+                    ? Math.min(parsedPageSize, 100)
+                    : 10;
+
                 const result = await this._getCategoriesUseCase.execute(
                     page,
                     pageSize,

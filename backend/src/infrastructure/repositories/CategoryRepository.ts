@@ -45,6 +45,13 @@ export class CategoryRepository extends BaseRepository<Category> implements ICat
         pageSize: number,
         filters?: { search?: string; status?: string }
     ) {
+
+        const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+
+        const safePageSize = Number.isInteger(pageSize) && pageSize > 0
+            ? Math.min(pageSize, 100)
+            : 10;
+
         const query: CategoryFilter = {};
 
         if (filters?.status && filters.status !== "ALL") {
@@ -52,21 +59,27 @@ export class CategoryRepository extends BaseRepository<Category> implements ICat
         }
 
         if (filters?.search && filters.search.trim() !== "") {
-            const searchRegex = new RegExp(filters.search.trim(), "i");
+
+            const escapedSearch = filters.search.trim().replace( /[.*+?^${}()|[\]\\]/g,"\\$&");
+
+            const searchRegex = new RegExp(escapedSearch, "i");
+
             query.$or = [{ name: searchRegex }, { description: searchRegex }];
         }
 
         const totalItems = await CategoryModel.countDocuments(query);
-        const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-        const skip = (page - 1) * pageSize;
 
-        const docs = await CategoryModel.find(query).skip(skip).limit(pageSize);
+        const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+
+        const skip = (safePage - 1) * safePageSize;
+
+        const docs = await CategoryModel.find(query).sort({createdAt: -1, _id:-1}).skip(skip).limit(safePageSize);
 
         return {
             items: docs.map(CategoryMapper.toEntity),
             pagination: {
-                page,
-                pageSize,
+                page: safePage,
+                pageSize: safePageSize,
                 totalItems,
                 totalPages,
             },

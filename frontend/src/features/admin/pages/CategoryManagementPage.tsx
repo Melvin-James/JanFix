@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Pencil, CheckCircle2 } from "lucide-react";
 
 import { ConfirmationModal } from "../components";
@@ -28,71 +28,100 @@ import {
   CategoryModal,
 } from "../components";
 
-import { usePagination } from "../hooks";
+import type { GetCategoriesParams } from "../types/Pagination";
 
 function CategoryManagementPage() {
+
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [backgroundLoading, setBackgroundLoading] = useState(false);
   const [error, setError] = useState("");
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "INACTIVE">("ALL");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "ACTIVE" | "INACTIVE"
+  >("ALL");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const itemsPerPage = 10;
+  const hasLoadedOnce = useRef(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
-
   const [successMessage, setSuccessMessage] = useState("");
+  const [updatingCategoryId, setUpdatingCategoryId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setCurrentPage(1);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    let cancelled = false;
+
     const fetchCategories = async () => {
-      try {
+      const isInitialLoad = !hasLoadedOnce.current;
+
+      if (isInitialLoad) {
         setLoading(true);
-        setError("");
-        const data = await getCategories();
-        setCategories(data);
+      } else {
+        setBackgroundLoading(true);
+      }
+
+      setError("");
+
+      const params: GetCategoriesParams = {
+        page: currentPage,
+        pageSize: itemsPerPage,
+        search: debouncedSearch || undefined,
+        status: statusFilter === "ALL" ? undefined : statusFilter,
+      };
+
+      try {
+        const result = await getCategories(params);
+
+        if (cancelled) return;
+
+        setCategories(result.items);
+        setTotalPages(result.pagination.totalPages);
+        setTotalItems(result.pagination.totalItems);
+        hasLoadedOnce.current = true;
       } catch (err) {
-        console.error(err);
+        if (cancelled) return;
+
+        console.error("Failed to load categories:", err);
         setError("Failed to load categories.");
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setBackgroundLoading(false);
+        }
       }
     };
 
     fetchCategories();
-  }, []);
 
-  const filteredCategories = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentPage, debouncedSearch, statusFilter]);
 
-    return categories.filter((cat) => {
-      const matchesSearch =
-        !query ||
-        cat.name.toLowerCase().includes(query) ||
-        cat.description.toLowerCase().includes(query);
 
-      const matchesStatus =
-        statusFilter === "ALL" ||
-        (statusFilter === "ACTIVE" && cat.isActive) ||
-        (statusFilter === "INACTIVE" && !cat.isActive);
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [categories, search, statusFilter]);
-
-  const categoriesPerPage = 5;
-
-  const {
-    currentPage,
-    totalPages,
-    startIndex,
-    endIndex,
-    paginatedItems: paginatedCategories,
-    setCurrentPage,
-  } = usePagination({
-    items: filteredCategories,
-    itemsPerPage: categoriesPerPage,
-    resetDependencies: [search, statusFilter],
-  });
 
   const handleOpenCreateModal = () => {
     setCategoryToEdit(null);
@@ -103,8 +132,6 @@ function CategoryManagementPage() {
     setCategoryToEdit(cat);
     setIsModalOpen(true);
   };
-
-  const [updatingCategoryId, setUpdatingCategoryId] = useState<string | null>(null);
 
   const handleSaveCategory = async (payload: { name: string; description: string }) => {
     if (categoryToEdit) {
@@ -217,7 +244,12 @@ function CategoryManagementPage() {
           <div className="mb-4">
             <h2 className="font-medium text-slate-900">Categories</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Showing {paginatedCategories.length} of {filteredCategories.length} categories
+              Showing {categories.length} of {totalItems} categories
+              {backgroundLoading && (
+                <span className="text-xs text-slate-500">
+                  Updating categories...
+                </span>
+              )}
             </p>
           </div>
 
@@ -255,7 +287,7 @@ function CategoryManagementPage() {
           ]}
           minWidth="min-w-[800px]"
         >
-          {paginatedCategories.map((cat) => (
+          {categories.map((cat) => (
             <tr key={cat.id} className="hover:bg-slate-50">
               {/* Category Name */}
               <td className="px-6 py-4">
@@ -313,12 +345,14 @@ function CategoryManagementPage() {
           ))}
         </AdminTable>
 
-        {filteredCategories.length === 0 && (
+        {categories.length === 0 && (
           <AdminEmptyState
             message={
-              categories.length === 0
-                ? "No categories found"
-                : "No categories match your search or filters"
+              totalItems === 0
+                ? search || statusFilter !== "ALL"
+                  ? "No categories match your search or filters"
+                  : "No categories found"
+                : "No categories found on this page"
             }
           />
         )}
@@ -327,9 +361,9 @@ function CategoryManagementPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          startIndex={startIndex}
-          endIndex={endIndex}
-          totalItems={filteredCategories.length}
+          startIndex={totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+          endIndex={Math.min(currentPage * itemsPerPage, totalItems)}
+          totalItems={totalItems}
         />
       </AdminCard>
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { Eye } from "lucide-react";
 
@@ -28,9 +28,6 @@ import {
     StatusBadge,
 } from "../components";
 
-
-import { usePagination } from "../hooks";
-
 function ServiceProvidersPage() {
 
     const navigate = useNavigate();
@@ -53,24 +50,84 @@ function ServiceProvidersPage() {
     const [statusFilter, setStatusFilter] =
         useState<ProviderStatus | "ALL">("ALL");
 
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const [totalPages, setTotalPages] = useState(1);
+
+    const [totalItems, setTotalItems] = useState(0);
+
+    const [backgroundLoading, setBackgroundLoading] = useState(false);
+
+    const hasLoadedOnce = useRef(false);
+
     useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setDebouncedSearch(search.trim());
+            setCurrentPage(1);
+        }, 400);
+
+        return () => clearTimeout(timeoutId);
+    }, [search]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [providerTypeFilter, statusFilter]);
+
+    useEffect(() => {
+        let cancelled = false;
+
         const fetchProviders = async () => {
-            try {
+            if (!hasLoadedOnce.current) {
                 setLoading(true);
-                setError("");
+            } else {
+                setBackgroundLoading(true);
+            }
 
-                const data = await getServiceProviders();
+            setError("");
 
-                setProviders(data);
+            try {
+                
+                const response = await getServiceProviders({
+                    page: currentPage,
+                    pageSize: itemsPerPage,
+                    search: debouncedSearch || undefined,
+                    providerType:
+                        providerTypeFilter === "ALL"
+                            ? undefined
+                            : providerTypeFilter,
+                    status:
+                        statusFilter === "ALL"
+                            ? undefined
+                            : statusFilter,
+                });
+
+                if (cancelled) return;
+
+                setProviders(response.items);
+                setTotalPages(response.pagination.totalPages);
+                setTotalItems(response.pagination.totalItems);
             } catch {
-                setError("Failed to load service providers.");
+                if (!cancelled) {
+                    setError("Failed to load service providers.");
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    hasLoadedOnce.current = true;
+                    setLoading(false);
+                    setBackgroundLoading(false);
+                }
             }
         };
 
         fetchProviders();
-    }, []);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [currentPage, debouncedSearch, providerTypeFilter, statusFilter]);
+
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -127,61 +184,15 @@ function ServiceProvidersPage() {
         }
     }
 
-    const filteredProviders = useMemo(() => {
-        const normalizedSearch = search.trim().toLowerCase();
 
-        return providers.filter((provider) => {
-            const matchesSearch =
-                normalizedSearch === "" ||
-                provider.responsiblePersonName
-                    ?.toLowerCase()
-                    .includes(normalizedSearch) ||
-                provider.email
-                    .toLowerCase()
-                    .includes(normalizedSearch) ||
-                provider.providerName
-                    ?.toLowerCase()
-                    .includes(normalizedSearch);
+    const itemsPerPage = 10;
 
-            const matchesProviderType =
-                providerTypeFilter === "ALL" ||
-                provider.providerType === providerTypeFilter;
-
-            const matchesStatus =
-                statusFilter === "ALL" ||
-                provider.providerStatus === statusFilter;
-
-            return (
-                matchesSearch &&
-                matchesProviderType &&
-                matchesStatus
-            );
-        });
-    }, [
-        providers,
-        search,
-        providerTypeFilter,
-        statusFilter,
-    ]);
-
-    const itemsPerPage = 5;
-
-    const {
-        currentPage,
-        totalPages,
-        paginatedItems: paginatedProviders,
-        setCurrentPage,
-    } = usePagination({
-        items: filteredProviders,
-        itemsPerPage,
-        resetDependencies: [search, providerTypeFilter, statusFilter],
-    });
 
     if (loading) {
         return <AdminLoadingState message="Loading service providers..." />;
     }
 
-    if (error) {
+    if (error && !hasLoadedOnce.current) {
         return <AdminErrorState message={error} />;
     }
 
@@ -200,8 +211,10 @@ function ServiceProvidersPage() {
                         </h2>
 
                         <p className="mt-1 text-xs text-slate-500">
-                            Showing {paginatedProviders.length} of{" "}
-                            {providers.length} providers
+                            Showing {providers.length} of {totalItems} providers
+                            {backgroundLoading && (
+                                <span className="ml-2 text-xs text-slate-500">Updating results...</span>
+                            )}
                         </p>
                     </div>
 
@@ -254,7 +267,7 @@ function ServiceProvidersPage() {
                         "Actions",
                     ]}
                 >
-                    {paginatedProviders.map((provider) => (
+                    {providers.map((provider) => (
                         <tr key={provider.id} className="hover:bg-slate-50">
                             <td className="px-6 py-4">
                                 <div>
@@ -317,12 +330,14 @@ function ServiceProvidersPage() {
                     ))}
                 </AdminTable>
 
-                {filteredProviders.length === 0 && (
+                {providers.length === 0 && !backgroundLoading && (
                     <AdminEmptyState
                         message={
-                            providers.length === 0
-                                ? "No service providers found"
-                                : "No providers match your search or filters"
+                            debouncedSearch ||
+                                providerTypeFilter !== "ALL" ||
+                                statusFilter !== "ALL"
+                                ? "No providers match your search or filters"
+                                : "No service providers found"
                         }
                     />
                 )}

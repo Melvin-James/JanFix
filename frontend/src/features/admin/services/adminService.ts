@@ -1,6 +1,6 @@
 import axiosInstance from "../../../api/axios";
 
-import type { GetUsersParams, PaginatedResponse } from "../types/Pagination";
+import type { GetProviderApplicationsParams, GetServiceProviderParams, GetUsersParams, PaginatedResponse } from "../types/Pagination";
 
 import type { AccountStatus } from "../types/AccountStatus";
 
@@ -16,14 +16,25 @@ import type { UpdateUserAccountStatusResponse } from "../types/UpdateUserAccount
 
 import type { ManagedUser } from "../types/UserManagement";
 
-export const getProviderApplications = async (): Promise<ProviderApplication[]> => {
+export const getProviderApplications = async ( params: GetProviderApplicationsParams ): Promise<PaginatedResponse<ProviderApplication>> => {
 
     const response = await axiosInstance.get(
 
-        "/admin/provider-applications"
+        "/admin/provider-applications", {
+            params: {
+                page: params.page,
+                pageSize: params.pageSize,
+                search: params.search || undefined,
+                status: params.status || undefined,
+                providerType: params.providerType || undefined,
+            }
+        }
     );
 
-    return response.data.applications;
+    return {
+        items: response.data.applications,
+        pagination: response.data.pagination,
+    }
 };
 
 export const getProviderApplicationDetails = async (userId: string): Promise<ProviderApplicationsDetails> => {
@@ -75,16 +86,23 @@ export const rejectProviderApplication = async (
 };
 
 
-export const getServiceProviders = async (): Promise<ServiceProvider[]> => {
+export const getServiceProviders = async ( params: GetServiceProviderParams ): Promise<PaginatedResponse<ServiceProvider>> => {
 
-    const response = await axiosInstance.get(
+    const response = await axiosInstance.get("/admin/service-providers", {
+        params: {
+            page: params.page,
+            pageSize: params.pageSize,
+            search: params.search || undefined,
+            providerType: params.providerType || undefined,
+            status: params.status || undefined,
+        }
+    });
 
-        "/admin/service-providers"
-
-    );
-
-    return response.data.providers;
-}
+    return {
+        items: response.data.providers,
+        pagination: response.data.pagination,
+    };
+};
 
 export const getServiceProviderDetails = async (
 

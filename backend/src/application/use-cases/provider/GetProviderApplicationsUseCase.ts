@@ -5,6 +5,7 @@ import type { IGetProviderApplicationsUseCase } from "../usecase interfaces/admi
 import type { ProviderApplicationResponseDTO } from "../../dto/admin/ProviderApplicationResponseDTO.js";
 
 import { ProviderApplicationMapper } from "../../mappers/ProviderApplicationMapper.js";
+
 import type { PaginatedResult } from "../../../shared/types/Pagination.js";
 
 export class GetProviderApplicationsUseCase implements IGetProviderApplicationsUseCase {

@@ -116,7 +116,7 @@ const adminController = new AdminController(
 
 
 
-router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATIONS, authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplications);
+router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATIONS, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getProviderApplications);
 
 router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATION_DETAILS, authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplicationDetails);
 
@@ -124,7 +124,7 @@ router.patch(ApiEndpoints.ADMIN.APPROVE_PROVIDER_APPLICATION, authenticate, auth
 
 router.patch(ApiEndpoints.ADMIN.REJECT_PROVIDER_APPLICATION, authenticate, authorizeRoles(Role.ADMIN), validate(rejectProviderApplicationSchema), adminController.rejectProviderApplication);
 
-router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDERS, authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviders);
+router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDERS, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getServiceProviders);
 
 router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDER_DETAILS, authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviderDetails);
 
@@ -136,7 +136,7 @@ router.patch(ApiEndpoints.ADMIN.UPDATE_USER_ACCOUNT_STATUS, authenticate, author
 
 router.post(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), validate(createCategorySchema), adminController.createCategory);
 
-router.get(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), adminController.getCategories);
+router.get(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getCategories);
 
 router.patch(ApiEndpoints.ADMIN.UPDATE_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), validate(updateCategorySchema), adminController.updateCategory);
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Eye } from "lucide-react";
 
@@ -23,8 +23,6 @@ import {
     StatusBadge,
 } from "../components";
 
-import { usePagination } from "../hooks";
-
 function ProviderApplicationsPage() {
 
     const navigate = useNavigate();
@@ -37,80 +35,99 @@ function ProviderApplicationsPage() {
 
     const [search, setSearch] = useState("");
 
-
+    const [debouncedSearch, setDebouncedSearch] = useState("");
 
     const [providerTypeFilter, setProviderTypeFilter] = useState("ALL");
 
     const [statusFilter, setStatusFilter] = useState("ALL");
 
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const [totalPages, setTotalPages] = useState(1);
+
+    const [totalItems, setTotalItems] = useState(0);
+
+    const [backgroundLoading, setBackgroundLoading] = useState(false);
+
+    const hasLoadedOnce = useRef(false);
+
+    const itemsPerPage = 10;
+
     useEffect(() => {
+        const timeOutId = setTimeout(() => {
+            setDebouncedSearch(search.trim());
+            setCurrentPage(1);
+        }, 400);
+
+        return () => clearTimeout(timeOutId);
+    }, [search]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [providerTypeFilter, statusFilter]);
+
+    useEffect(() => {
+
+        let cancelled = false;
+
         const fetchApplications = async () => {
-            try {
+
+            if (!hasLoadedOnce.current) {
                 setLoading(true);
-                setError("");
+            } else {
+                setBackgroundLoading(true);
+            }
 
-                const data = await getProviderApplications();
+            setError("");
 
-                setApplications(data);
+            try {
+                const response = await getProviderApplications({
+                    page: currentPage,
+                    pageSize: itemsPerPage,
+                    search: debouncedSearch || undefined,
+                    providerType:
+                        providerTypeFilter === "ALL"
+                            ? undefined
+                            : providerTypeFilter,
+                    status:
+                        statusFilter === "ALL"
+                            ? undefined
+                            : statusFilter,
+                });
+
+                if (cancelled) return;
+
+                setApplications(response.items);
+
+                setTotalPages(response.pagination.totalPages);
+
+                setTotalItems(response.pagination.totalItems);
             } catch {
-                setError("Failed to load provider applications.");
+                if (!cancelled) {
+                    setError("Failed to load provider applications.");
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    hasLoadedOnce.current = true;
+                    setLoading(false);
+                    setBackgroundLoading(false);
+                }
             }
         };
 
         fetchApplications();
-    }, []);
 
-    const filteredApplications = useMemo(() => {
-        const normalizedSearch = search.trim().toLowerCase();
+        return () => {
+            cancelled = true;
+        };
+    }, [currentPage, debouncedSearch, providerTypeFilter, statusFilter]);
 
-        return applications.filter((application) => {
-            const matchesSearch =
-                normalizedSearch === "" ||
-                application.fullName.toLowerCase().includes(normalizedSearch) ||
-                application.email.toLowerCase().includes(normalizedSearch) ||
-                application.providerName?.toLowerCase().includes(normalizedSearch);
-
-            const matchesProviderType =
-                providerTypeFilter === 'ALL' ||
-                application.providerType === providerTypeFilter;
-
-            const matchesStatus =
-                statusFilter === 'ALL' ||
-                application.applicationStatus === statusFilter;
-
-            return (
-                matchesSearch &&
-                matchesProviderType &&
-                matchesStatus
-            );
-        });
-    }, [
-        applications,
-        search,
-        providerTypeFilter,
-        statusFilter,
-    ]);
-
-    const itemsPerPage = 5;
-
-    const {
-        currentPage,
-        totalPages,
-        paginatedItems: paginatedApplications,
-        setCurrentPage,
-    } = usePagination({
-        items: filteredApplications,
-        itemsPerPage,
-        resetDependencies: [search, providerTypeFilter, statusFilter],
-    });
 
     if (loading) {
         return <AdminLoadingState message="Loading provider applications..." />;
     }
 
-    if (error) {
+    if (error && !hasLoadedOnce.current) {
         return <AdminErrorState message={error} />;
     }
 
@@ -129,7 +146,12 @@ function ProviderApplicationsPage() {
                         </h2>
 
                         <p className="mt-1 text-xs text-slate-500">
-                            showing {paginatedApplications.length} of {applications.length} applications
+                            showing {applications.length} of {totalItems} applications
+                            {backgroundLoading && (
+                                <span className="text-xs text-slate-500">
+                                    Updating results...
+                                </span>
+                            )}
                         </p>
                     </div>
 
@@ -158,10 +180,9 @@ function ProviderApplicationsPage() {
                             onChange={setStatusFilter}
                             options={[
                                 { value: "ALL", label: "All Statuses" },
-                                { value: "SUBMITTED", label: "Submitted" },
                                 { value: "UNDER_REVIEW", label: "Under Review" },
-                                { value: "APPORVED", label: "Approved" },
-                                { value: "Rejected", label: "Rejected" },
+                                { value: "APPROVED", label: "Approved" },
+                                { value: "REJECTED", label: "Rejected" },
                             ]}
                         />
                     </AdminFilterBar>
@@ -177,7 +198,7 @@ function ProviderApplicationsPage() {
                         { header: "Action", align: "right" },
                     ]}
                 >
-                    {paginatedApplications.map((application) => (
+                    {applications.map((application) => (
                         <tr
                             key={application.id}
                             className="hover:bg-slate-50"
@@ -243,12 +264,14 @@ function ProviderApplicationsPage() {
                     ))}
                 </AdminTable>
 
-                {filteredApplications.length === 0 && (
+                {applications.length === 0 && !backgroundLoading && (
                     <AdminEmptyState
                         message={
-                            applications.length === 0
-                                ? "No provider applications found"
-                                : "No applications match your search or filters"
+                            debouncedSearch ||
+                            providerTypeFilter !== "ALL" ||
+                            statusFilter !== "ALL"
+                                ? "No applications match your search or filters"
+                                : "No provider applications found"
                         }
                     />
                 )}
