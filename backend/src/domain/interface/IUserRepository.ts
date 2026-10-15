@@ -56,4 +56,5 @@ export interface IUserRepository {
         filters?: UserManagementFilters
     ): Promise<PaginatedResult<User>>;
 
+
 }

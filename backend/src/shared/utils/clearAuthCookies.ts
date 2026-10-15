@@ -1,6 +1,6 @@
 import type { Response } from "express";
 
-import { AuthCookie, AuthCookieClearOptions, AuthCookieOptions } from "../constants/auth.constants.js";
+import { AuthCookie, AuthCookieClearOptions } from "../constants/auth.constants.js";
 
 export const clearAuthCookies = (res: Response): void => {
     
