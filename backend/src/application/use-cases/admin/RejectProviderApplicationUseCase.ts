@@ -9,7 +9,6 @@ import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
-import type { User } from "../../../domain/entities/User.js";
 
 
 export class RejectProviderApplicationUseCase implements IRejectProviderApplicationUseCase {

@@ -1,4 +1,4 @@
-import { compareData, hashData } from "../../../shared/utils/hashUtil.js";
+import { compareData } from "../../../shared/utils/hashUtil.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
