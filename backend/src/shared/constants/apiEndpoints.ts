@@ -19,6 +19,7 @@ export const ApiEndpoints = {
     ONBOARDING_SUBMIT: "/onboarding/submit",
     ONBOARDING_RESUBMIT: "/onboarding/resubmit",
     PROFILE: "/profile",
+    CATEGORIES: "/categories",
   },
   ADMIN: {
     BASE: "/api/v1/admin",
@@ -40,5 +41,12 @@ export const ApiEndpoints = {
   UPLOAD: {
     BASE: "/api/v1/upload",
     ROOT: "/",
+  },
+  ISSUES: {
+    BASE: "/api/v1/issues",
+    ROOT: "/",
+    BY_ID: "/:issueId",
+    MY_ISSUES: "/my-issues",
+    CATEGORIES: "/categories",
   },
 } as const;

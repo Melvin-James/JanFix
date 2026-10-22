@@ -1,4 +1,4 @@
-import mongoose, { type Document } from "mongoose";
+import mongoose, { type Document, type Types } from "mongoose";
 
 import { Role } from "../../domain/enums/Role.js";
 
@@ -41,7 +41,7 @@ export interface ProviderDocumentsDoc {
 }
 
 export interface ProviderWorkPreferencesDoc {
-    categoriesWillingToWork?: string[];
+    categoriesWillingToWork?: Types.ObjectId[] | string[];
     websiteLinks?: string[];
 }
 

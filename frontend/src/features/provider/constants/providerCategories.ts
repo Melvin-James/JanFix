@@ -1,3 +1,6 @@
+/**
+ * @deprecated Categories are now dynamically loaded from the database `categories` collection.
+ */
 export const PROVIDER_CATEGORIES = [
 
   "Waste & Cleanliness",

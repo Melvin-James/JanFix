@@ -7,29 +7,23 @@ import asyncHandler from "../../../shared/utils/asyncHandler.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 
 import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProviderApplicationUseCase.js";
-
 import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/IResubmitProviderApplicationUseCase.js";
-
 import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProfileUseCase.js";
-
+import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
-
 import { UserMapper } from "../../../application/mappers/LoginMapper.js";
 
 export class ProviderController {
 
-
     constructor(
-
         private _submitProviderApplicationUseCase:
             ISubmitProviderApplicationUseCase,
-
         private _resubmitProviderApplicationUseCase:
             IResubmitProviderApplicationUseCase,
-
         private _getProviderProfileUseCase:
-            IGetProviderProfileUseCase
-
+            IGetProviderProfileUseCase,
+        private _getCategoriesUseCase?:
+            IGetCategoriesUseCase
     ) { }
 
 
@@ -170,4 +164,25 @@ export class ProviderController {
 
     );
 
+    getCategories = asyncHandler(
+        async (_req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._getCategoriesUseCase) {
+                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    message: "Category use case not configured",
+                });
+                return;
+            }
+
+            const result = await this._getCategoriesUseCase.execute();
+            const activeCategories = Array.isArray(result)
+                ? result.filter((cat) => cat.isActive)
+                : result.items.filter((cat) => cat.isActive);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                categories: activeCategories,
+            });
+        }
+    );
 }
