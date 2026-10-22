@@ -1,17 +1,5 @@
-import React from "react";
+import { ErrorState, type ErrorStateProps } from "../../../components/UI/ErrorState";
 
-export interface AdminErrorStateProps {
-    message: string;
-    className?: string;
-}
-
-export const AdminErrorState: React.FC<AdminErrorStateProps> = ({
-    message,
-    className = "",
-}) => {
-    return (
-        <div className={`p-6 ${className}`.trim()}>
-            <p className="text-sm text-red-600">{message}</p>
-        </div>
-    );
-};
+export type AdminErrorStateProps = ErrorStateProps;
+export const AdminErrorState = ErrorState;
+export default AdminErrorState;

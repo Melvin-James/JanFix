@@ -8,6 +8,8 @@ import uploadRoutes from "./presentation/routes/uploadRoutes.js";
 
 import adminRoutes from "./presentation/routes/adminRoutes.js";
 
+import issueRoutes from "./presentation/routes/issueRoutes.js";
+
 import errorMiddleware from "./presentation/middlewares/errorMiddleware.js";
 
 import { ApiEndpoints } from "./shared/constants/apiEndpoints.js";
@@ -31,6 +33,8 @@ app.use(ApiEndpoints.PROVIDER.BASE, providerRoutes);
 app.use(ApiEndpoints.UPLOAD.BASE, uploadRoutes);
 
 app.use(ApiEndpoints.ADMIN.BASE, adminRoutes);
+
+app.use(ApiEndpoints.ISSUES.BASE, issueRoutes);
 
 app.use(errorMiddleware);
 

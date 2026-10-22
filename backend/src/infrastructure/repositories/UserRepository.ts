@@ -44,7 +44,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
   async findByEmail(email: string): Promise<User | null> {
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).populate("providerProfile.workPreferences.categoriesWillingToWork");
 
     if (!user) {
 
@@ -54,6 +54,12 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     return UserMapper.toEntity(user);
 
+  }
+
+  override async findById(id: string): Promise<User | null> {
+    const document = await UserModel.findById(id).populate("providerProfile.workPreferences.categoriesWillingToWork");
+    if (!document) return null;
+    return UserMapper.toEntity(document);
   }
 
   async updateUser(user: User): Promise<User> {
@@ -73,7 +79,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     const users = await UserModel.find({
       providerProfile: { $exists: true }
-    });
+    }).populate("providerProfile.workPreferences.categoriesWillingToWork");
 
     return users.map(
       UserMapper.toEntity
@@ -93,7 +99,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
       "providerProfile.status.applicationStatus": ApplicationStatus.APPROVED
 
-    });
+    }).populate("providerProfile.workPreferences.categoriesWillingToWork");
 
     return users.map(UserMapper.toEntity);
 
@@ -150,7 +156,11 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     const skip = (safePage - 1) * safePageSize;
 
-    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(safePageSize);
+    const docs = await UserModel.find(query)
+      .populate("providerProfile.workPreferences.categoriesWillingToWork")
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(safePageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),
@@ -205,7 +215,11 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
     const skip = (safePage - 1) * safePageSize;
 
-    const docs = await UserModel.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(safePageSize);
+    const docs = await UserModel.find(query)
+      .populate("providerProfile.workPreferences.categoriesWillingToWork")
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(safePageSize);
 
     return {
       items: docs.map(UserMapper.toEntity),

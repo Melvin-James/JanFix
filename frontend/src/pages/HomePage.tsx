@@ -13,12 +13,16 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+import { useState } from "react";
 import { useProviderOnboardingStore } from "../features/provider/store/providerOnboardingStore";
-
+import { ReportIssueModal } from "../features/issues/components/ReportIssueModal";
+import type { Issue } from "../features/issues/types/issue";
 import MainLayout from "../layouts/MainLayout";
 
 function HomePage() {
-  
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [recentReportedIssue, setRecentReportedIssue] = useState<Issue | null>(null);
+
   const steps = [
     { icon: AlertCircle, title: "Report", desc: "Snap a photo and pin the location of any civic issue in seconds." },
     { icon: Users, title: "Participate", desc: "Join local cleanup drives and community-led events in your neighborhood." },
@@ -45,10 +49,31 @@ function HomePage() {
 
   return (
     <MainLayout>
-      {/* Navbar */}
-      
-
       <main className="mx-auto max-w-7xl px-6 py-10 space-y-16">
+        {/* Success Alert if newly created */}
+        {recentReportedIssue && (
+          <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-4 shadow-xs">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-emerald-900">
+                  Issue successfully created: "{recentReportedIssue.title}"
+                </p>
+                <p className="text-xs text-emerald-700">
+                  Status: {recentReportedIssue.status} • Location: {recentReportedIssue.location.address}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setRecentReportedIssue(null)}
+              className="text-xs font-medium text-emerald-800 hover:underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {/* Hero */}
         <section className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
@@ -60,10 +85,14 @@ function HomePage() {
               initiatives, and track the real-time progress of urban improvements.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/report" className="rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+              <button
+                type="button"
+                onClick={() => setIsReportModalOpen(true)}
+                className="cursor-pointer rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 transition-colors"
+              >
                 Report an Issue
-              </Link>
-              <Link to="/feed" className="rounded-md border border-blue-600 px-5 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50">
+              </button>
+              <Link to="/feed" className="rounded-md border border-blue-600 px-5 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors">
                 Explore Community Feed
               </Link>
             </div>
@@ -266,7 +295,16 @@ function HomePage() {
         </section>
       </main>
 
-      {/* Footer */}
+      {/* Report Issue Modal */}
+      {isReportModalOpen && (
+        <ReportIssueModal
+          isOpen={true}
+          onClose={() => setIsReportModalOpen(false)}
+          onSuccess={(created) => {
+            setRecentReportedIssue(created);
+          }}
+        />
+      )}
     </MainLayout>
   );
 }

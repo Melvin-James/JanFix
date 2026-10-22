@@ -50,6 +50,8 @@ import UserManagementPage from "../features/admin/pages/UserManagementPage";
 
 import CategoryManagementPage from "../features/admin/pages/CategoryManagementPage";
 
+import ReportIssuePage from "../features/issues/pages/ReportIssuePage";
+
 
 function AppRouter() {
 
@@ -141,15 +143,28 @@ function AppRouter() {
                 />
 
                 <Route
-
-                    path="/home"
-
+                    path="/"
                     element={
-
                         <ProtectedRoute>
-
                             <HomePage />
+                        </ProtectedRoute>
+                    }
+                />
 
+                <Route
+                    path="/home"
+                    element={
+                        <ProtectedRoute>
+                            <HomePage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/report"
+                    element={
+                        <ProtectedRoute>
+                            <ReportIssuePage />
                         </ProtectedRoute>
                     }
                 />
