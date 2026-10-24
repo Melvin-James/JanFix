@@ -2,6 +2,8 @@ import axiosInstance from "../../../api/axios";
 import type {
   CreateIssuePayload,
   CreateIssueResponse,
+  FeedIssuesParams,
+  FeedIssuesResponse,
   IssueDetailsResponse,
   UserIssuesResponse,
 } from "../types/issue";
@@ -44,5 +46,14 @@ export const getMyIssues = async (
       params: { page, pageSize },
     }
   );
+  return response.data;
+};
+
+export const getFeedIssues = async (
+  params?: FeedIssuesParams
+): Promise<FeedIssuesResponse> => {
+  const response = await axiosInstance.get<FeedIssuesResponse>("/issues", {
+    params,
+  });
   return response.data;
 };

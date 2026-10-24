@@ -69,8 +69,8 @@ export class UserMapper {
 
           workPreferences: {
             ...(document.providerProfile.workPreferences?.categoriesWillingToWork !== undefined && {
-              categoriesWillingToWork: document.providerProfile.workPreferences.categoriesWillingToWork.map((cat: any) =>
-                typeof cat === "object" && cat !== null && "name" in cat ? cat.name : cat.toString()
+              categoriesWillingToWork: document.providerProfile.workPreferences.categoriesWillingToWork.map((cat: unknown) =>
+                typeof cat === "object" && cat !== null && "name" in cat ? String((cat as { name: unknown }).name) : String(cat)
               ),
             }),
             ...(document.providerProfile.workPreferences?.websiteLinks !== undefined && {

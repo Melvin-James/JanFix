@@ -9,6 +9,7 @@ export class IssueAppMapper {
             title: issue.title,
             description: issue.description,
             category: issue.category,
+            categoryName: issue.categoryName,
             images: issue.images || [],
             visibility: issue.visibility,
             location: issue.location,

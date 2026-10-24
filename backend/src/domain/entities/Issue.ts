@@ -9,6 +9,7 @@ export interface Issue {
     title: string;
     description: string;
     category: string; // Category ID
+    categoryName?: string | undefined;
     images: UploadedFile[];
     visibility: IssueVisibility;
     location: IssueLocation;

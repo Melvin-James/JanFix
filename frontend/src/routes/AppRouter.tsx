@@ -51,6 +51,8 @@ import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import CategoryManagementPage from "../features/admin/pages/CategoryManagementPage";
 
 import ReportIssuePage from "../features/issues/pages/ReportIssuePage";
+import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
+import IssueDetailsPage from "../features/issues/pages/IssueDetailsPage";
 
 
 function AppRouter() {
@@ -165,6 +167,24 @@ function AppRouter() {
                     element={
                         <ProtectedRoute>
                             <ReportIssuePage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/feed"
+                    element={
+                        <ProtectedRoute>
+                            <IssueFeedPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/issues/:issueId"
+                    element={
+                        <ProtectedRoute>
+                            <IssueDetailsPage />
                         </ProtectedRoute>
                     }
                 />
