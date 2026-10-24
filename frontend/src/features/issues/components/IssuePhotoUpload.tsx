@@ -1,4 +1,4 @@
-import { MultiImageUpload, type MultiImageUploadProps } from "../../../components/UI/MultiImageUpload";
+import { MultiImageUpload } from "../../../components/UI/MultiImageUpload";
 import type { UploadedFile } from "../../../types/uploadedFile";
 
 export interface IssuePhotoUploadProps {

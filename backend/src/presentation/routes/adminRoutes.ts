@@ -51,6 +51,7 @@ import { UpdateCategoryUseCase } from "../../application/use-cases/category/Upda
 import { UpdateCategoryStatusUseCase } from "../../application/use-cases/category/UpdateCategoryStatusUseCase.js";
 
 import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
 
 const router = Router();
 
@@ -58,9 +59,11 @@ const userRepository = new UserRepository();
 
 const categoryRepository = new CategoryRepository();
 
+const storageService = new S3StorageService();
+
 const getProviderApplicationsUseCase = new GetProviderApplicationsUseCase(userRepository);
 
-const getProviderApplicationDetailsUseCase = new GetProviderApplicationDetailsUseCase(userRepository);
+const getProviderApplicationDetailsUseCase = new GetProviderApplicationDetailsUseCase(userRepository, storageService);
 
 const approveProviderApplicationUseCase = new ApproveProviderApplicationUseCase(userRepository);
 
@@ -68,7 +71,7 @@ const rejectProviderApplicationUseCase = new RejectProviderApplicationUseCase(us
 
 const getServiceProvidersUseCase = new GetServiceProvidersUseCase(userRepository);
 
-const getServiceProviderDetailsUseCase = new GetServiceProviderDetailsUseCase(userRepository);
+const getServiceProviderDetailsUseCase = new GetServiceProviderDetailsUseCase(userRepository, storageService);
 
 const updateServiceProviderStatusUseCase = new UpdateServiceProviderStatusUseCase(userRepository);
 

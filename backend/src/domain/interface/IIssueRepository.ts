@@ -4,10 +4,10 @@ import type { IssueStatus } from "../enums/IssueStatus.js";
 import type { IssueVisibility } from "../enums/IssueVisibility.js";
 
 export interface IssueFilters {
-    status?: IssueStatus | string;
-    visibility?: IssueVisibility | string;
-    category?: string;
-    search?: string;
+    status?: IssueStatus | string | undefined;
+    visibility?: IssueVisibility | string | undefined;
+    category?: string | undefined;
+    search?: string | undefined;
 }
 
 export interface IIssueRepository {
@@ -23,6 +23,12 @@ export interface IIssueRepository {
         page: number,
         pageSize: number,
         filters?: IssueFilters
+    ): Promise<PaginatedResult<Issue>>;
+    findFeedIssues(
+        page: number,
+        pageSize: number,
+        filters?: IssueFilters,
+        requestingUserId?: string
     ): Promise<PaginatedResult<Issue>>;
     update(id: string, data: Partial<Issue>): Promise<Issue | null>;
 }

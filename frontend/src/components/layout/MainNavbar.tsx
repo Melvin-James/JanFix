@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import { useAuthStore } from "../../store/authStore";
 
@@ -7,6 +7,10 @@ import { logoutUser } from "../../features/auth/services/authService";
 function MainNavbar() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const isHome = location.pathname === "/" || location.pathname === "/home";
+    const isFeed = location.pathname.startsWith("/feed") || location.pathname.startsWith("/issues");
 
     const clearAuth = useAuthStore(
         state => state.clearAuth
@@ -86,7 +90,7 @@ function MainNavbar() {
                     <li>
                         <Link
                             to="/"
-                            className="text-blue-600"
+                            className={isHome ? "text-blue-600 font-semibold" : "hover:text-slate-900 transition-colors"}
                         >
                             Home
                         </Link>
@@ -95,7 +99,7 @@ function MainNavbar() {
                     <li>
                         <Link
                             to="/feed"
-                            className="hover:text-slate-900"
+                            className={isFeed ? "text-blue-600 font-semibold" : "hover:text-slate-900 transition-colors"}
                         >
                             Feed
                         </Link>

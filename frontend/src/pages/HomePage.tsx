@@ -7,21 +7,63 @@ import {
   CheckCircle2,
   MapPin,
   Calendar,
-  ThumbsUp,
-  MessageSquare,
   Wrench,
   ArrowRight,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useProviderOnboardingStore } from "../features/provider/store/providerOnboardingStore";
 import { ReportIssueModal } from "../features/issues/components/ReportIssueModal";
+import { IssueCard } from "../features/issues/components/IssueCard";
+import { LoadingState } from "../components/UI/LoadingState";
+import { ErrorState } from "../components/UI/ErrorState";
+import { getFeedIssues } from "../features/issues/services/issueService";
 import type { Issue } from "../features/issues/types/issue";
 import MainLayout from "../layouts/MainLayout";
 
 function HomePage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [recentReportedIssue, setRecentReportedIssue] = useState<Issue | null>(null);
+  const [recentIssues, setRecentIssues] = useState<Issue[]>([]);
+  const [recentLoading, setRecentLoading] = useState(true);
+  const [recentError, setRecentError] = useState("");
+
+  const fetchRecentIssues = useCallback(() => {
+    setRecentLoading(true);
+    setRecentError("");
+    getFeedIssues({ page: 1, pageSize: 4 })
+      .then((response) => {
+        setRecentIssues(response.issues);
+      })
+      .catch((err) => {
+        console.error("Failed to load recent issues on homepage", err);
+        setRecentError("Failed to load recent community issues.");
+      })
+      .finally(() => {
+        setRecentLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    getFeedIssues({ page: 1, pageSize: 4 })
+      .then((response) => {
+        if (!isMounted) return;
+        setRecentIssues(response.issues);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("Failed to load recent issues on homepage", err);
+        setRecentError("Failed to load recent community issues.");
+      })
+      .finally(() => {
+        if (isMounted) setRecentLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const steps = [
     { icon: AlertCircle, title: "Report", desc: "Snap a photo and pin the location of any civic issue in seconds." },
@@ -30,11 +72,6 @@ function HomePage() {
     { icon: CheckCircle2, title: "Track", desc: "Follow real-time status updates on your reports and see them resolved." },
   ];
 
-  const reports = [
-    { title: "Waste Pile near Central Park", place: "Sector 4, MG Road", time: "2 days ago", img: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=600&h=400&fit=crop" },
-    { title: "Water Stagnation on High St.", place: "N. Ward, Junction", time: "5 days ago", img: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&h=400&fit=crop" },
-    { title: "Kochi Mural Arts Site", place: "Heritage Zone", time: "1 week ago", img: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=400&fit=crop" },
-  ];
 
   const stats = [
     { value: "1,240+", label: "Issues Reported", accent: false },
@@ -118,39 +155,47 @@ function HomePage() {
           </div>
         </section>
 
-        {/* Recent Reports */}
-        <section className="relative">
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/40 backdrop-blur-[3px]">
-            <span className="text-3xl font-bold text-slate-800 drop-shadow-sm">
-              Coming Soon...
-            </span>
-          </div>
-          <div className="pointer-events-none select-none">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold">Recent Reports</h2>
-              <Link to="/feed" className="text-sm font-medium text-blue-600 hover:underline">
-                See all →
-              </Link>
+        {/* Recently Reported Issues */}
+        <section className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                Recently Reported Issues
+              </h2>
+              <p className="mt-1 text-sm text-slate-600">
+                See the latest civic issues reported in your community.
+              </p>
             </div>
-            <div className="mt-6 grid gap-5 md:grid-cols-3">
-              {reports.map((r) => (
-                <article key={r.title} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                  <img src={r.img} alt={r.title} className="h-40 w-full object-cover" />
-                  <div className="p-4">
-                    <h3 className="font-semibold">{r.title}</h3>
-                    <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                      <MapPin className="h-3.5 w-3.5" /> {r.place}
-                    </p>
-                    <p className="mt-0.5 text-xs text-slate-400">{r.time}</p>
-                    <div className="mt-3 flex gap-4 text-xs text-slate-500">
-                      <span className="flex items-center gap-1"><ThumbsUp className="h-3.5 w-3.5" /> 124</span>
-                      <span className="flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> 18</span>
-                    </div>
-                  </div>
-                </article>
+            <Link
+              to="/feed"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors shrink-0"
+            >
+              <span>View All Issues</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          {recentLoading ? (
+            <div className="py-12">
+              <LoadingState message="Loading recent issues..." />
+            </div>
+          ) : recentError ? (
+            <div className="rounded-xl border border-red-200 bg-white p-6 shadow-xs text-center">
+              <ErrorState message={recentError} />
+            </div>
+          ) : recentIssues.length === 0 ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-xs">
+              <p className="text-sm text-slate-500">
+                No civic issues reported yet. Be the first to report an issue in your neighborhood!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recentIssues.map((issue) => (
+                <IssueCard key={issue.id} issue={issue} />
               ))}
             </div>
-          </div>
+          )}
         </section>
 
         {/* Explore Neighborhood */}
@@ -302,6 +347,7 @@ function HomePage() {
           onClose={() => setIsReportModalOpen(false)}
           onSuccess={(created) => {
             setRecentReportedIssue(created);
+            fetchRecentIssues();
           }}
         />
       )}

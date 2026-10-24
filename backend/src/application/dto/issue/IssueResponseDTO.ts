@@ -9,6 +9,7 @@ export interface IssueResponseDTO {
     title: string;
     description: string;
     category: string;
+    categoryName?: string | undefined;
     images: UploadedFile[];
     visibility: IssueVisibility;
     location: IssueLocation;

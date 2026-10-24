@@ -12,11 +12,15 @@ import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
 import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
 
+import type { IStorageService } from "../../services/IStorageService.js";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
+
 export class CreateIssueUseCase implements ICreateIssueUseCase {
     constructor(
         private readonly issueRepository: IIssueRepository,
         private readonly categoryRepository: ICategoryRepository,
-        private readonly userRepository: IUserRepository
+        private readonly userRepository: IUserRepository,
+        private readonly storageService: IStorageService
     ) { }
 
     async execute(dto: CreateIssueDTO): Promise<IssueResponseDTO> {
@@ -122,6 +126,11 @@ export class CreateIssueUseCase implements ICreateIssueUseCase {
             status: IssueStatus.REPORTED, // strictly enforced server-side
         });
 
-        return IssueAppMapper.toResponse(createdIssue);
+        const response = IssueAppMapper.toResponse(createdIssue);
+
+        return {
+            ...response,
+            images: await refreshUploadedFileUrls(response.images, this.storageService),
+        };
     }
 }
