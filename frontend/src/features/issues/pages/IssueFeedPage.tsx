@@ -152,7 +152,6 @@ export const IssueFeedPage: React.FC = () => {
   const statusOptions = [
     { value: "", label: "All Statuses" },
     { value: "REPORTED", label: "Reported" },
-    { value: "UNDER_REVIEW", label: "Under Review" },
     { value: "VERIFIED", label: "Verified" },
     { value: "REJECTED", label: "Rejected" },
   ];

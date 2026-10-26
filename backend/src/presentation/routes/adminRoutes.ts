@@ -42,7 +42,11 @@ import { CreateCategoryUseCase } from "../../application/use-cases/category/Crea
 
 import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.js";
 
-import { createCategorySchema, updateCategorySchema, updateCategoryStatusSchema } from "../validators/category/categoryValidator.js";
+import {
+  createCategorySchema,
+  updateCategorySchema,
+  updateCategoryStatusSchema,
+} from "../validators/category/categoryValidator.js";
 
 import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.js";
 
@@ -52,6 +56,11 @@ import { UpdateCategoryStatusUseCase } from "../../application/use-cases/categor
 
 import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
 import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
+import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.js";
+import { GetReviewEligibleIssuesUseCase } from "../../application/use-cases/admin/GetReviewEligibleIssuesUseCase.js";
+import { ApproveIssueUseCase } from "../../application/use-cases/admin/ApproveIssueUseCase.js";
+import { RejectIssueUseCase } from "../../application/use-cases/admin/RejectIssueUseCase.js";
+import { rejectIssueSchema } from "../validators/admin/rejectIssueValidator.js";
 
 const router = Router();
 
@@ -59,25 +68,57 @@ const userRepository = new UserRepository();
 
 const categoryRepository = new CategoryRepository();
 
+const issueRepository = new IssueRepository();
+
 const storageService = new S3StorageService();
 
-const getProviderApplicationsUseCase = new GetProviderApplicationsUseCase(userRepository);
+const getReviewEligibleIssuesUseCase = new GetReviewEligibleIssuesUseCase(
+  issueRepository,
+  storageService,
+);
+const approveIssueUseCase = new ApproveIssueUseCase(
+  issueRepository,
+  storageService,
+);
+const rejectIssueUseCase = new RejectIssueUseCase(
+  issueRepository,
+  storageService,
+);
 
-const getProviderApplicationDetailsUseCase = new GetProviderApplicationDetailsUseCase(userRepository, storageService);
+const getProviderApplicationsUseCase = new GetProviderApplicationsUseCase(
+  userRepository,
+);
 
-const approveProviderApplicationUseCase = new ApproveProviderApplicationUseCase(userRepository);
+const getProviderApplicationDetailsUseCase =
+  new GetProviderApplicationDetailsUseCase(userRepository, storageService);
 
-const rejectProviderApplicationUseCase = new RejectProviderApplicationUseCase(userRepository);
+const approveProviderApplicationUseCase = new ApproveProviderApplicationUseCase(
+  userRepository,
+);
 
-const getServiceProvidersUseCase = new GetServiceProvidersUseCase(userRepository);
+const rejectProviderApplicationUseCase = new RejectProviderApplicationUseCase(
+  userRepository,
+);
 
-const getServiceProviderDetailsUseCase = new GetServiceProviderDetailsUseCase(userRepository, storageService);
+const getServiceProvidersUseCase = new GetServiceProvidersUseCase(
+  userRepository,
+);
 
-const updateServiceProviderStatusUseCase = new UpdateServiceProviderStatusUseCase(userRepository);
+const getServiceProviderDetailsUseCase = new GetServiceProviderDetailsUseCase(
+  userRepository,
+  storageService,
+);
 
-const getUsersForManagementUseCase = new GetUsersForManagementUseCase(userRepository);
+const updateServiceProviderStatusUseCase =
+  new UpdateServiceProviderStatusUseCase(userRepository);
 
-const updateUserAccountStatusUseCase = new UpdateUserAccountStatusUseCase(userRepository);
+const getUsersForManagementUseCase = new GetUsersForManagementUseCase(
+  userRepository,
+);
+
+const updateUserAccountStatusUseCase = new UpdateUserAccountStatusUseCase(
+  userRepository,
+);
 
 const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository);
 
@@ -85,68 +126,179 @@ const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
 
 const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository);
 
-const updateCategoryStatusUseCase = new UpdateCategoryStatusUseCase(categoryRepository);
-
-const adminController = new AdminController(
-
-    getProviderApplicationsUseCase,
-
-    getProviderApplicationDetailsUseCase,
-
-    approveProviderApplicationUseCase,
-
-    rejectProviderApplicationUseCase,
-
-    getServiceProvidersUseCase,
-
-    getServiceProviderDetailsUseCase,
-
-    updateServiceProviderStatusUseCase,
-
-    getUsersForManagementUseCase,
-
-    updateUserAccountStatusUseCase,
-
-    createCategoryUseCase,
-
-    getCategoriesUseCase,
-
-    updateCategoryUseCase,
-
-    updateCategoryStatusUseCase,
-    
+const updateCategoryStatusUseCase = new UpdateCategoryStatusUseCase(
+  categoryRepository,
 );
 
+const adminController = new AdminController(
+  getProviderApplicationsUseCase,
 
+  getProviderApplicationDetailsUseCase,
 
-router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATIONS, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getProviderApplications);
+  approveProviderApplicationUseCase,
 
-router.get(ApiEndpoints.ADMIN.PROVIDER_APPLICATION_DETAILS, authenticate, authorizeRoles(Role.ADMIN), adminController.getProviderApplicationDetails);
+  rejectProviderApplicationUseCase,
 
-router.patch(ApiEndpoints.ADMIN.APPROVE_PROVIDER_APPLICATION, authenticate, authorizeRoles(Role.ADMIN), adminController.approveProviderApplication);
+  getServiceProvidersUseCase,
 
-router.patch(ApiEndpoints.ADMIN.REJECT_PROVIDER_APPLICATION, authenticate, authorizeRoles(Role.ADMIN), validate(rejectProviderApplicationSchema), adminController.rejectProviderApplication);
+  getServiceProviderDetailsUseCase,
 
-router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDERS, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getServiceProviders);
+  updateServiceProviderStatusUseCase,
 
-router.get(ApiEndpoints.ADMIN.SERVICE_PROVIDER_DETAILS, authenticate, authorizeRoles(Role.ADMIN), adminController.getServiceProviderDetails);
+  getUsersForManagementUseCase,
 
-router.patch(ApiEndpoints.ADMIN.UPDATE_SERVICE_PROVIDER_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateServiceProviderStatusSchema), adminController.updateServiceProviderStatus);
+  updateUserAccountStatusUseCase,
 
-router.get(ApiEndpoints.ADMIN.USERS, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getUsersForManagement);
+  createCategoryUseCase,
 
-router.patch(ApiEndpoints.ADMIN.UPDATE_USER_ACCOUNT_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateUserAccountStatusSchema), adminController.updateUserAccountStatus);
+  getCategoriesUseCase,
 
-router.post(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), validate(createCategorySchema), adminController.createCategory);
+  updateCategoryUseCase,
 
-router.get(ApiEndpoints.ADMIN.CATEGORIES, authenticate, authorizeRoles(Role.ADMIN), searchRateLimit, adminController.getCategories);
+  updateCategoryStatusUseCase,
 
-router.patch(ApiEndpoints.ADMIN.UPDATE_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), validate(updateCategorySchema), adminController.updateCategory);
+  getReviewEligibleIssuesUseCase,
+  approveIssueUseCase,
+  rejectIssueUseCase,
+);
 
-router.patch(ApiEndpoints.ADMIN.UPDATE_CATEGORY_STATUS, authenticate, authorizeRoles(Role.ADMIN), validate(updateCategoryStatusSchema), adminController.updateCategoryStatus);
+router.get(
+  ApiEndpoints.ADMIN.PROVIDER_APPLICATIONS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  searchRateLimit,
+  adminController.getProviderApplications,
+);
 
-router.patch(ApiEndpoints.ADMIN.BLOCK_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.blockCategory);
+router.get(
+  ApiEndpoints.ADMIN.PROVIDER_APPLICATION_DETAILS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getProviderApplicationDetails,
+);
 
-router.patch(ApiEndpoints.ADMIN.UNBLOCK_CATEGORY, authenticate, authorizeRoles(Role.ADMIN), adminController.unblockCategory);
+router.patch(
+  ApiEndpoints.ADMIN.APPROVE_PROVIDER_APPLICATION,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.approveProviderApplication,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.REJECT_PROVIDER_APPLICATION,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(rejectProviderApplicationSchema),
+  adminController.rejectProviderApplication,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.SERVICE_PROVIDERS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  searchRateLimit,
+  adminController.getServiceProviders,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.SERVICE_PROVIDER_DETAILS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getServiceProviderDetails,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.UPDATE_SERVICE_PROVIDER_STATUS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(updateServiceProviderStatusSchema),
+  adminController.updateServiceProviderStatus,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.USERS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  searchRateLimit,
+  adminController.getUsersForManagement,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.UPDATE_USER_ACCOUNT_STATUS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(updateUserAccountStatusSchema),
+  adminController.updateUserAccountStatus,
+);
+
+router.post(
+  ApiEndpoints.ADMIN.CATEGORIES,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(createCategorySchema),
+  adminController.createCategory,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.CATEGORIES,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  searchRateLimit,
+  adminController.getCategories,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.UPDATE_CATEGORY,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(updateCategorySchema),
+  adminController.updateCategory,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.UPDATE_CATEGORY_STATUS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(updateCategoryStatusSchema),
+  adminController.updateCategoryStatus,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.BLOCK_CATEGORY,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.blockCategory,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.UNBLOCK_CATEGORY,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.unblockCategory,
+);
+
+// Review-eligible issues listing (authenticated, admin only, search rate-limited)
+router.get(
+  ApiEndpoints.ADMIN.ISSUES,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  searchRateLimit,
+  adminController.getReviewEligibleIssues,
+);
+
+// Admin issue review decisions (authenticated, admin only)
+router.patch(
+  ApiEndpoints.ADMIN.APPROVE_ISSUE,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.approveIssue,
+);
+router.patch(
+  ApiEndpoints.ADMIN.REJECT_ISSUE,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  validate(rejectIssueSchema),
+  adminController.rejectIssue,
+);
 
 export default router;

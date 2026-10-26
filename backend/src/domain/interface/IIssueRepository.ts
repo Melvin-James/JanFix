@@ -10,6 +10,28 @@ export interface IssueFilters {
     search?: string | undefined;
 }
 
+export interface AdminIssueFilters {
+    status?: IssueStatus | string | undefined;
+    visibility?: IssueVisibility | string | undefined;
+    category?: string | undefined;
+    search?: string | undefined;
+}
+
+export interface ReviewEligibleIssueItem {
+    issue: Issue;
+    reporter: {
+        id: string;
+        fullName: string;
+        email?: string | undefined;
+    };
+    category: {
+        id: string;
+        name: string;
+    };
+    upvoteCount: number;
+    commentCount: number;
+}
+
 export interface IIssueRepository {
     create(issue: Partial<Issue>): Promise<Issue>;
     findById(id: string): Promise<Issue | null>;
@@ -30,5 +52,18 @@ export interface IIssueRepository {
         filters?: IssueFilters,
         requestingUserId?: string
     ): Promise<PaginatedResult<Issue>>;
+    findReviewEligibleIssues(
+        page: number,
+        pageSize: number,
+        filters?: AdminIssueFilters,
+        serverNow?: Date
+    ): Promise<PaginatedResult<ReviewEligibleIssueItem>>;
     update(id: string, data: Partial<Issue>): Promise<Issue | null>;
+    updateStatusIfEligible(
+        id: string,
+        newStatus: IssueStatus,
+        allowedCurrentStatuses: IssueStatus[],
+        rejectionReason?: string,
+        serverNow?: Date
+    ): Promise<Issue | null>;
 }

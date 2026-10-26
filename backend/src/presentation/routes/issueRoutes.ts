@@ -17,6 +17,14 @@ import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCa
 import { GetFeedIssuesUseCase } from "../../application/use-cases/issue/GetFeedIssuesUseCase.js";
 
 import { IssueController } from "../controllers/issue/IssueController.js";
+import { IssueVoteRepository } from "../../infrastructure/repositories/IssueVoteRepository.js";
+import { AddIssueUpvoteUseCase } from "../../application/use-cases/issue/AddIssueUpvoteUseCase.js";
+import { RemoveIssueUpvoteUseCase } from "../../application/use-cases/issue/RemoveIssueUpvoteUseCase.js";
+import { GetIssueUpvoteStatusUseCase } from "../../application/use-cases/issue/GetIssueUpvoteStatusUseCase.js";
+import { IssueCommentRepository } from "../../infrastructure/repositories/IssueCommentRepository.js";
+import { CreateIssueCommentUseCase } from "../../application/use-cases/issue/CreateIssueCommentUseCase.js";
+import { GetIssueCommentsUseCase } from "../../application/use-cases/issue/GetIssueCommentsUseCase.js";
+import { createCommentValidator } from "../validators/issue/createCommentValidator.js";
 
 import { authenticate } from "../middlewares/authMiddleware.js";
 
@@ -55,12 +63,31 @@ const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
 
 const getFeedIssuesUseCase = new GetFeedIssuesUseCase(issueRepository, storageService);
 
+const issueVoteRepository = new IssueVoteRepository();
+
+const addIssueUpvoteUseCase = new AddIssueUpvoteUseCase(issueRepository, issueVoteRepository);
+
+const removeIssueUpvoteUseCase = new RemoveIssueUpvoteUseCase(issueRepository, issueVoteRepository);
+
+const getIssueUpvoteStatusUseCase = new GetIssueUpvoteStatusUseCase(issueRepository, issueVoteRepository);
+
+const issueCommentRepository = new IssueCommentRepository();
+
+const createIssueCommentUseCase = new CreateIssueCommentUseCase(issueRepository, issueCommentRepository);
+
+const getIssueCommentsUseCase = new GetIssueCommentsUseCase(issueRepository, issueCommentRepository);
+
 const issueController = new IssueController(
     createIssueUseCase,
     getIssueByIdUseCase,
     getUserIssuesUseCase,
     getCategoriesUseCase,
-    getFeedIssuesUseCase
+    getFeedIssuesUseCase,
+    addIssueUpvoteUseCase,
+    removeIssueUpvoteUseCase,
+    getIssueUpvoteStatusUseCase,
+    createIssueCommentUseCase,
+    getIssueCommentsUseCase
 );
 
 // Public / Feed endpoints (with optional auth for personal visibility rules)
@@ -76,6 +103,15 @@ router.get(ApiEndpoints.ISSUES.MY_ISSUES, authenticate, issueController.getUserI
 
 // Create a new issue
 router.post(ApiEndpoints.ISSUES.ROOT, authenticate, validate(createIssueValidator), issueController.createIssue);
+
+// Issue upvote endpoints (authenticated)
+router.post(ApiEndpoints.ISSUES.UPVOTE, authenticate, issueController.addUpvote);
+router.delete(ApiEndpoints.ISSUES.UPVOTE, authenticate, issueController.removeUpvote);
+router.get(ApiEndpoints.ISSUES.UPVOTE, authenticate, issueController.getUpvoteStatus);
+
+// Issue comment endpoints (authenticated)
+router.post(ApiEndpoints.ISSUES.COMMENTS, authenticate, validate(createCommentValidator), issueController.createComment);
+router.get(ApiEndpoints.ISSUES.COMMENTS, authenticate, issueController.getComments);
 
 // Get issue details by id (enforces visibility & authorization; guests can view public verified)
 router.get(ApiEndpoints.ISSUES.BY_ID, authenticate, issueController.getIssueById);

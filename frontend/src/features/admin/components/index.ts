@@ -14,6 +14,7 @@ export * from "./AdminErrorState";
 export * from "./DetailPageHeader";
 export * from "./ProviderApplicationActions";
 export * from "./RejectApplicationModal";
+export * from "./RejectReasonModal";
 export * from "./CategoryModal";
 export * from "./ConfirmationModal";
 

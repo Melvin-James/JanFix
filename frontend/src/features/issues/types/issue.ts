@@ -2,7 +2,7 @@ import type { UploadedFile } from "../../provider/types/uploadedFile";
 
 export type IssueVisibility = "PUBLIC" | "PRIVATE";
 
-export type IssueStatus = "REPORTED" | "UNDER_REVIEW" | "VERIFIED" | "REJECTED";
+export type IssueStatus = "REPORTED" | "VERIFIED" | "REJECTED";
 
 export interface Coordinates {
   latitude: number;
@@ -21,6 +21,7 @@ export interface IssueLocation {
 export interface Issue {
   id: string;
   createdBy: string;
+  reporterName?: string;
   title: string;
   description: string;
   category: string;
@@ -29,6 +30,7 @@ export interface Issue {
   visibility: IssueVisibility;
   location: IssueLocation;
   status: IssueStatus;
+  rejectionReason?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -83,3 +85,46 @@ export interface FeedIssuesResponse {
     totalPages: number;
   };
 }
+
+export interface UpvoteStateResponse {
+  success: boolean;
+  message?: string;
+  hasUpvoted: boolean;
+  upvoteCount: number;
+}
+
+export interface CommentAuthor {
+  id: string;
+  fullName: string;
+}
+
+export interface IssueComment {
+  id: string;
+  issueId: string;
+  body: string;
+  author: CommentAuthor;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IssueCommentsResponse {
+  success: boolean;
+  comments: IssueComment[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateCommentPayload {
+  body: string;
+}
+
+export interface CreateCommentResponse {
+  success: boolean;
+  message: string;
+  comment: IssueComment;
+}
+

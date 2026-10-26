@@ -18,6 +18,8 @@ export class LoginMapper {
       
       isVerified: user.isVerified,
 
+      accountStatus: user.accountStatus,
+
       ...(user.providerProfile && {
         providerProfile: {
           ...user.providerProfile,

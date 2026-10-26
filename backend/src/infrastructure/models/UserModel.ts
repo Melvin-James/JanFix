@@ -152,4 +152,5 @@ const userSchema = new mongoose.Schema(
 
 const UserModel = mongoose.model<UserDocument>("User", userSchema);
 
+export { UserModel };
 export default UserModel;

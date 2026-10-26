@@ -10,6 +10,7 @@ export const ApiEndpoints = {
     LOGIN: "/login",
     LOGOUT: "/logout",
     ME: "/me",
+    PROFILE: "/profile",
     ADMIN_TEST: "/admin-test",
     REFRESH_TOKEN: "/refresh-token",
     RESEND_OTP: "/resend-otp",
@@ -37,6 +38,9 @@ export const ApiEndpoints = {
     UPDATE_CATEGORY_STATUS: "/categories/:categoryId/status",
     BLOCK_CATEGORY: "/categories/:categoryId/block",
     UNBLOCK_CATEGORY: "/categories/:categoryId/unblock",
+    ISSUES: "/issues",
+    APPROVE_ISSUE: "/issues/:issueId/approve",
+    REJECT_ISSUE: "/issues/:issueId/reject",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",
@@ -48,5 +52,7 @@ export const ApiEndpoints = {
     BY_ID: "/:issueId",
     MY_ISSUES: "/my-issues",
     CATEGORIES: "/categories",
+    UPVOTE: "/:issueId/upvote",
+    COMMENTS: "/:issueId/comments",
   },
 } as const;

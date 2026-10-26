@@ -10,11 +10,13 @@ import {
   Settings,
   Tags,
   Users,
+  AlertCircle,
 } from "lucide-react";
 
 const navigation = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/admin" },
   { label: "Provider Applications", icon: FileText, to:"/admin/provider-applications" },
+  { label: "Issues", icon: AlertCircle, to: "/admin/issues" },
 //   { label: "Proposals", icon: ClipboardCheck },
 //   { label: "Activities", icon: Activity },
   { label: "Users", icon: Users, to:"/admin/users" },

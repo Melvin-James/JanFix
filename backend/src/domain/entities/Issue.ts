@@ -6,6 +6,7 @@ import type { IssueStatus } from "../enums/IssueStatus.js";
 export interface Issue {
     id?: string;
     createdBy: string;
+    reporterName?: string | undefined;
     title: string;
     description: string;
     category: string; // Category ID
@@ -14,6 +15,7 @@ export interface Issue {
     visibility: IssueVisibility;
     location: IssueLocation;
     status: IssueStatus;
+    rejectionReason?: string | undefined;
     createdAt?: Date;
     updatedAt?: Date;
 }
