@@ -32,6 +32,8 @@ import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyRese
 import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyResetOtpUseCase.js";
 import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResendOtpUseCase.js";
 import type { IGetCurrentSessionUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentSessionUseCase.js";
+import type { IUpdateUserProfileUseCase } from "../../../application/use-cases/usecase interfaces/auth/IUpdateUserProfileUseCase.js";
+import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
 
 export class AuthController {
   constructor(
@@ -46,6 +48,7 @@ export class AuthController {
     private _resendOtpUseCase: IResendOtpUseCase,
     private _googleAuthService: IGoogleAuthService,
     private _getSessionUseCase: IGetCurrentSessionUseCase,
+    private _updateUserProfileUseCase?: IUpdateUserProfileUseCase,
   ) { }
 
   public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -240,6 +243,30 @@ export class AuthController {
         message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED,
         data: {
           user: result.user,
+        },
+      });
+    }
+  );
+
+  public updateProfile = asyncHandler(
+    async (req: AuthRequest, res: Response): Promise<void> => {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
+      }
+
+      if (!this._updateUserProfileUseCase) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Update profile usecase not initialized");
+      }
+
+      const { fullName } = req.body;
+      const updatedUser = await this._updateUserProfileUseCase.execute(userId, { fullName });
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: "Profile updated successfully",
+        data: {
+          user: updatedUser,
         },
       });
     }

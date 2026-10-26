@@ -15,6 +15,12 @@ import type { UpdateServiceProviderStatusResponse } from "../types/UpdateService
 import type { UpdateUserAccountStatusResponse } from "../types/UpdateUserAccountStatusResponse";
 
 import type { ManagedUser } from "../types/UserManagement";
+import type {
+    AdminIssueListItem,
+    GetAdminIssuesParams,
+    ApproveIssueResponse,
+    RejectIssueResponse,
+} from "../types/AdminIssue";
 
 export const getProviderApplications = async ( params: GetProviderApplicationsParams ): Promise<PaginatedResponse<ProviderApplication>> => {
 
@@ -173,4 +179,41 @@ export const updateUserAccountStatus = async (
 
 };
 
+export const getAdminReviewIssues = async (
+    params: GetAdminIssuesParams
+): Promise<PaginatedResponse<AdminIssueListItem>> => {
+    const response = await axiosInstance.get("/admin/issues", {
+        params: {
+            page: params.page,
+            pageSize: params.pageSize,
+            search: params.search || undefined,
+            category: params.category === "ALL" ? undefined : params.category,
+            status: params.status === "ALL" ? undefined : params.status,
+            visibility: params.visibility === "ALL" ? undefined : params.visibility,
+        },
+    });
+
+    return {
+        items: response.data.issues || [],
+        pagination: response.data.pagination,
+    };
+};
+
+export const approveIssue = async (issueId: string): Promise<ApproveIssueResponse> => {
+    const response = await axiosInstance.patch(`/admin/issues/${issueId}/approve`);
+    return response.data;
+};
+
+export const rejectIssue = async (
+    issueId: string,
+    rejectionReason: string
+): Promise<RejectIssueResponse> => {
+    const response = await axiosInstance.patch(`/admin/issues/${issueId}/reject`, {
+        rejectionReason,
+    });
+    return response.data;
+};
+
 export * from "./categoryService";
+export type * from "../types/AdminIssue";
+

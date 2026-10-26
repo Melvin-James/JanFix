@@ -49,6 +49,16 @@ import ServiceProviderDetailsPage from "../features/admin/pages/ServiceProviderD
 import UserManagementPage from "../features/admin/pages/UserManagementPage";
 
 import CategoryManagementPage from "../features/admin/pages/CategoryManagementPage";
+import AdminIssuesPage from "../features/admin/pages/AdminIssuesPage";
+
+import ReportIssuePage from "../features/issues/pages/ReportIssuePage";
+import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
+import IssueDetailsPage from "../features/issues/pages/IssueDetailsPage";
+
+import ProfileLayout from "../features/profile/components/ProfileLayout";
+import ProfilePage from "../features/profile/pages/ProfilePage";
+import EditProfilePage from "../features/profile/pages/EditProfilePage";
+import YourReportsPage from "../features/profile/pages/YourReportsPage";
 
 
 function AppRouter() {
@@ -141,18 +151,62 @@ function AppRouter() {
                 />
 
                 <Route
-
-                    path="/home"
-
+                    path="/"
                     element={
-
                         <ProtectedRoute>
-
                             <HomePage />
-
                         </ProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/home"
+                    element={
+                        <ProtectedRoute>
+                            <HomePage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/report"
+                    element={
+                        <ProtectedRoute>
+                            <ReportIssuePage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/feed"
+                    element={
+                        <ProtectedRoute>
+                            <IssueFeedPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/issues/:issueId"
+                    element={
+                        <ProtectedRoute>
+                            <IssueDetailsPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <ProfileLayout />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<ProfilePage />} />
+                    <Route path="edit" element={<EditProfilePage />} />
+                    <Route path="reports" element={<YourReportsPage />} />
+                </Route>
 
                 <Route
 
@@ -376,6 +430,17 @@ function AppRouter() {
 
                     }
 
+                />
+
+                <Route
+                    path="/admin/issues"
+                    element={
+                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+                            <AdminLayout>
+                                <AdminIssuesPage />
+                            </AdminLayout>
+                        </RoleProtectedRoute>
+                    }
                 />
 
 

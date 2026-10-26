@@ -18,10 +18,22 @@ export class LoginMapper {
       
       isVerified: user.isVerified,
 
+      accountStatus: user.accountStatus,
+
       ...(user.providerProfile && {
-        providerProfile: user.providerProfile,
+        providerProfile: {
+          ...user.providerProfile,
+          // Never expose sensitive verification documents (ID proof, NGO registration) in auth responses
+          documents: {
+            ...(user.providerProfile.documents?.profileImage && {
+              profileImage: user.providerProfile.documents.profileImage,
+            }),
+            ...(user.providerProfile.documents?.logo && {
+              logo: user.providerProfile.documents.logo,
+            }),
+          },
+        },
       }),
-      
     };
   }
 }

@@ -1,29 +1,20 @@
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-
+import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.js";
 import type { IResubmitProviderApplicationUseCase } from "../usecase interfaces/provider/IResubmitProviderApplicationUseCase.js";
-
 import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.js";
-
 import ApiError from "../../../shared/utils/apiError.js";
-
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-
 import { AppMessages } from "../../../shared/constants/messages.js";
-
 import { ProviderType } from "../../../domain/enums/ProviderType.js";
-
 import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
-
 import type { User } from "../../../domain/entities/User.js";
-
 
 export class ResubmitProviderApplicationUseCase
     implements IResubmitProviderApplicationUseCase {
 
     constructor(
-
-        private userRepository: IUserRepository
-
+        private userRepository: IUserRepository,
+        private categoryRepository: ICategoryRepository
     ) { }
 
 
@@ -76,6 +67,37 @@ export class ResubmitProviderApplicationUseCase
                 HttpStatusCode.BAD_REQUEST,
                 AppMessages.ERROR.GOVERNMENT_ID_REQUIRED
             );
+        }
+
+        if (!dto.categoriesWillingToWork || !Array.isArray(dto.categoriesWillingToWork) || dto.categoriesWillingToWork.length === 0) {
+            throw new ApiError(
+                HttpStatusCode.BAD_REQUEST,
+                AppMessages.ERROR.CATEGORY_NOT_FOUND
+            );
+        }
+
+        const resolvedCategoryIds: string[] = [];
+        for (const catIdOrName of dto.categoriesWillingToWork) {
+            let category = null;
+            if (/^[0-9a-fA-F]{24}$/.test(catIdOrName)) {
+                category = await this.categoryRepository.findById(catIdOrName);
+            }
+            if (!category) {
+                category = await this.categoryRepository.findByName(catIdOrName);
+            }
+            if (!category) {
+                throw new ApiError(
+                    HttpStatusCode.BAD_REQUEST,
+                    AppMessages.ERROR.CATEGORY_NOT_FOUND
+                );
+            }
+            if (!category.isActive) {
+                throw new ApiError(
+                    HttpStatusCode.BAD_REQUEST,
+                    AppMessages.ERROR.SELECTED_CATEGORY_INACTIVE
+                );
+            }
+            resolvedCategoryIds.push(category.id as string);
         }
 
 
@@ -188,7 +210,7 @@ export class ResubmitProviderApplicationUseCase
             workPreferences: {
 
                 categoriesWillingToWork:
-                    dto.categoriesWillingToWork,
+                    resolvedCategoryIds,
 
                 ...(dto.websiteLinks && {
 

@@ -16,9 +16,16 @@ export const AppMessages = {
     PROVIDER_APPLICATION_APPROVED: "Provider application approved successfully",
     PROVIDER_APPLICATION_REJECTED: "Provider application rejected successfully",
     RESET_OTP_VERIFIED: "OTP verified successfully",
-    OTP_RESENT_SUCCESS: "OTP resent successfully"
+    OTP_RESENT_SUCCESS: "OTP resent successfully",
+    ISSUE_APPROVED: "Issue approved successfully",
+    ISSUE_REJECTED: "Issue rejected successfully"
   },
   ERROR: {
+    ISSUE_NOT_FOUND: "Issue not found",
+    ISSUE_NOT_ELIGIBLE_FOR_REVIEW: "Issue is not eligible for review until the 24-hour interaction period has ended",
+    ISSUE_ALREADY_APPROVED: "Issue is already approved",
+    ISSUE_ALREADY_REJECTED: "Issue is already rejected",
+    INVALID_ISSUE_STATUS_TRANSITION: "Invalid status transition for issue",
     USER_ALREADY_EXISTS: "User already exists",
     USER_NOT_FOUND: "User not found",
     USER_ALREADY_VERIFIED: "User already verified",
@@ -57,5 +64,15 @@ export const AppMessages = {
     INVALID_UPLOAD_FOLDER: "Invalid upload folder",
     UNSUPPORTED_FILE_TYPE: "Unsupported file type",
     ACCOUNT_BLOCKED: "Your account has been blocked. Please contact support",
+    INVALID_COORDINATES: "Valid latitude [-90, 90] and longitude [-180, 180] are required",
+    ISSUE_VISIBILITY_REQUIRED: "Please select an issue visibility.",
+    SELECTED_CATEGORY_INACTIVE: "Selected category is currently inactive",
+    IMAGES_ARRAY_REQUIRED: "Images array is required",
+    MAX_IMAGE_LIMIT: "An issue can have a maximum of 5 images",
+    INVALID_IMAGE_METADATA: "Invalid image metadata",
+    UNSUPPORTED_IMAGE_FORMAT: "Unsupported image format. Only JPEG, PNG, and WebP are allowed",
+    IMAGE_SIZE_LIMIT_EXCEEDED: "Image size exceeds the 5 MB limit",
+    UNAUTHORIZED_UPLOAD_KEY_PREFIX: "Unauthorized upload key prefix",
+    LOCATION_INFORMATION_REQUIRED: "Complete location information is required"
   }
 };

@@ -12,162 +12,106 @@ import type { IResubmitProviderApplicationUseCase } from "../../../application/u
 
 import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProfileUseCase.js";
 
+import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
+
 import { AppMessages } from "../../../shared/constants/messages.js";
 
 import { UserMapper } from "../../../application/mappers/LoginMapper.js";
 
 export class ProviderController {
-
-
-    constructor(
-
-        private _submitProviderApplicationUseCase:
-            ISubmitProviderApplicationUseCase,
-
-        private _resubmitProviderApplicationUseCase:
-            IResubmitProviderApplicationUseCase,
-
-        private _getProviderProfileUseCase:
-            IGetProviderProfileUseCase
-
-    ) { }
-
-
-
-
-
-    submit = asyncHandler(
-
-        async (
-
-            req: AuthRequest,
-
-            res: Response
-
-        ): Promise<void> => {
-
-
-
-           const user =  await this
-                ._submitProviderApplicationUseCase
-                .execute(
-
-                    req.user!.userId,
-
-                    req.body
-
-                );
-
-
-
-            res.status(
-                HttpStatusCode.CREATED
-            )
-            .json({
-
-                success: true,
-
-
-                message:
-                    AppMessages.SUCCESS
-                        .SERVICE_PROVIDER_PROFILE_CREATED,
-
-                data: {
-                    user: UserMapper.toAuthResponse(user)
-                }
-
-            });
-
-        }
-
-    );
-
-
-
-    resubmit = asyncHandler(
-
-        async (
-
-            req: AuthRequest,
-
-            res: Response
-
-        ): Promise<void> => {
-
-
-           const user = await this
-                ._resubmitProviderApplicationUseCase
-                .execute(
-
-                    req.user!.userId,
-
-                    req.body
-
-                );
-
-
-
-            res.status(
-                HttpStatusCode.OK
-            )
-            .json({
-
-                success: true,
-
-
-                message:
-                    AppMessages.SUCCESS
-                        .APPLICATION_RESUBMITTED,
-
-                data: {
-                    user: UserMapper.toAuthResponse(user)
-                }
-
-            });
-
-        }
-
-    );
-
-
-    getProfile = asyncHandler(
-
-        async (
-
-            req: AuthRequest,
-
-            res: Response
-
-        ): Promise<void> => {
-
-
-
-            const provider =
-
-                await this
-                    ._getProviderProfileUseCase
-                    .execute(
-
-                        req.user!.userId
-
-                    );
-
-
-
-
-            res.status(
-                HttpStatusCode.OK
-            )
-            .json({
-
-                success: true,
-
-                provider
-
-            });
-
-        }
-
-    );
-
+  constructor(
+    private _submitProviderApplicationUseCase: ISubmitProviderApplicationUseCase,
+    private _resubmitProviderApplicationUseCase: IResubmitProviderApplicationUseCase,
+    private _getProviderProfileUseCase: IGetProviderProfileUseCase,
+    private _getCategoriesUseCase?: IGetCategoriesUseCase,
+  ) {}
+
+  submit = asyncHandler(
+    async (
+      req: AuthRequest,
+
+      res: Response,
+    ): Promise<void> => {
+      const user = await this._submitProviderApplicationUseCase.execute(
+        req.user!.userId,
+
+        req.body,
+      );
+
+      res.status(HttpStatusCode.CREATED).json({
+        success: true,
+
+        message: AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED,
+
+        data: {
+          user: UserMapper.toAuthResponse(user),
+        },
+      });
+    },
+  );
+
+  resubmit = asyncHandler(
+    async (
+      req: AuthRequest,
+
+      res: Response,
+    ): Promise<void> => {
+      const user = await this._resubmitProviderApplicationUseCase.execute(
+        req.user!.userId,
+
+        req.body,
+      );
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+
+        message: AppMessages.SUCCESS.APPLICATION_RESUBMITTED,
+
+        data: {
+          user: UserMapper.toAuthResponse(user),
+        },
+      });
+    },
+  );
+
+  getProfile = asyncHandler(
+    async (
+      req: AuthRequest,
+
+      res: Response,
+    ): Promise<void> => {
+      const provider = await this._getProviderProfileUseCase.execute(
+        req.user!.userId,
+        req.user!.userId,
+      );
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+
+        provider,
+      });
+    },
+  );
+
+  getCategories = asyncHandler(
+    async (_req: AuthRequest, res: Response): Promise<void> => {
+      if (!this._getCategoriesUseCase) {
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          message: "Category use case not configured",
+        });
+        return;
+      }
+
+      const result = await this._getCategoriesUseCase.execute();
+      const activeCategories = Array.isArray(result)
+        ? result.filter((cat) => cat.isActive)
+        : result.items.filter((cat) => cat.isActive);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        categories: activeCategories,
+      });
+    },
+  );
 }

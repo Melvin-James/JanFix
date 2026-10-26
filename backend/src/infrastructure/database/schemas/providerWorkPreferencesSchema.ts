@@ -4,7 +4,8 @@ export const providerWorkPreferencesSchema = new Schema(
     {
         categoriesWillingToWork: [
             {
-                type: String,
+                type: Schema.Types.ObjectId,
+                ref: "Category",
             },
         ],
 

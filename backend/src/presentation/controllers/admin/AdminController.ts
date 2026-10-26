@@ -31,6 +31,11 @@ import type { IGetCategoriesUseCase } from "../../../application/use-cases/useca
 import type { IUpdateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryUseCase.js";
 
 import type { IUpdateCategoryStatusUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryStatusUseCase.js";
+import type { IGetReviewEligibleIssuesUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetReviewEligibleIssuesUseCase.js";
+import type { IApproveIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveIssueUseCase.js";
+import type { IRejectIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectIssueUseCase.js";
+import { Role } from "../../../domain/enums/Role.js";
+import ApiError from "../../../shared/utils/apiError.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
 
@@ -63,6 +68,12 @@ export class AdminController {
         private readonly _updateCategoryUseCase: IUpdateCategoryUseCase,
 
         private readonly _updateCategoryStatusUseCase: IUpdateCategoryStatusUseCase,
+
+        private readonly _getReviewEligibleIssuesUseCase: IGetReviewEligibleIssuesUseCase,
+
+        private readonly _approveIssueUseCase: IApproveIssueUseCase,
+
+        private readonly _rejectIssueUseCase: IRejectIssueUseCase,
 
     ) { }
 
@@ -399,6 +410,78 @@ export class AdminController {
             res.status(HttpStatusCode.OK).json({
                 success: true,
                 category,
+            });
+        }
+    );
+
+    getReviewEligibleIssues = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!req.user) {
+                throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
+            }
+
+            if (!req.user.roles?.includes(Role.ADMIN)) {
+                throw new ApiError(HttpStatusCode.FORBIDDEN, AppMessages.ERROR.FORBIDDEN);
+            }
+
+            if (req.query.page !== undefined) {
+                const parsedPage = Number(req.query.page);
+                if (!Number.isInteger(parsedPage) || parsedPage < 1) {
+                    throw new ApiError(HttpStatusCode.BAD_REQUEST, "Page must be a positive integer");
+                }
+            }
+
+            if (req.query.pageSize !== undefined) {
+                const parsedPageSize = Number(req.query.pageSize);
+                if (!Number.isInteger(parsedPageSize) || parsedPageSize < 1 || parsedPageSize > 100) {
+                    throw new ApiError(HttpStatusCode.BAD_REQUEST, "Page size must be between 1 and 100");
+                }
+            }
+
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
+            const search = req.query.search as string | undefined;
+            const status = req.query.status as string | undefined;
+            const category = req.query.category as string | undefined;
+            const visibility = req.query.visibility as string | undefined;
+
+            const result = await this._getReviewEligibleIssuesUseCase.execute(
+                page,
+                pageSize,
+                { search, status, category, visibility }
+            );
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                issues: result.items,
+                pagination: result.pagination,
+            });
+        }
+    );
+
+    approveIssue = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            const issueId = req.params.issueId as string;
+            const updatedIssue = await this._approveIssueUseCase.execute(issueId);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                message: AppMessages.SUCCESS.ISSUE_APPROVED,
+                issue: updatedIssue,
+            });
+        }
+    );
+
+    rejectIssue = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            const issueId = req.params.issueId as string;
+            const { rejectionReason } = req.body;
+            const updatedIssue = await this._rejectIssueUseCase.execute(issueId, rejectionReason);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                message: AppMessages.SUCCESS.ISSUE_REJECTED,
+                issue: updatedIssue,
             });
         }
     );

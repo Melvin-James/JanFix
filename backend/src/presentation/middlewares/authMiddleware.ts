@@ -76,3 +76,30 @@ export const authenticate = asyncHandler(
         next();
     }
 );
+
+export const optionalAuthenticate = asyncHandler(
+    async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+        const token = req.cookies?.accessToken;
+
+        if (!token) {
+            return next();
+        }
+
+        try {
+            const decoded = jwtService.verifyAccessToken(token) as AccessTokenPayload;
+            const user = await userRepository.findById(decoded.userId);
+
+            if (user && user.accountStatus !== AccountStatus.BLOCKED) {
+                req.user = {
+                    userId: decoded.userId,
+                    roles: decoded.roles,
+                };
+            }
+        } catch {
+            // Optional auth proceeds without setting req.user if token is invalid or expired
+        }
+
+        next();
+    }
+);
+
