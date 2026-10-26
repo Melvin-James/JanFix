@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint \"src/**/*.ts\"",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix"
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "test": "tsx src/tests/issueSocialModels.test.ts && tsx src/tests/issueUpvoteApi.test.ts && tsx src/tests/issueCommentsApi.test.ts && tsx src/tests/adminIssueListingApi.test.ts && tsx src/tests/adminIssueDecisionApi.test.ts && tsx src/tests/userProfileAndReportsApi.test.ts"
   },
   "keywords": [],
   "author": "",

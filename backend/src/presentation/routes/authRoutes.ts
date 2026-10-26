@@ -12,7 +12,7 @@ import { forgotPasswordSchema } from "../validators/auth/forgotPasswordValidator
 import { resetPasswordSchema } from "../validators/auth/resetPasswordValidator.js";
 import { resendOtpSchema } from "../validators/auth/resendOtpValidator.js";
 import { verifyResetOtpSchema } from "../validators/auth/verifyResetOtpValidator.js";
-
+import { updateProfileSchema } from "../validators/auth/updateProfileValidator.js";
 
 import { authenticate } from "../middlewares/authMiddleware.js";
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
@@ -35,6 +35,7 @@ import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPass
 import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.js";
 import { ResendOtpUseCase } from "../../application/use-cases/auth/ResendOtpUseCase.js";
 import { GetCurrentSessionUseCase } from "../../application/use-cases/auth/GetCurrentSessionUseCase.js";
+import { UpdateUserProfileUseCase } from "../../application/use-cases/auth/UpdateUserProfileUseCase.js";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();
@@ -54,6 +55,7 @@ const verifyResetOtpUseCase = new VerifyResetOtpUseCase(userRepository, otpRepos
 const resendOtpUseCase = new ResendOtpUseCase(userRepository, otpRepository, emailService);
 // Session-aware use case — handles access token + refresh token fallback internally
 const getSessionUseCase = new GetCurrentSessionUseCase(jwtService, userRepository);
+const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository);
 
 const authController = new AuthController(
     registerUserUseCase,
@@ -67,6 +69,7 @@ const authController = new AuthController(
     resendOtpUseCase,
     googleAuthService,
     getSessionUseCase,
+    updateUserProfileUseCase,
 );
 
 const router = express.Router();
@@ -89,6 +92,9 @@ router.post(ApiEndpoints.AUTH.LOGOUT, authController.logout);
 
 // /auth/me is session-aware — no authenticate middleware, the use case handles token resolution
 router.get(ApiEndpoints.AUTH.ME, authController.getCurrentUser);
+
+// Self-service profile update (authenticated user only)
+router.patch(ApiEndpoints.AUTH.PROFILE, authenticate, validate(updateProfileSchema), authController.updateProfile);
 
 router.get(ApiEndpoints.AUTH.ADMIN_TEST, authenticate, authorizeRoles(Role.ADMIN), (req, res) => {
     res.status(HttpStatusCode.OK).json({

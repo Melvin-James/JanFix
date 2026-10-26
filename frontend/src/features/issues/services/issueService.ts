@@ -1,10 +1,14 @@
 import axiosInstance from "../../../api/axios";
 import type {
+  CreateCommentPayload,
+  CreateCommentResponse,
   CreateIssuePayload,
   CreateIssueResponse,
   FeedIssuesParams,
   FeedIssuesResponse,
+  IssueCommentsResponse,
   IssueDetailsResponse,
+  UpvoteStateResponse,
   UserIssuesResponse,
 } from "../types/issue";
 import type { Category } from "../../admin/types/Category";
@@ -57,3 +61,41 @@ export const getFeedIssues = async (
   });
   return response.data;
 };
+
+export const addIssueUpvote = async (issueId: string): Promise<UpvoteStateResponse> => {
+  const response = await axiosInstance.post<UpvoteStateResponse>(`/issues/${issueId}/upvote`);
+  return response.data;
+};
+
+export const removeIssueUpvote = async (issueId: string): Promise<UpvoteStateResponse> => {
+  const response = await axiosInstance.delete<UpvoteStateResponse>(`/issues/${issueId}/upvote`);
+  return response.data;
+};
+
+export const getIssueUpvoteStatus = async (issueId: string): Promise<UpvoteStateResponse> => {
+  const response = await axiosInstance.get<UpvoteStateResponse>(`/issues/${issueId}/upvote`);
+  return response.data;
+};
+
+export const getIssueComments = async (
+  issueId: string,
+  page = 1,
+  pageSize = 20
+): Promise<IssueCommentsResponse> => {
+  const response = await axiosInstance.get<IssueCommentsResponse>(`/issues/${issueId}/comments`, {
+    params: { page, pageSize },
+  });
+  return response.data;
+};
+
+export const createIssueComment = async (
+  issueId: string,
+  payload: CreateCommentPayload
+): Promise<CreateCommentResponse> => {
+  const response = await axiosInstance.post<CreateCommentResponse>(
+    `/issues/${issueId}/comments`,
+    payload
+  );
+  return response.data;
+};
+

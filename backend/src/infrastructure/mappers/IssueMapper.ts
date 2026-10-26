@@ -15,9 +15,20 @@ export class IssueMapper {
             ? rawCategory.name
             : undefined;
 
+        const rawCreatedBy = (document as unknown as { createdBy?: { _id?: unknown; fullName?: string } | { toString(): string } }).createdBy;
+        const createdById = rawCreatedBy && typeof rawCreatedBy === "object" && "_id" in rawCreatedBy && rawCreatedBy._id
+            ? String(rawCreatedBy._id)
+            : rawCreatedBy
+            ? rawCreatedBy.toString()
+            : "";
+        const reporterName = rawCreatedBy && typeof rawCreatedBy === "object" && "fullName" in rawCreatedBy && typeof rawCreatedBy.fullName === "string"
+            ? rawCreatedBy.fullName
+            : undefined;
+
         return {
             id: document._id.toString(),
-            createdBy: document.createdBy?.toString(),
+            createdBy: createdById,
+            reporterName,
             title: document.title,
             description: document.description,
             category: categoryId,
@@ -26,6 +37,7 @@ export class IssueMapper {
             visibility: document.visibility,
             location: document.location,
             status: document.status,
+            rejectionReason: document.rejectionReason,
             createdAt: document.createdAt,
             updatedAt: document.updatedAt,
         };

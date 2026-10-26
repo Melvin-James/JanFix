@@ -15,6 +15,7 @@ export interface IssueDocument extends Document {
     visibility: IssueVisibility;
     location: IssueLocation;
     status: IssueStatus;
+    rejectionReason?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -69,6 +70,11 @@ const issueSchema = new Schema<IssueDocument>(
             required: true,
             index: true,
         },
+        rejectionReason: {
+            type: String,
+            trim: true,
+            maxlength: 1000,
+        },
     },
     {
         timestamps: true,
@@ -79,5 +85,6 @@ const issueSchema = new Schema<IssueDocument>(
 issueSchema.index({ createdAt: -1 });
 issueSchema.index({ createdBy: 1, createdAt: -1 });
 issueSchema.index({ status: 1, visibility: 1 });
+issueSchema.index({ status: 1, createdAt: 1 });
 
 export const IssueModel = model<IssueDocument>("Issue", issueSchema);

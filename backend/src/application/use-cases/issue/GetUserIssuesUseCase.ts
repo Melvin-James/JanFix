@@ -1,4 +1,4 @@
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
+import type { IIssueRepository, IssueFilters } from "../../../domain/interface/IIssueRepository.js";
 
 import type { IStorageService } from "../../services/IStorageService.js";
 
@@ -21,13 +21,16 @@ export class GetUserIssuesUseCase implements IGetUserIssuesUseCase {
     async execute(
         userId: string,
         page = 1,
-        pageSize = 10
+        pageSize = 10,
+        filters?: IssueFilters
     ): Promise<PaginatedResult<IssueResponseDTO>> {
-        const paginated = await this.issueRepository.findByUserId(userId, page, pageSize);
+        const paginated = await this.issueRepository.findByUserId(userId, page, pageSize, filters);
 
         const items = await Promise.all(
             paginated.items.map(async (issue) => {
-                const response = IssueAppMapper.toResponse(issue);
+                const response = IssueAppMapper.toResponse(issue, {
+                    includeRejectionReason: true,
+                });
                 
                 return {
                     ...response,
