@@ -50,8 +50,11 @@ export class GetProviderProfileUseCase implements IGetProviderProfileUseCase {
             { includeSensitive }
         );
 
+        // Never expose payout details through general provider profile responses
+        const { payoutDetails: _omittedPayout, ...safeProfile } = user.providerProfile;
+
         return {
-            ...user.providerProfile,
+            ...safeProfile,
             documents: refreshedDocuments,
         };
     }

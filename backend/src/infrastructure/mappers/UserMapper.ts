@@ -107,8 +107,23 @@ export class UserMapper {
               rejectionReason: document.providerProfile.status.rejectionReason,
             }),
           },
+
+          ...(document.providerProfile.payoutDetails && {
+            payoutDetails: {
+              accountHolderName: document.providerProfile.payoutDetails.accountHolderName,
+              upiId: document.providerProfile.payoutDetails.upiId,
+              ...(document.providerProfile.payoutDetails.bankAccountNumber && {
+                bankAccountNumber: document.providerProfile.payoutDetails.bankAccountNumber,
+              }),
+              ...(document.providerProfile.payoutDetails.ifscCode && {
+                ifscCode: document.providerProfile.payoutDetails.ifscCode,
+              }),
+              submittedAt: document.providerProfile.payoutDetails.submittedAt,
+            },
+          }),
         },
       }),
-    }
+    };
   }
 }
+

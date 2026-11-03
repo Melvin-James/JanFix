@@ -2,6 +2,14 @@ import type { ProviderType } from "./providerTypes";
 
 import type { UploadedFile } from "./uploadedFile";
 
+export interface ProviderPayoutDetails {
+  accountHolderName: string;
+  upiId: string;
+  bankAccountNumber?: string;
+  ifscCode?: string;
+  submittedAt?: string;
+}
+
 export interface ProviderProfile {
 
   onboardingStatus?: string;
@@ -68,5 +76,5 @@ export interface ProviderProfile {
 
   };
 
-  
+  payoutDetails?: ProviderPayoutDetails;
 }

@@ -7,6 +7,7 @@ export type ApplicationMode = "USER" | "SERVICE_PROVIDER";
 export interface ProviderAccessSummary {
   isApproved: boolean;
   isActivated: boolean;
+  hasPayoutDetails?: boolean;
 }
 
 export interface AuthUser {
