@@ -40,7 +40,11 @@ export class SwitchModeUseCase implements ISwitchModeUseCase {
                 );
             }
 
-            const isActivated = user.providerProfile.status.providerStatus === ProviderStatus.ACTIVE;
+            const hasPayoutDetails = Boolean(
+                user.providerProfile.payoutDetails?.accountHolderName &&
+                user.providerProfile.payoutDetails?.upiId
+            );
+            const isActivated = user.providerProfile.status.providerStatus === ProviderStatus.ACTIVE && hasPayoutDetails;
             const accessToken = this.jwtService.generateAccessToken(
                 user.id as string,
                 user.roles,

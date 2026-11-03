@@ -8,7 +8,11 @@ export class LoginMapper {
 
   static toAuthResponse(user: User, activeMode: ApplicationMode = "USER"): AuthUserDTO {
     const isApproved = user.providerProfile?.status?.applicationStatus === ApplicationStatus.APPROVED;
-    const isActivated = isApproved && user.providerProfile?.status?.providerStatus === ProviderStatus.ACTIVE;
+    const hasPayoutDetails = Boolean(
+      user.providerProfile?.payoutDetails?.accountHolderName &&
+      user.providerProfile?.payoutDetails?.upiId
+    );
+    const isActivated = isApproved && user.providerProfile?.status?.providerStatus === ProviderStatus.ACTIVE && hasPayoutDetails;
 
     return {
 
@@ -29,11 +33,14 @@ export class LoginMapper {
       providerAccess: {
         isApproved,
         isActivated,
+        hasPayoutDetails,
       },
 
       ...(user.providerProfile && {
         providerProfile: {
           ...user.providerProfile,
+          // Never expose sensitive payout account details in auth responses
+          payoutDetails: undefined,
           // Never expose sensitive verification documents (ID proof, NGO registration) in auth responses
           documents: {
             ...(user.providerProfile.documents?.profileImage && {
@@ -49,4 +56,4 @@ export class LoginMapper {
   }
 }
 
-export { LoginMapper as UserMapper };
+export { LoginMapper as UserMapper };

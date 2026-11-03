@@ -132,7 +132,7 @@ export class ProviderController {
       if (!this._activateProviderUseCase) {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Activate provider usecase not initialized");
       }
-      const updatedUser = await this._activateProviderUseCase.execute(userId);
+      const updatedUser = await this._activateProviderUseCase.execute(userId, req.body);
       res.status(HttpStatusCode.OK).json({
         success: true,
         message: "Service provider account successfully activated.",

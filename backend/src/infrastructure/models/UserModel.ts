@@ -61,6 +61,14 @@ export interface ProviderStatusDoc {
     rejectionReason?: string;
 }
 
+export interface ProviderPayoutDetailsDoc {
+    accountHolderName: string;
+    upiId: string;
+    bankAccountNumber?: string;
+    ifscCode?: string;
+    submittedAt: Date;
+}
+
 export interface ProviderProfileDoc {
     identity?: ProviderIdentityDoc;
     documents?: ProviderDocumentsDoc;
@@ -68,6 +76,7 @@ export interface ProviderProfileDoc {
     volunteerGroupProfile?: VolunteerGroupProfileDoc;
     organizationProfile?: OrganizationProfileDoc;
     status: ProviderStatusDoc;
+    payoutDetails?: ProviderPayoutDetailsDoc;
 }
 
 /**

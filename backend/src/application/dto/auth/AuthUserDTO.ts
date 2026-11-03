@@ -5,6 +5,7 @@ import type { AccountStatus } from "../../../domain/enums/AccountStatus.js";
 export interface ProviderAccessSummary {
     isApproved: boolean;
     isActivated: boolean;
+    hasPayoutDetails?: boolean;
 }
 
 export interface AuthUserDTO {
