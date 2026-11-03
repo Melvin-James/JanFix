@@ -5,6 +5,7 @@ import type { AuthUser } from "../../auth/types/authUser";
 import type { ProviderProfile } from "../types/providerProfile";
 
 import type { ProviderDraft } from "../store/providerOnboardingStore";
+import type { ProviderActivationFormData } from "../validations/providerActivationSchema";
 
 export const getProviderProfile =
     async (): Promise<{
@@ -62,7 +63,9 @@ export const resubmitProviderApplication =
         return response.data;
     };
 
-export const activateProvider = async (): Promise<{
+export const activateProvider = async (
+    data: ProviderActivationFormData
+): Promise<{
     success: boolean;
     message: string;
     data: {
@@ -75,7 +78,7 @@ export const activateProvider = async (): Promise<{
         data: {
             user: AuthUser;
         };
-    }>("/provider/activate");
+    }>("/provider/activate", data);
     return response.data;
 };
 

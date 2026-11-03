@@ -11,9 +11,10 @@ import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCa
 import { ActivateProviderUseCase } from "../../application/use-cases/provider/ActivateProviderUseCase.js";
 import { GetProviderIssuesUseCase } from "../../application/use-cases/provider/GetProviderIssuesUseCase.js";
 import { ExpressIssueInterestUseCase } from "../../application/use-cases/provider/ExpressIssueInterestUseCase.js";
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authenticate, requireActiveProvider } from "../middlewares/authMiddleware.js";
 import validate from "../middlewares/validate.js";
 import { providerApplicationSchema } from "../validators/provider/providerApplicationSchema.js";
+import { activateProviderSchema } from "../validators/provider/activateProviderValidator.js";
 import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
 import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
 import { requireActiveMode } from "../middlewares/activeModeMiddleware.js";
@@ -81,11 +82,12 @@ router.get(
   providerController.getProfile,
 );
 
-// Activate provider account (Service Provider mode only)
+// Activate provider account (Service Provider mode only, submits payout details)
 router.post(
   ApiEndpoints.PROVIDER.ACTIVATE,
   authenticate,
   requireActiveMode("SERVICE_PROVIDER"),
+  validate(activateProviderSchema),
   providerController.activate,
 );
 
@@ -94,6 +96,7 @@ router.get(
   ApiEndpoints.PROVIDER.ISSUES,
   authenticate,
   requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
   providerController.getIssues,
 );
 
@@ -102,6 +105,7 @@ router.post(
   ApiEndpoints.PROVIDER.EXPRESS_INTEREST,
   authenticate,
   requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
   providerController.expressInterest,
 );
 

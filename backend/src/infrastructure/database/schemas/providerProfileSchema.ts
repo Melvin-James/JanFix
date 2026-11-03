@@ -12,6 +12,8 @@ import { volunteerGroupProfileSchema } from "./volunteerGroupProfileSchema.js";
 
 import { organizationProfileSchema } from "./organizationProfileSchema.js";
 
+import { providerPayoutDetailsSchema } from "./providerPayoutDetailsSchema.js";
+
 export const providerProfileSchema = new Schema(
     {
         identity: {
@@ -40,6 +42,11 @@ export const providerProfileSchema = new Schema(
         status: {
             type: providerStatusSchema,
             default: () => ({})
+        },
+
+        payoutDetails: {
+            type: providerPayoutDetailsSchema,
+            required: false,
         }
     },
     {

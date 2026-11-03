@@ -39,20 +39,27 @@ export default function ProviderModeRoute({
     return <Navigate to="/home" replace />;
   }
 
+  // Check if payout details have been submitted and provider is activated
+  const hasPayoutDetails = Boolean(
+    user.providerAccess?.hasPayoutDetails ||
+    (user.providerProfile?.payoutDetails?.accountHolderName &&
+     user.providerProfile?.payoutDetails?.upiId)
+  );
+
   const isActivated =
     Boolean(user.providerAccess?.isActivated) ||
-    user.providerProfile?.status?.providerStatus === "ACTIVE";
+    (user.providerProfile?.status?.providerStatus === "ACTIVE" && hasPayoutDetails);
 
-  // If this is the activation gate page:
+  // If this is the activation gate page (/provider/activation):
   if (allowInactive) {
     if (isActivated) {
-      // Already activated -> go to provider dashboard
+      // Already activated -> go directly to provider dashboard
       return <Navigate to="/provider/dashboard" replace />;
     }
     return <>{children}</>;
   }
 
-  // Standard provider workspace routes require an activated account
+  // Standard provider workspace routes require an activated account with payout details submitted
   if (!isActivated) {
     return <Navigate to="/provider/activation" replace />;
   }

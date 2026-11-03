@@ -147,32 +147,36 @@ export const requireMode = (expectedMode: ApplicationMode) => {
     };
 };
 
-// export const requireActiveProvider = asyncHandler(
-//     async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-//         if (!req.user) {
-//             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
-//         }
+export const requireActiveProvider = asyncHandler(
+    async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+        if (!req.user) {
+            throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
+        }
 
-//         const user = await userRepository.findById(req.user.userId);
-//         if (
-//             !user ||
-//             !user.providerProfile ||
-//             user.providerProfile.status.applicationStatus !== ApplicationStatus.APPROVED
-//         ) {
-//             throw new ApiError(
-//                 HttpStatusCode.FORBIDDEN,
-//                 "Approved service provider status is required."
-//             );
-//         }
+        const user = await userRepository.findById(req.user.userId);
+        if (
+            !user ||
+            !user.providerProfile ||
+            user.providerProfile.status.applicationStatus !== ApplicationStatus.APPROVED
+        ) {
+            throw new ApiError(
+                HttpStatusCode.FORBIDDEN,
+                "Approved service provider status is required."
+            );
+        }
 
-//         if (user.providerProfile.status.providerStatus !== ProviderStatus.ACTIVE) {
-//             throw new ApiError(
-//                 HttpStatusCode.FORBIDDEN,
-//                 "Service provider account must be activated to access this workspace."
-//             );
-//         }
+        const hasPayoutDetails = Boolean(
+            user.providerProfile.payoutDetails?.accountHolderName &&
+            user.providerProfile.payoutDetails?.upiId
+        );
 
-//         next();
-//     }
-// );
+        if (user.providerProfile.status.providerStatus !== ProviderStatus.ACTIVE || !hasPayoutDetails) {
+            throw new ApiError(
+                HttpStatusCode.FORBIDDEN,
+                "Service provider account must be activated with payout details to access this workspace."
+            );
+        }
 
+        next();
+    }
+);

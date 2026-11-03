@@ -60,7 +60,19 @@ export interface ProviderStatus {
     reviewedAt?: Date;
 
     rejectionReason?: string;
+}
 
+export interface ProviderPayoutDetails {
+
+    accountHolderName: string;
+
+    upiId: string;
+
+    bankAccountNumber?: string;
+
+    ifscCode?: string;
+
+    submittedAt: Date;
 }
 
 export interface ProviderProfile {
@@ -76,4 +88,6 @@ export interface ProviderProfile {
     organizationProfile?: OrganizationProfile;
 
     status: ProviderStatus;
+
+    payoutDetails?: ProviderPayoutDetails;
 }

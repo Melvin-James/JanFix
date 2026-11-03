@@ -139,6 +139,11 @@ async function runTests() {
                     submittedAt: new Date(),
                     reviewedAt: new Date(),
                 },
+                payoutDetails: {
+                    accountHolderName: "Approved Active",
+                    upiId: "active@upi",
+                    submittedAt: new Date(),
+                },
             },
         },
         {
@@ -169,6 +174,11 @@ async function runTests() {
                     submittedAt: new Date(),
                     reviewedAt: new Date(),
                 },
+                payoutDetails: {
+                    accountHolderName: "Approved Active",
+                    upiId: "active@upi",
+                    submittedAt: new Date(),
+                },
             },
         },
         {
@@ -198,6 +208,11 @@ async function runTests() {
                     providerStatus: ProviderStatus.BLOCKED,
                     submittedAt: new Date(),
                     reviewedAt: new Date(),
+                },
+                payoutDetails: {
+                    accountHolderName: "Approved Active",
+                    upiId: "active@upi",
+                    submittedAt: new Date(),
                 },
             },
         },
@@ -330,7 +345,7 @@ async function runTests() {
         assert.equal(decodedBackToken.activeMode, "USER");
 
         console.log("Test 6: Activation gate - Approved inactive provider can activate account");
-        const activatedUser = await activateProviderUseCase.execute(approvedInactiveUserId.toString());
+        const activatedUser = await activateProviderUseCase.execute(approvedInactiveUserId.toString(), { accountHolderName: "Approved Inactive", upiId: "inactive@upi" });
         assert.equal(activatedUser.providerAccess?.isActivated, true);
 
         // Verify now in switch mode, isActivated is true
@@ -402,7 +417,7 @@ async function runTests() {
         // Re-activate and verify requireActiveProvider passes
         await UserModel.updateOne(
             { _id: approvedInactiveUserId },
-            { $set: { "providerProfile.status.providerStatus": ProviderStatus.ACTIVE } }
+            { $set: { "providerProfile.status.providerStatus": ProviderStatus.ACTIVE, "providerProfile.payoutDetails": { accountHolderName: "Approved Inactive", upiId: "inactive@upi", submittedAt: new Date() } } }
         );
         let activePassed = false;
         await new Promise<void>((resolve) => {
