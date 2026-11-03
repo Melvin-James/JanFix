@@ -88,6 +88,7 @@ async function runTests() {
         findAllPaginated: async () => { throw new Error("Not implemented"); },
         findFeedIssues: async () => { throw new Error("Not implemented"); },
         findReviewEligibleIssues: async () => { throw new Error("Not implemented"); },
+        findProviderIssues: async () => { throw new Error("Not implemented"); },
         update: async () => { throw new Error("Not implemented"); },
         updateStatusIfEligible: async () => { throw new Error("Not implemented"); },
     };

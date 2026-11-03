@@ -17,8 +17,12 @@ import { IssueVisibilitySelector } from "./IssueVisibilitySelector";
 import { createIssue } from "../services/issueService";
 
 import { issueFormSchema } from "../validations/issueSchema";
+
 import FormField from "../../../components/UI/FormField";
+
 import FormError from "../../../components/UI/FormError";
+
+import toast from "react-hot-toast";
 
 interface ReportIssueModalProps {
   isOpen: boolean;
@@ -96,7 +100,7 @@ export function ReportIssueModal({
 
       const res = await createIssue(validatedData);
 
-      setSuccessMessage("Issue reported successfully!");
+      toast.success("Issue reported successfully!");
 
       onSuccess?.(res.issue);
 

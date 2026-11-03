@@ -20,6 +20,8 @@ import PasswordField from "../components/PasswordField";
 
 import GoogleAuthButton from "../components/GoogleAuthButton";
 
+import toast from "react-hot-toast";
+
 function RegisterPage() {
     
     const {
@@ -55,6 +57,8 @@ function RegisterPage() {
             await registerUser(data);
 
             sessionStorage.setItem("pending_otp_email", data.email);
+
+            toast.success("OTP sent to your email!");
 
             navigate("/verify-otp");
         

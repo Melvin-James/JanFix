@@ -58,6 +58,8 @@ export interface ProviderProfile {
 
     applicationStatus: string;
 
+    providerStatus?: string;
+
     submittedAt: string;
 
     reviewedAt?: string;

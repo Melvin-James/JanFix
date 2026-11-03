@@ -43,8 +43,7 @@ export class ApproveProviderApplicationUseCase implements IApproveProviderApplic
 
         user.providerProfile.status.applicationStatus = ApplicationStatus.APPROVED;
 
-        user.providerProfile.status.providerStatus = ProviderStatus.ACTIVE;
-
+        // Provider account activation is performed by the provider via the activation gate
         user.providerProfile.status.reviewedAt = new Date();
 
         if (!user.roles.includes(Role.SERVICE_PROVIDER)) {

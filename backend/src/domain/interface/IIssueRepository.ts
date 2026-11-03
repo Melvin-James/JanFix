@@ -52,6 +52,11 @@ export interface IIssueRepository {
         filters?: IssueFilters,
         requestingUserId?: string
     ): Promise<PaginatedResult<Issue>>;
+    findProviderIssues(
+        page: number,
+        pageSize: number,
+        filters?: { category?: string | undefined; search?: string | undefined }
+    ): Promise<PaginatedResult<Issue>>;
     findReviewEligibleIssues(
         page: number,
         pageSize: number,

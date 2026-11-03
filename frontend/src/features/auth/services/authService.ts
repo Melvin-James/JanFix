@@ -78,4 +78,20 @@ export const resendOtp = async (
 ): Promise<ApiResponse<void>> => {
     const response = await axiosInstance.post<ApiResponse<void>>("/auth/resend-otp", data);
     return response.data;
+};
+
+export interface SwitchModeResponseData {
+    activeMode: "USER" | "SERVICE_PROVIDER";
+    user: AuthLoginResponseData["user"];
+    isActivated?: boolean;
+}
+
+export const switchMode = async (
+    mode: "USER" | "SERVICE_PROVIDER"
+): Promise<ApiResponse<SwitchModeResponseData>> => {
+    const response = await axiosInstance.post<ApiResponse<SwitchModeResponseData>>(
+        "/auth/switch-mode",
+        { mode }
+    );
+    return response.data;
 };

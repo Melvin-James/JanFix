@@ -73,16 +73,14 @@ export function IssueLocationPicker({
 }: IssueLocationPickerProps) {
   const [isDetecting, setIsDetecting] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
-  const [customAddress, setCustomAddress] = useState(
-    value?.address ?? ""
-  );
+  const [customAddress, setCustomAddress] = useState(value?.address ?? "");
 
   const [customLat, setCustomLat] = useState(
-    value?.coordinates.latitude.toString() ?? ""
+    value?.coordinates.latitude.toString() ?? "",
   );
 
   const [customLng, setCustomLng] = useState(
-    value?.coordinates.longitude.toString() ?? ""
+    value?.coordinates.longitude.toString() ?? "",
   );
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
 
@@ -93,33 +91,61 @@ export function IssueLocationPicker({
       return;
     }
 
-    setIsDetecting(true);
     setGeoError(null);
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setCustomLat(latitude.toFixed(6));
-        setCustomLng(longitude.toFixed(6));
-        setSelectedPreset(null);
+        const { latitude, longitude, accuracy } = pos.coords;
 
-        // Attempt reverse geocoding using OpenStreetMap Nominatim
-        let detectedAddress = `Kochi Area (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`;
-        let locality = "Kochi";
+        if (accuracy > 100) {
+          setGeoError(
+            `Your location accuracy is approximately ${Math.round(accuracy)} meters. ` +
+              "Move to an area with better GPS signal and try agian or select the location manually.",
+          );
+          setIsDetecting(false);
+          return;
+        }
+
+        let detectedAddress = `Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+        let locality = "";
+        let city = "";
+        let state = "";
         let postalCode = "";
 
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&addressdetails=1`,
           );
-          if (res.ok) {
-            const data = await res.json();
-            if (data.display_name) {
-              detectedAddress = data.display_name;
-              locality = data.address?.suburb || data.address?.neighbourhood || data.address?.city_district || "Kochi";
-              postalCode = data.address?.postcode || "";
-            }
+
+          if (!res.ok) {
+            throw new Error("Unable to resolve the address");
           }
+
+          const data = await res.json();
+
+          const address = data.address ?? {};
+
+          detectedAddress = data.display_name ?? detectedAddress;
+
+          locality =
+            address.suburb ||
+            address.neighbourhood ||
+            address.city_district ||
+            address.village ||
+            address.town ||
+            address.city ||
+            "";
+
+          city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "";
+
+          state = address.state || "";
+          postalCode = address.postcode || "";
         } catch {
           // Graceful fallback to coordinate address
         }
@@ -129,8 +155,8 @@ export function IssueLocationPicker({
           address: detectedAddress,
           coordinates: { latitude, longitude },
           locality,
-          city: "Kochi",
-          state: "Kerala",
+          city,
+          state,
           postalCode,
         });
         setIsDetecting(false);
@@ -138,12 +164,16 @@ export function IssueLocationPicker({
       (err) => {
         setIsDetecting(false);
         if (err.code === err.PERMISSION_DENIED) {
-          setGeoError("Location permission denied. Please select a preset or type an address below.");
+          setGeoError(
+            "Location permission denied. Please select a preset or type an address below.",
+          );
         } else {
-          setGeoError("Unable to retrieve your location. Please choose a location below.");
+          setGeoError(
+            "Unable to retrieve your location. Please choose a location below.",
+          );
         }
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 },
     );
   };
 
@@ -184,9 +214,7 @@ export function IssueLocationPicker({
       longitude < -180 ||
       longitude > 180
     ) {
-      setGeoError(
-        "Please select a location or provide valid coordinates."
-      );
+      setGeoError("Please select a location or provide valid coordinates.");
       return;
     }
 
@@ -204,7 +232,7 @@ export function IssueLocationPicker({
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <label className="block text-sm font-semibold text-slate-900">
-          Location & Landmark (Kochi)
+          Location & Landmark
         </label>
         <button
           type="button"
@@ -212,7 +240,12 @@ export function IssueLocationPicker({
           disabled={isDetecting}
           className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
         >
-          <Navigation size={13} className={isDetecting ? "animate-spin text-blue-600" : "text-blue-600"} />
+          <Navigation
+            size={13}
+            className={
+              isDetecting ? "animate-spin text-blue-600" : "text-blue-600"
+            }
+          />
           {isDetecting ? "Detecting..." : "Use Current Location"}
         </button>
       </div>
@@ -252,16 +285,19 @@ export function IssueLocationPicker({
         </span>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {KOCHI_PRESETS.map((preset) => {
-            const isSelected = selectedPreset === preset.name || value?.address === preset.address;
+            const isSelected =
+              selectedPreset === preset.name ||
+              value?.address === preset.address;
             return (
               <button
                 key={preset.name}
                 type="button"
                 onClick={() => handleSelectPreset(preset)}
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors ${isSelected
-                  ? "border-blue-600 bg-blue-50 font-medium text-blue-700"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                  }`}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                  isSelected
+                    ? "border-blue-600 bg-blue-50 font-medium text-blue-700"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                }`}
               >
                 {isSelected && <Check size={12} className="text-blue-600" />}
                 {preset.name}
@@ -279,14 +315,13 @@ export function IssueLocationPicker({
             <span className="truncate">{value.address}</span>
           </div>
           <span className="shrink-0 text-slate-400">
-            [{value.coordinates.latitude.toFixed(4)}, {value.coordinates.longitude.toFixed(4)}]
+            [{value.coordinates.latitude.toFixed(4)},{" "}
+            {value.coordinates.longitude.toFixed(4)}]
           </span>
         </div>
       )}
 
-      {error && (
-        <p className="text-xs text-red-600">{error}</p>
-      )}
+      {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }

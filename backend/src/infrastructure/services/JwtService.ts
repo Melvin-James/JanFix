@@ -6,14 +6,14 @@ import type { IJwtService } from "../../domain/interface/IJwtService.js";
 
 import type { Role } from "../../domain/enums/Role.js";
 
-import type { AccessTokenPayload } from "../../shared/types/AccessTokenPayload.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
 
 import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.js";
 
 class JwtService implements IJwtService {
 
-    generateAccessToken(userId: string, roles: Role[]): string {
-        return jwt.sign({ userId, roles, }, env.JWT_ACCESS_SECRET, { expiresIn: "15m", });
+    generateAccessToken(userId: string, roles: Role[], activeMode: ApplicationMode = "USER"): string {
+        return jwt.sign({ userId, roles, activeMode }, env.JWT_ACCESS_SECRET, { expiresIn: "15m", });
     }
 
     generateRefreshToken(userId: string): string {

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { User, LogOut, ChevronDown } from "lucide-react";
+import { User, LogOut, ChevronDown, Wrench, RefreshCw } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { logoutUser } from "../../features/auth/services/authService";
+import { logoutUser, switchMode } from "../../features/auth/services/authService";
+import toast from "react-hot-toast";
 
 function MainNavbar() {
   const navigate = useNavigate();
@@ -13,8 +14,12 @@ function MainNavbar() {
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const user = useAuthStore((state) => state.user);
+  const activeMode = useAuthStore((state) => state.activeMode);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isSwitchingMode, setIsSwitchingMode] = useState(false);
+  const [switchError, setSwitchError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
@@ -50,6 +55,38 @@ function MainNavbar() {
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
+    }
+  };
+
+  const isApprovedProvider = Boolean(user?.providerAccess?.isApproved);
+
+  const handleModeSwitch = async () => {
+    if (isSwitchingMode) return;
+    setIsSwitchingMode(true);
+    setSwitchError(null);
+    try {
+      const targetMode = activeMode === "SERVICE_PROVIDER" ? "USER" : "SERVICE_PROVIDER";
+      const response = await switchMode(targetMode);
+      setUser(response.data.user);
+      setDropdownOpen(false);
+      if (targetMode === "SERVICE_PROVIDER") {
+        if (response.data.isActivated) {
+          navigate("/provider/dashboard");
+        } else {
+          navigate("/provider/activation");
+        }
+      } else {
+        navigate("/home");
+      }
+    } catch (err: unknown) {
+      console.error("Failed to switch mode:", err);
+      const message =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : "Failed to switch mode.";
+      setSwitchError(message || "Failed to switch mode.");
+    } finally {
+      setIsSwitchingMode(false);
     }
   };
 
@@ -149,9 +186,36 @@ function MainNavbar() {
                   onClick={handleProfileClick}
                   className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left cursor-pointer"
                 >
-                  <User className="h-4 w-4 text-slate-500 group-hover:text-blue-700" />
+                  <User className="h-4 w-4 text-slate-500" />
                   <span>Profile</span>
                 </button>
+
+                {isApprovedProvider && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={handleModeSwitch}
+                    disabled={isSwitchingMode}
+                    className="flex w-full items-center gap-2.5 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50 transition-colors text-left cursor-pointer disabled:opacity-60"
+                  >
+                    {isSwitchingMode ? (
+                      <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                    ) : (
+                      <Wrench className="h-4 w-4 text-blue-600" />
+                    )}
+                    <span>
+                      {isSwitchingMode
+                        ? "Switching Mode..."
+                        : activeMode === "SERVICE_PROVIDER"
+                        ? "Switch to User Mode"
+                        : "Switch to Service Provider Mode"}
+                    </span>
+                  </button>
+                )}
+
+                {switchError && (
+                  <p className="px-4 py-1 text-xs text-red-600 leading-tight">{switchError}</p>
+                )}
               </div>
 
               <div className="border-t border-slate-100 py-1">

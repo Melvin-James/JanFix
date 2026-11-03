@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
-    "test": "tsx src/tests/issueSocialModels.test.ts && tsx src/tests/issueUpvoteApi.test.ts && tsx src/tests/issueCommentsApi.test.ts && tsx src/tests/adminIssueListingApi.test.ts && tsx src/tests/adminIssueDecisionApi.test.ts && tsx src/tests/userProfileAndReportsApi.test.ts"
+    "test": "tsx src/tests/issueSocialModels.test.ts && tsx src/tests/issueUpvoteApi.test.ts && tsx src/tests/issueCommentsApi.test.ts && tsx src/tests/adminIssueListingApi.test.ts && tsx src/tests/adminIssueDecisionApi.test.ts && tsx src/tests/userProfileAndReportsApi.test.ts && tsx src/tests/providerModeAndWorkspaceApi.test.ts"
   },
   "keywords": [],
   "author": "",

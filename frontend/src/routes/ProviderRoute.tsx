@@ -33,6 +33,10 @@ function ProviderRoute({
         )
     }
 
+    if (user?.providerAccess?.isApproved || user.providerProfile.status?.applicationStatus === "APPROVED") {
+        return <Navigate to="/home" replace />;
+    }
+
     return children;
 
 }

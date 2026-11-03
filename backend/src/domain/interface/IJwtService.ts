@@ -1,12 +1,12 @@
 import type { Role } from "../enums/Role.js";
 
-import type { AccessTokenPayload } from "../../shared/types/AccessTokenPayload.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
 
 import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.js";
 
 export interface IJwtService {
 
-    generateAccessToken(userId: string, roles: Role[]): string;
+    generateAccessToken(userId: string, roles: Role[], activeMode?: ApplicationMode): string;
 
     generateRefreshToken(userId: string): string;
 

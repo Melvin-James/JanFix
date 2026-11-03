@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   AlertCircle,
@@ -9,9 +9,12 @@ import {
   Calendar,
   Wrench,
   ArrowRight,
+  RefreshCw,
 } from "lucide-react";
 
 import { useState, useEffect, useCallback } from "react";
+import { useAuthStore } from "../store/authStore";
+import { switchMode } from "../features/auth/services/authService";
 import { useProviderOnboardingStore } from "../features/provider/store/providerOnboardingStore";
 import { ReportIssueModal } from "../features/issues/components/ReportIssueModal";
 import { IssueCard } from "../features/issues/components/IssueCard";
@@ -22,6 +25,29 @@ import type { Issue } from "../features/issues/types/issue";
 import MainLayout from "../layouts/MainLayout";
 
 function HomePage() {
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const [isSwitchingMode, setIsSwitchingMode] = useState(false);
+  const isApprovedProvider = Boolean(user?.providerAccess?.isApproved);
+
+  const handleProviderModeSwitch = async () => {
+    if (isSwitchingMode) return;
+    setIsSwitchingMode(true);
+    try {
+      const response = await switchMode("SERVICE_PROVIDER");
+      setUser(response.data.user);
+      if (response.data.isActivated) {
+        navigate("/provider/dashboard");
+      } else {
+        navigate("/provider/activation");
+      }
+    } catch (err) {
+      console.error("Failed to switch to provider mode:", err);
+    } finally {
+      setIsSwitchingMode(false);
+    }
+  };
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [recentReportedIssue, setRecentReportedIssue] = useState<Issue | null>(null);
   const [recentIssues, setRecentIssues] = useState<Issue[]>([]);
@@ -329,13 +355,31 @@ function HomePage() {
               </ul>
             </div>
 
-            <Link
-              to="/provider/onboarding/step-1" onClick={clearDraft}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow-md hover:bg-blue-50"
-            >
-              Become a Service Provider
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            {isApprovedProvider ? (
+              <button
+                type="button"
+                onClick={handleProviderModeSwitch}
+                disabled={isSwitchingMode}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow-md hover:bg-blue-50 cursor-pointer disabled:opacity-75 transition-all"
+              >
+                {isSwitchingMode ? (
+                  <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                ) : (
+                  <Wrench className="h-4 w-4 text-blue-600" />
+                )}
+                <span>{isSwitchingMode ? "Switching..." : "Switch to Service Provider Mode"}</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            ) : (
+              <Link
+                to="/provider/onboarding/step-1"
+                onClick={clearDraft}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow-md hover:bg-blue-50"
+              >
+                Become a Service Provider
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
           </div>
         </section>
       </main>

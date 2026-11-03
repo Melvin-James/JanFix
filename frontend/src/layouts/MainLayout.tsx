@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import MainNavbar from "../components/layout/MainNavbar";
+
 import MainFooter from "../components/layout/MainFooter";
 
 interface MainLayoutProps {

@@ -23,6 +23,8 @@ import PasswordField from "../components/PasswordField";
 
 import GoogleAuthButton from "../components/GoogleAuthButton";
 
+import toast from "react-hot-toast";
+
 function LoginPage() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
@@ -55,6 +57,8 @@ function LoginPage() {
       const { user } = response.data;
 
       setUser(user);
+
+      toast.success("Authenticated");
 
     } catch (error: unknown) {
 

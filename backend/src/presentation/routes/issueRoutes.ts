@@ -28,6 +28,8 @@ import { createCommentValidator } from "../validators/issue/createCommentValidat
 
 import { authenticate } from "../middlewares/authMiddleware.js";
 
+import { requireActiveMode } from "../middlewares/activeModeMiddleware.js";
+
 import { searchRateLimit } from "../middlewares/searchRateLimit.js";
 
 import validate from "../middlewares/validate.js";
@@ -95,22 +97,22 @@ const issueController = new IssueController(
 router.get(ApiEndpoints.ISSUES.CATEGORIES, authenticate, issueController.getActiveCategories);
 
 // Get community issues feed / recent issues (rate-limited search & filter)
-router.get(ApiEndpoints.ISSUES.ROOT, authenticate, searchRateLimit, issueController.getFeedIssues);
+router.get(ApiEndpoints.ISSUES.ROOT, authenticate, requireActiveMode("USER"), searchRateLimit, issueController.getFeedIssues);
 
 // Authenticated user endpoints
 // Get authenticated user's reported issues
-router.get(ApiEndpoints.ISSUES.MY_ISSUES, authenticate, issueController.getUserIssues);
+router.get(ApiEndpoints.ISSUES.MY_ISSUES, authenticate, requireActiveMode("USER"), issueController.getUserIssues);
 
 // Create a new issue
-router.post(ApiEndpoints.ISSUES.ROOT, authenticate, validate(createIssueValidator), issueController.createIssue);
+router.post(ApiEndpoints.ISSUES.ROOT, authenticate, requireActiveMode("USER"), validate(createIssueValidator), issueController.createIssue);
 
-// Issue upvote endpoints (authenticated)
-router.post(ApiEndpoints.ISSUES.UPVOTE, authenticate, issueController.addUpvote);
-router.delete(ApiEndpoints.ISSUES.UPVOTE, authenticate, issueController.removeUpvote);
+// Issue upvote endpoints (authenticated, user mode)
+router.post(ApiEndpoints.ISSUES.UPVOTE, authenticate, requireActiveMode("USER"), issueController.addUpvote);
+router.delete(ApiEndpoints.ISSUES.UPVOTE, authenticate, requireActiveMode("USER"), issueController.removeUpvote);
 router.get(ApiEndpoints.ISSUES.UPVOTE, authenticate, issueController.getUpvoteStatus);
 
-// Issue comment endpoints (authenticated)
-router.post(ApiEndpoints.ISSUES.COMMENTS, authenticate, validate(createCommentValidator), issueController.createComment);
+// Issue comment endpoints (authenticated, user mode)
+router.post(ApiEndpoints.ISSUES.COMMENTS, authenticate, requireActiveMode("USER"), validate(createCommentValidator), issueController.createComment);
 router.get(ApiEndpoints.ISSUES.COMMENTS, authenticate, issueController.getComments);
 
 // Get issue details by id (enforces visibility & authorization; guests can view public verified)
