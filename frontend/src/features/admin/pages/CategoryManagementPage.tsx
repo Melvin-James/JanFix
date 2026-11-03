@@ -340,6 +340,7 @@ function CategoryManagementPage() {
                   />
                 </div>
               </td>
+      
 
             </tr>
           ))}

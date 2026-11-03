@@ -33,6 +33,7 @@ import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usec
 import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResendOtpUseCase.js";
 import type { IGetCurrentSessionUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentSessionUseCase.js";
 import type { IUpdateUserProfileUseCase } from "../../../application/use-cases/usecase interfaces/auth/IUpdateUserProfileUseCase.js";
+import type { ISwitchModeUseCase } from "../../../application/use-cases/usecase interfaces/auth/ISwitchModeUseCase.js";
 import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
 
 export class AuthController {
@@ -49,6 +50,7 @@ export class AuthController {
     private _googleAuthService: IGoogleAuthService,
     private _getSessionUseCase: IGetCurrentSessionUseCase,
     private _updateUserProfileUseCase?: IUpdateUserProfileUseCase,
+    private _switchModeUseCase?: ISwitchModeUseCase,
   ) { }
 
   public register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -267,6 +269,34 @@ export class AuthController {
         message: "Profile updated successfully",
         data: {
           user: updatedUser,
+        },
+      });
+    }
+  );
+
+  public switchMode = asyncHandler(
+    async (req: AuthRequest, res: Response): Promise<void> => {
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
+      }
+
+      if (!this._switchModeUseCase) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Switch mode usecase not initialized");
+      }
+
+      const { mode } = req.body as { mode: "USER" | "SERVICE_PROVIDER" };
+      const result = await this._switchModeUseCase.execute(userId, mode);
+
+      setAccessTokenCookie(res, result.accessToken);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: `Switched to ${result.activeMode === "SERVICE_PROVIDER" ? "Service Provider" : "User"} mode`,
+        data: {
+          activeMode: result.activeMode,
+          isActivated: result.isActivated,
+          user: result.user,
         },
       });
     }

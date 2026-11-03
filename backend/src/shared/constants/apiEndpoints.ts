@@ -11,6 +11,7 @@ export const ApiEndpoints = {
     LOGOUT: "/logout",
     ME: "/me",
     PROFILE: "/profile",
+    SWITCH_MODE: "/switch-mode",
     ADMIN_TEST: "/admin-test",
     REFRESH_TOKEN: "/refresh-token",
     RESEND_OTP: "/resend-otp",
@@ -21,6 +22,9 @@ export const ApiEndpoints = {
     ONBOARDING_RESUBMIT: "/onboarding/resubmit",
     PROFILE: "/profile",
     CATEGORIES: "/categories",
+    ACTIVATE: "/activate",
+    ISSUES: "/issues",
+    EXPRESS_INTEREST: "/issues/:issueId/interest",
   },
   ADMIN: {
     BASE: "/api/v1/admin",

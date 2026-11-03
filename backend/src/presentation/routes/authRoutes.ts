@@ -38,6 +38,10 @@ import { GetCurrentSessionUseCase } from "../../application/use-cases/auth/GetCu
 import { UpdateUserProfileUseCase } from "../../application/use-cases/auth/UpdateUserProfileUseCase.js";
 
 // Dependency Injection Setup
+import { switchModeSchema } from "../validators/auth/switchModeValidator.js";
+import { SwitchModeUseCase } from "../../application/use-cases/auth/SwitchModeUseCase.js";
+
+// Dependency Injection Setup
 const userRepository = new UserRepository();
 const otpRepository = new RedisOtpRepository();
 const emailService = new EmailService();
@@ -56,6 +60,7 @@ const resendOtpUseCase = new ResendOtpUseCase(userRepository, otpRepository, ema
 // Session-aware use case — handles access token + refresh token fallback internally
 const getSessionUseCase = new GetCurrentSessionUseCase(jwtService, userRepository);
 const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository);
+const switchModeUseCase = new SwitchModeUseCase(userRepository, jwtService);
 
 const authController = new AuthController(
     registerUserUseCase,
@@ -70,6 +75,7 @@ const authController = new AuthController(
     googleAuthService,
     getSessionUseCase,
     updateUserProfileUseCase,
+    switchModeUseCase,
 );
 
 const router = express.Router();
@@ -95,6 +101,9 @@ router.get(ApiEndpoints.AUTH.ME, authController.getCurrentUser);
 
 // Self-service profile update (authenticated user only)
 router.patch(ApiEndpoints.AUTH.PROFILE, authenticate, validate(updateProfileSchema), authController.updateProfile);
+
+// Mode switching between USER and SERVICE_PROVIDER (authenticated user only)
+router.post(ApiEndpoints.AUTH.SWITCH_MODE, authenticate, validate(switchModeSchema), authController.switchMode);
 
 router.get(ApiEndpoints.AUTH.ADMIN_TEST, authenticate, authorizeRoles(Role.ADMIN), (req, res) => {
     res.status(HttpStatusCode.OK).json({

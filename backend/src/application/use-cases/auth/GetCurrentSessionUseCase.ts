@@ -14,11 +14,17 @@ import { UserMapper } from "../../mappers/LoginMapper.js";
 
 import type { IGetCurrentSessionUseCase, SessionResult } from "../usecase interfaces/auth/IGetCurrentSessionUseCase.js";
 
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+
+import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+
 /**
  * Session-aware use case for GET /auth/me.
  *
  * Resolution order:
- *  1. Valid access token  → return user
+ *  1. Valid access token  → return user with active mode
  *  2. Expired access token + valid refresh token → generate new access token, return user + new token
  *  3. Both invalid/missing → throw 401
  *
@@ -40,7 +46,7 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
         // --- Try access token ---
         if (accessToken) {
             try {
-                const decoded = this.jwtService.verifyAccessToken(accessToken);
+                const decoded = this.jwtService.verifyAccessToken(accessToken) as AccessTokenPayload;
 
                 const user = await this.userRepository.findById(decoded.userId);
 
@@ -48,7 +54,27 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
                     throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
                 }
 
-                return { user: UserMapper.toAuthResponse(user) };
+                let activeMode: ApplicationMode = decoded.activeMode ?? "USER";
+                let newAccessToken: string | undefined;
+
+                if (activeMode === "SERVICE_PROVIDER") {
+                    const isApproved = user.providerProfile?.status?.applicationStatus === ApplicationStatus.APPROVED;
+                    const isBlocked = user.providerProfile?.status?.providerStatus === ProviderStatus.BLOCKED;
+                    if (!isApproved || isBlocked) {
+                        // Ineligible — automatically downgrade to USER mode and rotate token
+                        activeMode = "USER";
+                        newAccessToken = this.jwtService.generateAccessToken(
+                            user.id as string,
+                            user.roles,
+                            activeMode
+                        );
+                    }
+                }
+
+                return {
+                    user: UserMapper.toAuthResponse(user, activeMode),
+                    ...(newAccessToken && { newAccessToken }),
+                };
 
             } catch (error: unknown) {
                 // Only fall through to refresh for TokenExpiredError; reject tampered tokens immediately
@@ -56,12 +82,9 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
                     error instanceof jwt.TokenExpiredError;
 
                 if (!isExpired) {
-                    // Malformed, tampered, or other JWT error — do NOT attempt refresh
-                    // If error is an ApiError (user not found), propagate it
                     if (error instanceof ApiError) {
                         throw error;
                     }
-                    // Invalid token signature / structure → 401
                     throw new ApiError(
                         HttpStatusCode.UNAUTHORIZED,
                         AppMessages.ERROR.INVALID_OR_EXPIRED_TOKEN
@@ -85,13 +108,31 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
                 throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
             }
 
+            // Attempt to recover previously selected active mode from expired token claims
+            let activeMode: ApplicationMode = "USER";
+            if (accessToken) {
+                try {
+                    const unverified = jwt.decode(accessToken) as AccessTokenPayload | null;
+                    if (unverified?.activeMode === "SERVICE_PROVIDER") {
+                        const isApproved = user.providerProfile?.status?.applicationStatus === ApplicationStatus.APPROVED;
+                        const isBlocked = user.providerProfile?.status?.providerStatus === ProviderStatus.BLOCKED;
+                        if (isApproved && !isBlocked) {
+                            activeMode = "SERVICE_PROVIDER";
+                        }
+                    }
+                } catch {
+                    // Fall back to USER mode
+                }
+            }
+
             const newAccessToken = this.jwtService.generateAccessToken(
                 user.id as string,
-                user.roles
+                user.roles,
+                activeMode
             );
 
             return {
-                user: UserMapper.toAuthResponse(user),
+                user: UserMapper.toAuthResponse(user, activeMode),
                 newAccessToken,
             };
 

@@ -36,6 +36,11 @@ function ProviderOnboardingRoute({children, step}: ProviderOnboardingRouteProps)
     const applicationStatus = providerProfile?.status?.applicationStatus;
     const isRejected = applicationStatus === ApplicationStatus.REJECTED;
 
+    // Approved providers must not access onboarding routes
+    if (user?.providerAccess?.isApproved || applicationStatus === ApplicationStatus.APPROVED) {
+        return <Navigate to="/home" replace />;
+    }
+
     // Rejected providers are allowed into the onboarding flow for resubmission.
     // They enter via ProviderSubmissionPage → Resubmit button → step 2,
     // which hydrates the draft before navigating, so draft.providerType is set.

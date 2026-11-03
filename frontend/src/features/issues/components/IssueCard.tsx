@@ -6,13 +6,33 @@ import { StatusBadge } from "../../../components/UI/StatusBadge";
 import { formatRelativeTime } from "../../../utils/date";
 import { IssueVoteButton } from "./IssueVoteButton";
 import { IssueCommentsModal } from "./IssueCommentsModal";
+import type { ProviderIssue } from "../../provider/types/providerTypes";
 
-export interface IssueCardProps {
-  issue: Issue;
+interface BaseIssueCardProps {
   className?: string;
 }
 
-export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "" }) => {
+interface UserIssueCardProps extends BaseIssueCardProps {
+
+  issue: Issue;
+  onExpressInterest?: never;
+  hasExpressedInterest?: never;
+
+}
+
+interface ProviderIssueCardProps extends BaseIssueCardProps {
+
+  issue : ProviderIssue;
+  onExpressInterest: (issueId: string) => Promise<boolean>;
+  hasExpressedInterest?: boolean;
+
+}
+
+export type IssueCardProps = | UserIssueCardProps | ProviderIssueCardProps
+
+
+
+export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "", onExpressInterest, hasExpressedInterest = false }) => {
   const navigate = useNavigate();
   const [imageError, setImageError] = useState(false);
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
@@ -26,7 +46,16 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "" }) =
     issue.location?.address ||
     "Location specified";
 
-  const categoryLabel = issue.categoryName || "Civic Issue";
+  const categoryLabel =
+    "categoryName" in issue && issue.categoryName
+      ? issue.categoryName
+      : typeof issue.category === "object" && issue.category !== null
+      ? issue.category.name
+      : typeof issue.category === "string"
+      ? issue.category
+      : "Uncategorized";
+
+  const isProviderCard = Boolean(onExpressInterest);
 
   const handleCardClick = () => {
     navigate(`/issues/${issue.id}`);
@@ -100,9 +129,23 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "" }) =
             </div>
 
             {/* Social Interactions & View Details */}
-            <div className="flex items-center justify-between gap-2 pt-1">
+            {isProviderCard ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void onExpressInterest?.(issue.id);
+                }}
+                disabled={hasExpressedInterest}
+                className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {hasExpressedInterest ? "Interest Expressed" : "Express Interest"}
+              </button>
+            ) : (
+
+              <div className="flex items-center justify-between gap-2 pt-1">
               <div className="flex items-center gap-2">
-                <IssueVoteButton issue={issue} size="sm" showLabel={false} />
+                <IssueVoteButton issue={issue as Issue} size="sm" showLabel={false} />
 
                 <button
                   type="button"
@@ -125,6 +168,8 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "" }) =
                 <Eye className="h-3.5 w-3.5" />
               </div>
             </div>
+
+            )}
           </div>
         </div>
       </article>
@@ -134,7 +179,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "" }) =
         <IssueCommentsModal
           isOpen={isCommentsModalOpen}
           onClose={() => setIsCommentsModalOpen(false)}
-          issue={issue}
+          issue={issue as Issue}
         />
       )}
     </>

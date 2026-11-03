@@ -60,395 +60,313 @@ import ProfilePage from "../features/profile/pages/ProfilePage";
 import EditProfilePage from "../features/profile/pages/EditProfilePage";
 import YourReportsPage from "../features/profile/pages/YourReportsPage";
 
+import ProviderModeRoute from "./ProviderModeRoute";
+import UserModeRoute from "./UserModeRoute";
+import ProviderDashboardPage from "../features/provider/pages/ProviderDashboardPage";
+import ProviderIssuesPage from "../features/provider/pages/ProviderIssuesPage";
+import ProviderActivationPage from "../features/provider/pages/ProviderActivationPage";
 
 function AppRouter() {
-
-    return (
-
-        <BrowserRouter>
-
-            <Routes>
-
-                <Route
-                    path="/login"
-
-                    element={
-
-                        <PublicRoute>
-
-                            <LoginPage />
-
-                        </PublicRoute>
-                    }
-                />
-
-                <Route
-                    path="/forgot-password"
-                    element={
-
-                        <PublicRoute>
-
-                            <ForgotPasswordPage />
-
-                        </PublicRoute>
-
-                    }
-                />
-
-                <Route
-                    path="/verify-reset-otp"
-                    element={
-
-                        <PublicRoute>
-
-                            <VerifyResetOtpPage />
-
-                        </PublicRoute>
-
-                    }
-                />
-
-                <Route
-                    path="/reset-password"
-
-                    element={
-
-                        <PublicRoute>
-
-                            <ResetPasswordPage />
-
-                        </PublicRoute>
-
-                    }
-                />
-
-                <Route
-                    path="/register"
-                    element={
-
-                        <PublicRoute>
-
-                            <RegisterPage />
-
-                        </PublicRoute>
-
-                    }
-                />
-
-                <Route
-
-                    path="/verify-otp"
-
-                    element={
-
-                        <PublicRoute>
-
-                            <VerifyOtpPage />
-
-                        </PublicRoute>
-
-                    }
-                />
-
-                <Route
-                    path="/"
-                    element={
-                        <ProtectedRoute>
-                            <HomePage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/home"
-                    element={
-                        <ProtectedRoute>
-                            <HomePage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/report"
-                    element={
-                        <ProtectedRoute>
-                            <ReportIssuePage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/feed"
-                    element={
-                        <ProtectedRoute>
-                            <IssueFeedPage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/issues/:issueId"
-                    element={
-                        <ProtectedRoute>
-                            <IssueDetailsPage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/profile"
-                    element={
-                        <ProtectedRoute>
-                            <ProfileLayout />
-                        </ProtectedRoute>
-                    }
-                >
-                    <Route index element={<ProfilePage />} />
-                    <Route path="edit" element={<EditProfilePage />} />
-                    <Route path="reports" element={<YourReportsPage />} />
-                </Route>
-
-                <Route
-
-                    path="/provider/onboarding/step-1"
-
-                    element={
-
-                        <ProtectedRoute>
-
-                            <ProviderOnboardingRoute step={1}>
-
-                                <ProviderStep1Page />
-
-                            </ProviderOnboardingRoute>
-
-                        </ProtectedRoute>
-
-                    }
-                />
-
-                <Route
-
-                    path="/provider/onboarding/step-2"
-
-                    element={
-                        <ProtectedRoute>
-
-                            <ProviderOnboardingRoute step={2}>
-
-                                <ProviderStep2Page />
-
-                            </ProviderOnboardingRoute>
-                        </ProtectedRoute>
-
-                    }
-                />
-
-                <Route
-
-                    path="/provider/onboarding/review"
-
-                    element={
-                        <ProtectedRoute>
-
-                            <ProviderOnboardingRoute step={3}>
-
-                                <ProviderReviewPage />
-
-                            </ProviderOnboardingRoute>
-                        </ProtectedRoute>
-
-                    }
-                />
-
-                <Route
-                    path="/provider/application-submitted"
-                    element={
-                        <ProtectedRoute>
-
-                            <ProviderRoute>
-
-                                <ProviderWelcomePage />
-
-                            </ProviderRoute>
-
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path='/provider/submission'
-
-                    element={
-
-                        <ProtectedRoute>
-
-                            <ProviderRoute>
-
-                                <ProviderSubmissionPage />
-
-                            </ProviderRoute>
-
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-
-                    path="/admin"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <AdminDashboardPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-
-                />
-
-                <Route
-
-                    path="/admin/provider-applications"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <ProviderApplicationsPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-
-                />
-
-                <Route
-
-                    path="/admin/provider-applications/:userId"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <ProviderApplicationDetailsPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-
-                />
-
-                <Route
-
-                    path="/admin/service-providers"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <ServiceProvidersPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-                />
-
-                <Route
-
-                    path="/admin/service-providers/:userId"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <ServiceProviderDetailsPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-
-                />
-
-                <Route
-
-                    path="/admin/users"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <UserManagementPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-
-                />
-
-                <Route
-
-                    path="/admin/categories"
-
-                    element={
-
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-
-                            <AdminLayout>
-
-                                <CategoryManagementPage />
-
-                            </AdminLayout>
-
-                        </RoleProtectedRoute>
-
-                    }
-
-                />
-
-                <Route
-                    path="/admin/issues"
-                    element={
-                        <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-                            <AdminLayout>
-                                <AdminIssuesPage />
-                            </AdminLayout>
-                        </RoleProtectedRoute>
-                    }
-                />
-
-
-            </Routes>
-
-
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPasswordPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/verify-reset-otp"
+          element={
+            <PublicRoute>
+              <VerifyResetOtpPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPasswordPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/verify-otp"
+          element={
+            <PublicRoute>
+              <VerifyOtpPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <UserModeRoute>
+                    <HomePage />
+                </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+                <UserModeRoute>
+                    <HomePage />
+                </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/report"
+          element={
+            <ProtectedRoute>
+              <UserModeRoute>
+                <ReportIssuePage />
+              </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/feed"
+          element={
+            <ProtectedRoute>
+                <UserModeRoute>
+                    <IssueFeedPage />
+                </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/issues/:issueId"
+          element={
+            <ProtectedRoute>
+                <UserModeRoute>
+                    <IssueDetailsPage />
+                </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserModeRoute>
+                <ProfileLayout />
+              </UserModeRoute>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<ProfilePage />} />
+          <Route path="edit" element={<EditProfilePage />} />
+          <Route path="reports" element={<YourReportsPage />} />
+        </Route>
+
+        <Route
+          path="/provider/onboarding/step-1"
+          element={
+            <ProtectedRoute>
+              <ProviderOnboardingRoute step={1}>
+                <ProviderStep1Page />
+              </ProviderOnboardingRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/provider/onboarding/step-2"
+          element={
+            <ProtectedRoute>
+              <ProviderOnboardingRoute step={2}>
+                <ProviderStep2Page />
+              </ProviderOnboardingRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/provider/onboarding/review"
+          element={
+            <ProtectedRoute>
+              <ProviderOnboardingRoute step={3}>
+                <ProviderReviewPage />
+              </ProviderOnboardingRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/provider/application-submitted"
+          element={
+            <ProtectedRoute>
+              <ProviderRoute>
+                <ProviderWelcomePage />
+              </ProviderRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/provider/submission"
+          element={
+            <ProtectedRoute>
+              <ProviderRoute>
+                <ProviderSubmissionPage />
+              </ProviderRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Service Provider Workspace Routes */}
+        <Route
+          path="/provider/activation"
+          element={
+            <ProviderModeRoute allowInactive={true}>
+              <ProviderActivationPage />
+            </ProviderModeRoute>
+          }
+        />
+
+        <Route
+          path="/provider/dashboard"
+          element={
+            <ProviderModeRoute>
+              <ProviderDashboardPage />
+            </ProviderModeRoute>     
+          }
+        />
+
+        <Route
+          path="/provider/issues"
+          element={
+            <ProviderModeRoute>
+              <ProviderIssuesPage />
+            </ProviderModeRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <AdminDashboardPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/provider-applications"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <ProviderApplicationsPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/provider-applications/:userId"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <ProviderApplicationDetailsPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/service-providers"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <ServiceProvidersPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/service-providers/:userId"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <ServiceProviderDetailsPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <UserManagementPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/categories"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <CategoryManagementPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/issues"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <AdminIssuesPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default AppRouter;

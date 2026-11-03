@@ -8,3 +8,34 @@ export const ProviderType = {
 } as const
 
 export type ProviderType = typeof ProviderType[keyof typeof ProviderType];
+
+import type { IssueLocation, IssueStatus, IssueVisibility } from "../../issues/types/issue";
+import type { UploadedFile } from "./uploadedFile";
+
+export interface ProviderIssue {
+  id: string;
+  title: string;
+  description: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  location: IssueLocation;
+  images: UploadedFile[];
+  visibility: IssueVisibility;
+  status: IssueStatus;
+  hasExpressedInterest: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ProviderIssuesResponse {
+  success: boolean;
+  issues: ProviderIssue[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}

@@ -60,4 +60,51 @@ export const resubmitProviderApplication =
         }>("/provider/onboarding/resubmit", data);
 
         return response.data;
-    };
+    };
+
+export const activateProvider = async (): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+        user: AuthUser;
+    };
+}> => {
+    const response = await axiosInstance.post<{
+        success: boolean;
+        message: string;
+        data: {
+            user: AuthUser;
+        };
+    }>("/provider/activate");
+    return response.data;
+};
+
+export interface GetProviderIssuesParams {
+    page?: number;
+    pageSize?: number;
+    category?: string;
+    search?: string;
+}
+
+export const getProviderIssues = async (
+    params?: GetProviderIssuesParams
+): Promise<import("../types/providerTypes").ProviderIssuesResponse> => {
+    const response = await axiosInstance.get<import("../types/providerTypes").ProviderIssuesResponse>(
+        "/provider/issues",
+        { params }
+    );
+    return response.data;
+};
+
+export const expressInterest = async (
+    issueId: string
+): Promise<{
+    success: boolean;
+    message: string;
+}> => {
+    const response = await axiosInstance.post<{
+        success: boolean;
+        message: string;
+    }>(`/provider/issues/${issueId}/interest`);
+    return response.data;
+};

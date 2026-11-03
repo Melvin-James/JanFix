@@ -14,11 +14,10 @@
  *   or provide the environment variable ISSUE_INTERACTION_WINDOW_MS=86400000.
  */
 export const PRODUCTION_INTERACTION_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-export const TEMPORARY_TESTING_WINDOW_MS = 1 * 60 * 1000; // 1 minute (temporary test setting)
+// export const TEMPORARY_TESTING_WINDOW_MS = 1 * 60 * 1000; // 1 minute (temporary test setting)
 
-export const ISSUE_INTERACTION_WINDOW_MS = process.env.ISSUE_INTERACTION_WINDOW_MS
-    ? Number(process.env.ISSUE_INTERACTION_WINDOW_MS)
-    : TEMPORARY_TESTING_WINDOW_MS;
+export const ISSUE_INTERACTION_WINDOW_MS = PRODUCTION_INTERACTION_WINDOW_MS
+    
 
 /**
  * Returns the exact server timestamp when community interactions (upvotes and comments)

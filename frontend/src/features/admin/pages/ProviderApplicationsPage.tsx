@@ -236,6 +236,7 @@ function ProviderApplicationsPage() {
                                     status={application.applicationStatus}
                                 />
                             </td>
+                           
 
                             {/* Submitted date */}
                             <td className="px-6 py-4">

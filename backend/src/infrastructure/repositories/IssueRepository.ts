@@ -366,6 +366,57 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
         };
     }
 
+    async findProviderIssues(
+        page: number,
+        pageSize: number,
+        filters?: { category?: string | undefined; search?: string | undefined }
+    ): Promise<PaginatedResult<Issue>> {
+        const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+        const safePageSize = Number.isInteger(pageSize) && pageSize > 0 ? Math.min(pageSize, 100) : 10;
+
+        // Strict provider feed visibility rule:
+        // Only PUBLIC issues that are not REJECTED (e.g. REPORTED or VERIFIED)
+        const andConditions: Record<string, unknown>[] = [
+            {
+                visibility: IssueVisibility.PUBLIC,
+                status: { $ne: IssueStatus.REJECTED },
+            },
+        ];
+
+        if (filters?.category && filters.category !== "ALL" && Types.ObjectId.isValid(filters.category)) {
+            andConditions.push({ category: new Types.ObjectId(filters.category) });
+        }
+
+        if (filters?.search && filters.search.trim().length > 0) {
+            const escaped = filters.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            andConditions.push({
+                title: { $regex: escaped, $options: "i" },
+            });
+        }
+
+        const query = { $and: andConditions };
+        const totalItems = await IssueModel.countDocuments(query);
+        const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+        const skip = (safePage - 1) * safePageSize;
+
+        const documents = await IssueModel.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(safePageSize)
+            .populate("category", "name")
+            .populate("createdBy", "fullName");
+
+        return {
+            items: documents.map(IssueMapper.toEntity),
+            pagination: {
+                page: safePage,
+                pageSize: safePageSize,
+                totalItems,
+                totalPages,
+            },
+        };
+    }
+
     async updateStatusIfEligible(
         id: string,
         newStatus: IssueStatus,
