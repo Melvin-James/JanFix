@@ -10,29 +10,32 @@ import type { ProviderIssue } from "../../provider/types/providerTypes";
 
 interface BaseIssueCardProps {
   className?: string;
+  variant?: "user" | "provider";
 }
 
 interface UserIssueCardProps extends BaseIssueCardProps {
-
+  variant?: "user";
   issue: Issue;
   onExpressInterest?: never;
   hasExpressedInterest?: never;
-
 }
 
 interface ProviderIssueCardProps extends BaseIssueCardProps {
-
-  issue : ProviderIssue;
-  onExpressInterest: (issueId: string) => Promise<boolean>;
+  variant?: "provider";
+  issue: ProviderIssue | Issue;
+  onExpressInterest?: (issueId: string) => Promise<boolean>;
   hasExpressedInterest?: boolean;
-
 }
 
-export type IssueCardProps = | UserIssueCardProps | ProviderIssueCardProps
+export type IssueCardProps = UserIssueCardProps | ProviderIssueCardProps;
 
-
-
-export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "", onExpressInterest, hasExpressedInterest = false }) => {
+export const IssueCard: React.FC<IssueCardProps> = ({
+  issue,
+  className = "",
+  variant,
+  onExpressInterest,
+  hasExpressedInterest = false,
+}) => {
   const navigate = useNavigate();
   const [imageError, setImageError] = useState(false);
   const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
@@ -55,10 +58,14 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "", onE
       ? issue.category
       : "Uncategorized";
 
-  const isProviderCard = Boolean(onExpressInterest);
+  const isProviderCard = variant === "provider" || Boolean(onExpressInterest);
 
   const handleCardClick = () => {
-    navigate(`/issues/${issue.id}`);
+    if (isProviderCard) {
+      navigate(`/provider/issues/${issue.id}`);
+    } else {
+      navigate(`/issues/${issue.id}`);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
@@ -130,45 +137,56 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, className = "", onE
 
             {/* Social Interactions & View Details */}
             {isProviderCard ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void onExpressInterest?.(issue.id);
-                }}
-                disabled={hasExpressedInterest}
-                className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {hasExpressedInterest ? "Interest Expressed" : "Express Interest"}
-              </button>
-            ) : (
-
               <div className="flex items-center justify-between gap-2 pt-1">
-              <div className="flex items-center gap-2">
-                <IssueVoteButton issue={issue as Issue} size="sm" showLabel={false} />
+                {onExpressInterest ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void onExpressInterest?.(issue.id);
+                    }}
+                    disabled={hasExpressedInterest}
+                    className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {hasExpressedInterest ? "Interest Expressed" : "Express Interest"}
+                  </button>
+                ) : (
+                  <span className="text-xs font-medium text-slate-500">
+                    {hasExpressedInterest ? "Interest Expressed" : "Verified Issue"}
+                  </span>
+                )}
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setIsCommentsModalOpen(true);
-                  }}
-                  title="View and post comments"
-                  aria-label="View comments"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-colors cursor-pointer select-none"
-                >
-                  <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
-                  <span>Comments</span>
-                </button>
+                <div className="flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                  <span>View</span>
+                  <Eye className="h-3.5 w-3.5" />
+                </div>
               </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <IssueVoteButton issue={issue as Issue} size="sm" showLabel={false} />
 
-              <div className="flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:text-blue-700">
-                <span>View</span>
-                <Eye className="h-3.5 w-3.5" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setIsCommentsModalOpen(true);
+                    }}
+                    title="View and post comments"
+                    aria-label="View comments"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-colors cursor-pointer select-none"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
+                    <span>Comments</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                  <span>View</span>
+                  <Eye className="h-3.5 w-3.5" />
+                </div>
               </div>
-            </div>
-
             )}
           </div>
         </div>

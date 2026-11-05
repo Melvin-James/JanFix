@@ -17,13 +17,21 @@ import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCa
 import { GetFeedIssuesUseCase } from "../../application/use-cases/issue/GetFeedIssuesUseCase.js";
 
 import { IssueController } from "../controllers/issue/IssueController.js";
+
 import { IssueVoteRepository } from "../../infrastructure/repositories/IssueVoteRepository.js";
+
 import { AddIssueUpvoteUseCase } from "../../application/use-cases/issue/AddIssueUpvoteUseCase.js";
+
 import { RemoveIssueUpvoteUseCase } from "../../application/use-cases/issue/RemoveIssueUpvoteUseCase.js";
+
 import { GetIssueUpvoteStatusUseCase } from "../../application/use-cases/issue/GetIssueUpvoteStatusUseCase.js";
+
 import { IssueCommentRepository } from "../../infrastructure/repositories/IssueCommentRepository.js";
+
 import { CreateIssueCommentUseCase } from "../../application/use-cases/issue/CreateIssueCommentUseCase.js";
+
 import { GetIssueCommentsUseCase } from "../../application/use-cases/issue/GetIssueCommentsUseCase.js";
+
 import { createCommentValidator } from "../validators/issue/createCommentValidator.js";
 
 import { authenticate } from "../middlewares/authMiddleware.js";

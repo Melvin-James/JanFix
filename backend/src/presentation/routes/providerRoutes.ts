@@ -11,6 +11,7 @@ import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCa
 import { ActivateProviderUseCase } from "../../application/use-cases/provider/ActivateProviderUseCase.js";
 import { GetProviderIssuesUseCase } from "../../application/use-cases/provider/GetProviderIssuesUseCase.js";
 import { ExpressIssueInterestUseCase } from "../../application/use-cases/provider/ExpressIssueInterestUseCase.js";
+import { GetProviderIssueDetailsUseCase } from "../../application/use-cases/provider/GetProviderIssueDetailsUseCase.js";
 import { authenticate, requireActiveProvider } from "../middlewares/authMiddleware.js";
 import validate from "../middlewares/validate.js";
 import { providerApplicationSchema } from "../validators/provider/providerApplicationSchema.js";
@@ -38,6 +39,7 @@ const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
 const activateProviderUseCase = new ActivateProviderUseCase(userRepository);
 const getProviderIssuesUseCase = new GetProviderIssuesUseCase(issueRepository, issueInterestRepository, storageService);
 const expressIssueInterestUseCase = new ExpressIssueInterestUseCase(issueRepository, issueInterestRepository);
+const getProviderIssueDetailsUseCase = new GetProviderIssueDetailsUseCase(issueRepository, issueInterestRepository, storageService);
 
 const providerController = new ProviderController(
   submitProviderApplicationUseCase,
@@ -47,6 +49,7 @@ const providerController = new ProviderController(
   activateProviderUseCase,
   getProviderIssuesUseCase,
   expressIssueInterestUseCase,
+  getProviderIssueDetailsUseCase,
 );
 
 // Get active categories for provider onboarding
@@ -98,6 +101,15 @@ router.get(
   requireActiveMode("SERVICE_PROVIDER"),
   requireActiveProvider,
   providerController.getIssues,
+);
+
+// Provider workspace: Issue details (Service Provider mode, activated account only)
+router.get(
+  ApiEndpoints.PROVIDER.ISSUE_DETAILS,
+  authenticate,
+  requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
+  providerController.getIssueDetails,
 );
 
 // Provider workspace: Express interest in an eligible issue (Service Provider mode, activated account only)

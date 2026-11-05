@@ -68,6 +68,7 @@ function MainNavbar() {
       const targetMode = activeMode === "SERVICE_PROVIDER" ? "USER" : "SERVICE_PROVIDER";
       const response = await switchMode(targetMode);
       setUser(response.data.user);
+      toast.success("Service Provider mode activated");
       setDropdownOpen(false);
       if (targetMode === "SERVICE_PROVIDER") {
         if (response.data.isActivated) {

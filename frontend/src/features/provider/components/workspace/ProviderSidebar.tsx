@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, AlertCircle, Wrench } from "lucide-react";
+import { LayoutDashboard, AlertCircle } from "lucide-react";
 
 const navigation = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/provider/dashboard" },
@@ -30,9 +30,7 @@ export default function ProviderSidebar({ open, onNavigate }: ProviderSidebarPro
         }`}
       >
         <div className="flex h-16 items-center gap-2.5 border-b border-slate-200 px-5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs">
-            <Wrench className="h-4 w-4" />
-          </div>
+          
           <div>
             <p className="text-lg font-bold leading-none text-slate-900">JanFix</p>
             <p className="text-[11px] font-medium text-blue-600 mt-0.5">Service Provider</p>

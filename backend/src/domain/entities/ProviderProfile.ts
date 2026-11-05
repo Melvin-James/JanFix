@@ -89,5 +89,5 @@ export interface ProviderProfile {
 
     status: ProviderStatus;
 
-    payoutDetails?: ProviderPayoutDetails;
+    payoutDetails?: ProviderPayoutDetails | undefined;
 }
