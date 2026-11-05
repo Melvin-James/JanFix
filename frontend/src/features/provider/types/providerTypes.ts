@@ -1,15 +1,12 @@
 export const ProviderType = {
-
     INDIVIDUAL: "INDIVIDUAL",
-
     VOLUNTEER_GROUP: "VOLUNTEER_GROUP",
-
     NGO: "NGO",
-} as const
+} as const;
 
 export type ProviderType = typeof ProviderType[keyof typeof ProviderType];
 
-import type { IssueLocation, IssueStatus, IssueVisibility } from "../../issues/types/issue";
+import type { Issue, IssueLocation, IssueStatus, IssueVisibility } from "../../issues/types/issue";
 import type { UploadedFile } from "./uploadedFile";
 
 export interface ProviderIssue {
@@ -38,4 +35,13 @@ export interface ProviderIssuesResponse {
     totalItems: number;
     totalPages: number;
   };
+}
+
+export interface ProviderIssueDetail extends Issue {
+  hasExpressedInterest: boolean;
+}
+
+export interface ProviderIssueDetailsResponse {
+  success: boolean;
+  issue: ProviderIssueDetail;
 }

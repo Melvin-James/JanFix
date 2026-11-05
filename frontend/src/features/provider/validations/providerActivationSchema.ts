@@ -38,9 +38,8 @@ export const providerActivationSchema = z
       .trim()
       .optional()
       .or(z.literal(""))
-      .transform((val) => (val ? val.toUpperCase() : val))
       .refine(
-        (val) => !val || IFSC_REGEX.test(val),
+        (val) => !val || IFSC_REGEX.test(val.toUpperCase()),
         "Please enter a valid 11-character IFSC code (e.g. SBIN0001234)"
       ),
   })

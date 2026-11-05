@@ -369,7 +369,7 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
     async findProviderIssues(
         page: number,
         pageSize: number,
-        filters?: { category?: string | undefined; search?: string | undefined }
+        filters?: { category?: string | undefined; search?: string | undefined; visibility?: string | undefined }
     ): Promise<PaginatedResult<Issue>> {
         const safePage = Number.isInteger(page) && page > 0 ? page : 1;
         const safePageSize = Number.isInteger(pageSize) && pageSize > 0 ? Math.min(pageSize, 100) : 10;
@@ -378,8 +378,7 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
         // Only PUBLIC issues that are not REJECTED (e.g. REPORTED or VERIFIED)
         const andConditions: Record<string, unknown>[] = [
             {
-                visibility: IssueVisibility.PUBLIC,
-                status: { $ne: IssueStatus.REJECTED },
+                status: IssueStatus.VERIFIED ,
             },
         ];
 
@@ -392,6 +391,10 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
             andConditions.push({
                 title: { $regex: escaped, $options: "i" },
             });
+        }
+
+        if(filters?.visibility && filters.visibility !== "ALL" ) {
+            andConditions.push({ visibility: filters.visibility});
         }
 
         const query = { $and: andConditions };

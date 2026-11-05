@@ -3,7 +3,6 @@ import type { IIssueRepository } from "../../../domain/interface/IIssueRepositor
 import type { IIssueInterestRepository } from "../../../domain/interface/IIssueInterestRepository.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
 import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
 
 export class ExpressIssueInterestUseCase implements IExpressIssueInterestUseCase {
@@ -18,15 +17,7 @@ export class ExpressIssueInterestUseCase implements IExpressIssueInterestUseCase
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
-
-        // Privacy rule: Only public issues are eligible for provider interest
-        if (issue.visibility !== IssueVisibility.PUBLIC) {
-            throw new ApiError(
-                HttpStatusCode.FORBIDDEN,
-                "Service providers can only express interest in public issues."
-            );
-        }
-
+    
         // Status rule: Rejected issues cannot receive provider interest
         if (issue.status === IssueStatus.REJECTED) {
             throw new ApiError(

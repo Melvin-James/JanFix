@@ -4,6 +4,7 @@ import type { ProviderIssueResponseDTO } from "../../../dto/provider/ProviderIss
 export interface ProviderIssueFilters {
     category?: string | undefined;
     search?: string | undefined;
+    visibility?: string | undefined;
 }
 
 export interface IGetProviderIssuesUseCase {
