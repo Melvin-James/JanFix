@@ -87,6 +87,7 @@ export interface GetProviderIssuesParams {
     pageSize?: number;
     category?: string;
     search?: string;
+    visibility?:string
 }
 
 export const getProviderIssues = async (
@@ -110,4 +111,13 @@ export const expressInterest = async (
         message: string;
     }>(`/provider/issues/${issueId}/interest`);
     return response.data;
-};
+};
+
+export const getProviderIssueDetails = async (
+    issueId: string
+): Promise<import("../types/providerTypes").ProviderIssueDetailsResponse> => {
+    const response = await axiosInstance.get<import("../types/providerTypes").ProviderIssueDetailsResponse>(
+        `/provider/issues/${issueId}`
+    );
+    return response.data;
+};

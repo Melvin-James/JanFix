@@ -24,6 +24,7 @@ export const ApiEndpoints = {
     CATEGORIES: "/categories",
     ACTIVATE: "/activate",
     ISSUES: "/issues",
+    ISSUE_DETAILS: "/issues/:issueId",
     EXPRESS_INTEREST: "/issues/:issueId/interest",
   },
   ADMIN: {
@@ -53,10 +54,14 @@ export const ApiEndpoints = {
   ISSUES: {
     BASE: "/api/v1/issues",
     ROOT: "/",
-    BY_ID: "/:issueId",
-    MY_ISSUES: "/my-issues",
+    FEED: "/feed",
     CATEGORIES: "/categories",
+    MY_ISSUES: "/my-reports",
+    MY_REPORTS: "/my-reports",
+    DETAILS: "/:issueId",
+    BY_ID: "/:issueId",
     UPVOTE: "/:issueId/upvote",
+    UPVOTE_STATUS: "/:issueId/upvote-status",
     COMMENTS: "/:issueId/comments",
   },
 } as const;

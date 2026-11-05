@@ -14,6 +14,23 @@ export class LoginMapper {
     );
     const isActivated = isApproved && user.providerProfile?.status?.providerStatus === ProviderStatus.ACTIVE && hasPayoutDetails;
 
+    let providerProfilePayload = undefined;
+    if (user.providerProfile) {
+      const { payoutDetails: _omitted, ...safeProfile } = user.providerProfile;
+      providerProfilePayload = {
+        ...safeProfile,
+        // Never expose sensitive verification documents (ID proof, NGO registration) in auth responses
+        documents: {
+          ...(user.providerProfile.documents?.profileImage && {
+            profileImage: user.providerProfile.documents.profileImage,
+          }),
+          ...(user.providerProfile.documents?.logo && {
+            logo: user.providerProfile.documents.logo,
+          }),
+        },
+      };
+    }
+
     return {
 
       id: user.id as string,
@@ -36,21 +53,8 @@ export class LoginMapper {
         hasPayoutDetails,
       },
 
-      ...(user.providerProfile && {
-        providerProfile: {
-          ...user.providerProfile,
-          // Never expose sensitive payout account details in auth responses
-          payoutDetails: undefined,
-          // Never expose sensitive verification documents (ID proof, NGO registration) in auth responses
-          documents: {
-            ...(user.providerProfile.documents?.profileImage && {
-              profileImage: user.providerProfile.documents.profileImage,
-            }),
-            ...(user.providerProfile.documents?.logo && {
-              logo: user.providerProfile.documents.logo,
-            }),
-          },
-        },
+      ...(providerProfilePayload && {
+        providerProfile: providerProfilePayload,
       }),
     };
   }

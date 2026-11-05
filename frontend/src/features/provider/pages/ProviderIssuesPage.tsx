@@ -26,6 +26,8 @@ export default function ProviderIssuesPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
+  const [selectedVisibility, setSelectedVisibility] = useState("ALL");
+  
   const pageSize = 9;
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -68,6 +70,7 @@ export default function ProviderIssuesPage() {
           pageSize,
           category: selectedCategory !== "ALL" ? selectedCategory : undefined,
           search: debouncedSearch.trim() || undefined,
+          visibility: selectedVisibility !=="ALL" ? selectedVisibility : undefined
         });
         if (!mounted) return;
         setIssues(res.issues);
@@ -93,7 +96,7 @@ export default function ProviderIssuesPage() {
     return () => {
       mounted = false;
     };
-  }, [currentPage, selectedCategory, debouncedSearch, refreshCount]);
+  }, [currentPage, selectedCategory, debouncedSearch, refreshCount, selectedVisibility]);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
@@ -113,8 +116,19 @@ export default function ProviderIssuesPage() {
     return false;
   };
 
+  const handleVisibilityChange = (val: string) => {
+    setSelectedVisibility(val);
+    setCurrentPage(1);
+  };
+
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + issues.length;
+
+  const visibilityOptions = [
+    { value: "", label: "All Visibilities" },
+    { value: "PUBLIC", label: "Public" },
+    { value: "PRIVATE", label: "Private" },
+  ];
 
   return (
     <ProviderLayout>
@@ -167,6 +181,13 @@ export default function ProviderIssuesPage() {
                 label: category.name,
               })),
             ]}
+            className="w-full"
+          />
+
+          <FilterSelect
+            value={selectedVisibility}
+            onChange={handleVisibilityChange}
+            options={visibilityOptions}
             className="w-full"
           />
         </div>
