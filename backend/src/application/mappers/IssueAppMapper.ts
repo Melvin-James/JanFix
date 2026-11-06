@@ -19,6 +19,9 @@ export class IssueAppMapper {
             visibility: issue.visibility,
             location: issue.location,
             status: issue.status,
+            proposalOpenedAt: issue.proposalOpenedAt,
+            proposalDeadlineAt: issue.proposalDeadlineAt,
+            proposalWindowStatus: issue.proposalWindowStatus,
             createdAt: issue.createdAt,
             updatedAt: issue.updatedAt,
             ...(options?.includeRejectionReason && issue.rejectionReason

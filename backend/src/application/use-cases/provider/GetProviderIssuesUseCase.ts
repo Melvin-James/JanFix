@@ -1,5 +1,5 @@
 import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueInterestRepository } from "../../../domain/interface/IIssueInterestRepository.js";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
 import type { IStorageService } from "../../services/IStorageService.js";
 import type { PaginatedResult } from "../../../shared/types/Pagination.js";
 import type { ProviderIssueResponseDTO } from "../../dto/provider/ProviderIssueResponseDTO.js";
@@ -10,7 +10,7 @@ import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.
 export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
     constructor(
         private readonly issueRepository: IIssueRepository,
-        private readonly issueInterestRepository: IIssueInterestRepository,
+        private readonly proposalRepository: IProposalRepository,
         private readonly storageService: IStorageService
     ) {}
 
@@ -26,10 +26,15 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
             filters
         );
 
-        // Fetch all issue IDs that this provider has already expressed interest in
-        const expressedIssueIds = await this.issueInterestRepository.findInterestsByProvider(providerId);
-        const expressedSet = new Set(expressedIssueIds);
+        const issueIds = paginated.items.map((issue) => issue.id!).filter(Boolean);
 
+        // Fetch proposal counts and submitted state concurrently
+        const [submittedIssueIds, proposalCountMap] = await Promise.all([
+            this.proposalRepository.findSubmittedIssueIdsByProvider(providerId, issueIds),
+            this.proposalRepository.countSubmittedForIssues(issueIds),
+        ]);
+
+        const submittedSet = new Set(submittedIssueIds);
         const urlCache = new Map<string, string>();
 
         const items: ProviderIssueResponseDTO[] = await Promise.all(
@@ -41,10 +46,15 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
                     urlCache
                 );
 
+                const hasSubmittedProposal = Boolean(issue.id && submittedSet.has(issue.id));
+                const proposalCount = issue.id ? (proposalCountMap.get(issue.id) || 0) : 0;
+
                 return {
                     ...response,
                     images: refreshedImages,
-                    hasExpressedInterest: Boolean(issue.id && expressedSet.has(issue.id)),
+                    hasSubmittedProposal,
+                    proposalCount,
+                    hasExpressedInterest: hasSubmittedProposal,
                 };
             })
         );

@@ -31,6 +31,9 @@ export interface Issue {
   location: IssueLocation;
   status: IssueStatus;
   rejectionReason?: string;
+  proposalOpenedAt?: string;
+  proposalDeadlineAt?: string;
+  proposalWindowStatus?: "OPEN" | "CLOSED" | "CANCELLED";
   createdAt?: string;
   updatedAt?: string;
 }
@@ -128,3 +131,11 @@ export interface CreateCommentResponse {
   comment: IssueComment;
 }
 
+export interface IssueFilters {
+  page?: number;
+  pageSize?: number;
+  category?: string;
+  visibility?: IssueVisibility | "ALL";
+  status?: IssueStatus | "ALL";
+  search?: string;
+}

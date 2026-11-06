@@ -66,6 +66,7 @@ import ProviderDashboardPage from "../features/provider/pages/ProviderDashboardP
 import ProviderIssuesPage from "../features/provider/pages/ProviderIssuesPage";
 import ProviderActivationPage from "../features/provider/pages/ProviderActivationPage";
 import ProviderIssueDetailsPage from "../features/provider/pages/ProviderIssueDetailsPage";
+import ProviderProposalSubmissionPage from "../features/provider/pages/ProviderProposalSubmissionPage";
 
 function AppRouter() {
   return (
@@ -186,6 +187,17 @@ function AppRouter() {
             <ProtectedRoute>
                 <ProviderModeRoute>
                     <ProviderIssueDetailsPage />
+                </ProviderModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/provider/issues/:issueId/proposal"
+          element={
+            <ProtectedRoute>
+                <ProviderModeRoute>
+                    <ProviderProposalSubmissionPage />
                 </ProviderModeRoute>
             </ProtectedRoute>
           }

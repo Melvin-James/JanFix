@@ -45,30 +45,37 @@ export class SwitchModeUseCase implements ISwitchModeUseCase {
                 user.providerProfile.payoutDetails?.upiId
             );
             const isActivated = user.providerProfile.status.providerStatus === ProviderStatus.ACTIVE && hasPayoutDetails;
+
+            user.activeMode = "SERVICE_PROVIDER";
+            const updatedUser = await this.userRepository.updateUser(user);
+
             const accessToken = this.jwtService.generateAccessToken(
-                user.id as string,
-                user.roles,
+                updatedUser.id as string,
+                updatedUser.roles,
                 "SERVICE_PROVIDER"
             );
 
             return {
                 activeMode: "SERVICE_PROVIDER",
                 accessToken,
-                user: UserMapper.toAuthResponse(user, "SERVICE_PROVIDER"),
+                user: UserMapper.toAuthResponse(updatedUser, "SERVICE_PROVIDER"),
                 isActivated,
             };
         } else {
+
+            user.activeMode = "USER";
+            const updatedUser = await this.userRepository.updateUser(user);
             // Returning to USER mode is always permitted for authenticated users
             const accessToken = this.jwtService.generateAccessToken(
-                user.id as string,
-                user.roles,
+                updatedUser.id as string,
+                updatedUser.roles,
                 "USER"
             );
 
             return {
                 activeMode: "USER",
                 accessToken,
-                user: UserMapper.toAuthResponse(user, "USER"),
+                user: UserMapper.toAuthResponse(updatedUser, "USER"),
             };
         }
     }

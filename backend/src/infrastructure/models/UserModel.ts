@@ -14,6 +14,8 @@ import type { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js"
 
 import type { ProviderStatus } from "../../domain/enums/ProviderStatus.js";
 
+import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+
 // ─── Typed sub-document shapes ─────────────────────────────────────────────
 
 export interface UploadedFileDoc {
@@ -89,6 +91,7 @@ export interface UserDocument extends Document {
     email: string;
     password?: string;
     roles: Role[];
+    activeMode: ApplicationMode;
     isVerified: boolean;
     authProvider: AuthProvider;
     accountStatus: AccountStatus;
@@ -125,6 +128,12 @@ const userSchema = new mongoose.Schema(
             enum: Object.values(Role),
         }],
         default: [Role.USER],
+    },
+
+    activeMode: {
+        type: String,
+        enum: ["USER", "SERVICE_PROVIDER"],
+        default: "USER"
     },
 
     isVerified: {

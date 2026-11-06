@@ -3,6 +3,7 @@ import { UserRepository } from "../../infrastructure/repositories/UserRepository
 import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.js";
 import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.js";
 import { IssueInterestRepository } from "../../infrastructure/repositories/IssueInterestRepository.js";
+import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.js";
 import { ProviderController } from "../controllers/provider/ProviderController.js";
 import { SubmitProviderApplicationUseCase } from "../../application/use-cases/provider/SubmitProviderApplicationUseCase.js";
 import { ResubmitProviderApplicationUseCase } from "../../application/use-cases/provider/ResubmitProviderApplicationUseCase.js";
@@ -12,10 +13,15 @@ import { ActivateProviderUseCase } from "../../application/use-cases/provider/Ac
 import { GetProviderIssuesUseCase } from "../../application/use-cases/provider/GetProviderIssuesUseCase.js";
 import { ExpressIssueInterestUseCase } from "../../application/use-cases/provider/ExpressIssueInterestUseCase.js";
 import { GetProviderIssueDetailsUseCase } from "../../application/use-cases/provider/GetProviderIssueDetailsUseCase.js";
+import { SubmitProposalUseCase } from "../../application/use-cases/provider/SubmitProposalUseCase.js";
+import { GetProviderProposalUseCase } from "../../application/use-cases/provider/GetProviderProposalUseCase.js";
+import { UpdateProposalUseCase } from "../../application/use-cases/provider/UpdateProposalUseCase.js";
+import { WithdrawProposalUseCase } from "../../application/use-cases/provider/WithdrawProposalUseCase.js";
 import { authenticate, requireActiveProvider } from "../middlewares/authMiddleware.js";
 import validate from "../middlewares/validate.js";
 import { providerApplicationSchema } from "../validators/provider/providerApplicationSchema.js";
 import { activateProviderSchema } from "../validators/provider/activateProviderValidator.js";
+import { submitProposalSchema, updateProposalSchema } from "../validators/provider/proposalValidators.js";
 import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
 import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
 import { requireActiveMode } from "../middlewares/activeModeMiddleware.js";
@@ -26,6 +32,7 @@ const userRepository = new UserRepository();
 const categoryRepository = new CategoryRepository();
 const issueRepository = new IssueRepository();
 const issueInterestRepository = new IssueInterestRepository();
+const proposalRepository = new ProposalRepository();
 const storageService = new S3StorageService();
 
 const submitProviderApplicationUseCase = new SubmitProviderApplicationUseCase(
@@ -37,9 +44,15 @@ const resubmitProviderApplicationUseCase =
 const getProviderProfileUseCase = new GetProviderProfileUseCase(userRepository, storageService);
 const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
 const activateProviderUseCase = new ActivateProviderUseCase(userRepository);
-const getProviderIssuesUseCase = new GetProviderIssuesUseCase(issueRepository, issueInterestRepository, storageService);
+
+const getProviderIssuesUseCase = new GetProviderIssuesUseCase(issueRepository, proposalRepository, storageService);
 const expressIssueInterestUseCase = new ExpressIssueInterestUseCase(issueRepository, issueInterestRepository);
-const getProviderIssueDetailsUseCase = new GetProviderIssueDetailsUseCase(issueRepository, issueInterestRepository, storageService);
+const getProviderIssueDetailsUseCase = new GetProviderIssueDetailsUseCase(issueRepository, proposalRepository, storageService);
+
+const submitProposalUseCase = new SubmitProposalUseCase(issueRepository, proposalRepository, userRepository);
+const getProviderProposalUseCase = new GetProviderProposalUseCase(proposalRepository);
+const updateProposalUseCase = new UpdateProposalUseCase(issueRepository, proposalRepository);
+const withdrawProposalUseCase = new WithdrawProposalUseCase(issueRepository, proposalRepository);
 
 const providerController = new ProviderController(
   submitProviderApplicationUseCase,
@@ -50,6 +63,10 @@ const providerController = new ProviderController(
   getProviderIssuesUseCase,
   expressIssueInterestUseCase,
   getProviderIssueDetailsUseCase,
+  submitProposalUseCase,
+  getProviderProposalUseCase,
+  updateProposalUseCase,
+  withdrawProposalUseCase,
 );
 
 // Get active categories for provider onboarding
@@ -112,7 +129,45 @@ router.get(
   providerController.getIssueDetails,
 );
 
-// Provider workspace: Express interest in an eligible issue (Service Provider mode, activated account only)
+// Provider workspace: Submit structured proposal for an issue
+router.post(
+  ApiEndpoints.PROVIDER.PROPOSALS,
+  authenticate,
+  requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
+  validate(submitProposalSchema),
+  providerController.submitProposal,
+);
+
+// Provider workspace: Retrieve own proposal for an issue
+router.get(
+  ApiEndpoints.PROVIDER.MY_PROPOSAL,
+  authenticate,
+  requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
+  providerController.getMyProposal,
+);
+
+// Provider workspace: Update own proposal for an issue
+router.put(
+  ApiEndpoints.PROVIDER.MY_PROPOSAL,
+  authenticate,
+  requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
+  validate(updateProposalSchema),
+  providerController.updateProposal,
+);
+
+// Provider workspace: Withdraw own proposal for an issue
+router.delete(
+  ApiEndpoints.PROVIDER.MY_PROPOSAL,
+  authenticate,
+  requireActiveMode("SERVICE_PROVIDER"),
+  requireActiveProvider,
+  providerController.withdrawProposal,
+);
+
+// Deprecated Express Interest endpoint (preserved for backwards compatibility during migration)
 router.post(
   ApiEndpoints.PROVIDER.EXPRESS_INTEREST,
   authenticate,

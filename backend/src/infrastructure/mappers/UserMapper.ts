@@ -25,7 +25,9 @@ export class UserMapper {
 
       ...(document.password !== undefined && { password: document.password }),
 
-      roles: document.roles,
+      roles: document.roles,    
+
+      activeMode: document.activeMode ?? "USER",    
 
       isVerified: document.isVerified,
 

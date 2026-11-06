@@ -20,6 +20,12 @@ import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 
 import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
 
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+
 export class LoginUseCase implements ILoginUseCase {
     constructor(
 
@@ -57,14 +63,26 @@ export class LoginUseCase implements ILoginUseCase {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
         }
 
-        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles);
+        const activeModeToResume: ApplicationMode =
+            user.activeMode === "SERVICE_PROVIDER" && 
+            user.providerProfile?.status.applicationStatus === ApplicationStatus.APPROVED &&
+            user.providerProfile?.status.providerStatus !== ProviderStatus.BLOCKED
+                ? "SERVICE_PROVIDER"
+                : "USER";
+
+        if (user.activeMode !== activeModeToResume) {
+            user.activeMode = activeModeToResume;
+            await this.userRepository.updateUser(user);
+        }
+
+        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles, activeModeToResume);
 
         const refreshToken = this.jwtService.generateRefreshToken(user.id as string);
 
         return {
             accessToken,
             refreshToken,
-            user: UserMapper.toAuthResponse(user),
+            user: UserMapper.toAuthResponse(user, activeModeToResume),
         };
     }
 }
