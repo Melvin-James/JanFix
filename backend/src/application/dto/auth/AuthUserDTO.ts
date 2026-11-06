@@ -1,6 +1,7 @@
 import type { Role } from "../../../domain/enums/Role.js";
 import type { ProviderProfile } from "../../../domain/entities/ProviderProfile.js";
 import type { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
 
 export interface ProviderAccessSummary {
     isApproved: boolean;
@@ -15,7 +16,7 @@ export interface AuthUserDTO {
     roles: Role[];
     isVerified: boolean;
     accountStatus?: AccountStatus;
-    activeMode?: "USER" | "SERVICE_PROVIDER";
+    activeMode?: ApplicationMode;
     providerAccess?: ProviderAccessSummary;
     providerProfile?: ProviderProfile;
 }

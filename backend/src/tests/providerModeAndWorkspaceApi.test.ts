@@ -14,6 +14,7 @@ import { IssueInterestModel } from "../infrastructure/models/IssueInterestModel.
 import { IssueRepository } from "../infrastructure/repositories/IssueRepository.js";
 import { UserRepository } from "../infrastructure/repositories/UserRepository.js";
 import { IssueInterestRepository } from "../infrastructure/repositories/IssueInterestRepository.js";
+import { ProposalRepository } from "../infrastructure/repositories/ProposalRepository.js";
 import JwtService from "../infrastructure/services/JwtService.js";
 import { SwitchModeUseCase } from "../application/use-cases/auth/SwitchModeUseCase.js";
 import { ActivateProviderUseCase } from "../application/use-cases/provider/ActivateProviderUseCase.js";
@@ -54,13 +55,14 @@ async function runTests() {
     const userRepository = new UserRepository();
     const issueRepository = new IssueRepository();
     const issueInterestRepository = new IssueInterestRepository();
+    const proposalRepository = new ProposalRepository();
     const jwtService = new JwtService();
 
     const switchModeUseCase = new SwitchModeUseCase(userRepository, jwtService);
     const activateProviderUseCase = new ActivateProviderUseCase(userRepository);
     const getProviderIssuesUseCase = new GetProviderIssuesUseCase(
         issueRepository,
-        issueInterestRepository,
+        proposalRepository,
         mockStorageService
     );
     const expressIssueInterestUseCase = new ExpressIssueInterestUseCase(

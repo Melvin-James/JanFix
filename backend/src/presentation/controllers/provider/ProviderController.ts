@@ -1,30 +1,21 @@
 import type { Response } from "express";
-
 import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
-
 import asyncHandler from "../../../shared/utils/asyncHandler.js";
-
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-
 import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProviderApplicationUseCase.js";
-
 import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/IResubmitProviderApplicationUseCase.js";
-
 import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProfileUseCase.js";
-
 import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
-
 import type { IActivateProviderUseCase } from "../../../application/use-cases/usecase interfaces/provider/IActivateProviderUseCase.js";
-
 import type { IGetProviderIssuesUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderIssuesUseCase.js";
-
 import type { IExpressIssueInterestUseCase } from "../../../application/use-cases/usecase interfaces/provider/IExpressIssueInterestUseCase.js";
 import type { IGetProviderIssueDetailsUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderIssueDetailsUseCase.js";
-
+import type { ISubmitProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProposalUseCase.js";
+import type { IGetProviderProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProposalUseCase.js";
+import type { IUpdateProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IUpdateProposalUseCase.js";
+import type { IWithdrawProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IWithdrawProposalUseCase.js";
 import ApiError from "../../../shared/utils/apiError.js";
-
 import { AppMessages } from "../../../shared/constants/messages.js";
-
 import { UserMapper } from "../../../application/mappers/LoginMapper.js";
 
 export class ProviderController {
@@ -37,27 +28,27 @@ export class ProviderController {
     private _getProviderIssuesUseCase?: IGetProviderIssuesUseCase,
     private _expressIssueInterestUseCase?: IExpressIssueInterestUseCase,
     private _getProviderIssueDetailsUseCase?: IGetProviderIssueDetailsUseCase,
+    private _submitProposalUseCase?: ISubmitProposalUseCase,
+    private _getProviderProposalUseCase?: IGetProviderProposalUseCase,
+    private _updateProposalUseCase?: IUpdateProposalUseCase,
+    private _withdrawProposalUseCase?: IWithdrawProposalUseCase,
   ) {}
 
   submit = asyncHandler(
     async (
       req: AuthRequest,
-
       res: Response,
     ): Promise<void> => {
       const user = await this._submitProviderApplicationUseCase.execute(
         req.user!.userId,
-
         req.body,
       );
 
       res.status(HttpStatusCode.CREATED).json({
         success: true,
-
         message: AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED,
-
         data: {
-          user: UserMapper.toAuthResponse(user),
+          user,
         },
       });
     },
@@ -66,22 +57,18 @@ export class ProviderController {
   resubmit = asyncHandler(
     async (
       req: AuthRequest,
-
       res: Response,
     ): Promise<void> => {
       const user = await this._resubmitProviderApplicationUseCase.execute(
         req.user!.userId,
-
         req.body,
       );
 
       res.status(HttpStatusCode.OK).json({
         success: true,
-
         message: AppMessages.SUCCESS.APPLICATION_RESUBMITTED,
-
         data: {
-          user: UserMapper.toAuthResponse(user),
+          user,
         },
       });
     },
@@ -90,59 +77,67 @@ export class ProviderController {
   getProfile = asyncHandler(
     async (
       req: AuthRequest,
-
       res: Response,
     ): Promise<void> => {
-      const provider = await this._getProviderProfileUseCase.execute(
-        req.user!.userId,
+      const profile = await this._getProviderProfileUseCase.execute(
         req.user!.userId,
       );
 
       res.status(HttpStatusCode.OK).json({
         success: true,
-
-        provider,
+        data: {
+          profile,
+        },
       });
     },
   );
 
   getCategories = asyncHandler(
-    async (_req: AuthRequest, res: Response): Promise<void> => {
+    async (
+      _req: AuthRequest,
+      res: Response,
+    ): Promise<void> => {
       if (!this._getCategoriesUseCase) {
-        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          message: "Category use case not configured",
-        });
-        return;
+        throw new ApiError(
+          HttpStatusCode.INTERNAL_SERVER_ERROR,
+          AppMessages.ERROR.INTERNAL_SERVER_ERROR,
+        );
       }
 
-      const result = await this._getCategoriesUseCase.execute();
-      const activeCategories = Array.isArray(result)
-        ? result.filter((cat) => cat.isActive)
-        : result.items.filter((cat) => cat.isActive);
+      const categories = await this._getCategoriesUseCase.execute();
 
       res.status(HttpStatusCode.OK).json({
         success: true,
-        categories: activeCategories,
+        data: {
+          categories,
+        },
       });
     },
   );
 
   activate = asyncHandler(
     async (req: AuthRequest, res: Response): Promise<void> => {
-      const userId = req.user!.userId;
+      const providerId = req.user!.userId;
       if (!this._activateProviderUseCase) {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Activate provider usecase not initialized");
+        throw new ApiError(
+          HttpStatusCode.INTERNAL_SERVER_ERROR,
+          AppMessages.ERROR.INTERNAL_SERVER_ERROR,
+        );
       }
-      const updatedUser = await this._activateProviderUseCase.execute(userId, req.body);
+
+      const user = await this._activateProviderUseCase.execute(
+        providerId,
+        req.body,
+      );
+
       res.status(HttpStatusCode.OK).json({
         success: true,
-        message: "Service provider account successfully activated.",
+        message: "Provider account activated successfully",
         data: {
-          user: updatedUser,
+          user,
         },
       });
-    }
+    },
   );
 
   getIssues = asyncHandler(
@@ -156,12 +151,12 @@ export class ProviderController {
       const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
       const category = typeof req.query.category === "string" ? req.query.category : undefined;
       const search = typeof req.query.search === "string" ? req.query.search : undefined;
-      const visibility = typeof req.query.visibility === "string" ? req.query.visibility : undefined
+      const visibility = typeof req.query.visibility === "string" ? req.query.visibility : undefined;
 
       const result = await this._getProviderIssuesUseCase.execute(providerId, page, pageSize, {
         category,
         search,
-        visibility
+        visibility,
       });
 
       res.status(HttpStatusCode.OK).json({
@@ -208,6 +203,88 @@ export class ProviderController {
       res.status(HttpStatusCode.OK).json({
         success: true,
         issue,
+      });
+    }
+  );
+
+  submitProposal = asyncHandler(
+    async (req: AuthRequest, res: Response): Promise<void> => {
+      const providerId = req.user!.userId;
+      const issueId = req.params.issueId;
+      if (!issueId || typeof issueId !== "string") {
+        throw new ApiError(HttpStatusCode.BAD_REQUEST, "Issue ID is required");
+      }
+      if (!this._submitProposalUseCase) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Submit proposal use case not initialized");
+      }
+
+      const proposal = await this._submitProposalUseCase.execute(issueId, providerId, req.body);
+
+      res.status(HttpStatusCode.CREATED).json({
+        success: true,
+        message: "Proposal submitted successfully",
+        proposal,
+      });
+    }
+  );
+
+  getMyProposal = asyncHandler(
+    async (req: AuthRequest, res: Response): Promise<void> => {
+      const providerId = req.user!.userId;
+      const issueId = req.params.issueId;
+      if (!issueId || typeof issueId !== "string") {
+        throw new ApiError(HttpStatusCode.BAD_REQUEST, "Issue ID is required");
+      }
+      if (!this._getProviderProposalUseCase) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Get proposal use case not initialized");
+      }
+
+      const proposal = await this._getProviderProposalUseCase.execute(issueId, providerId);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        proposal,
+      });
+    }
+  );
+
+  updateProposal = asyncHandler(
+    async (req: AuthRequest, res: Response): Promise<void> => {
+      const providerId = req.user!.userId;
+      const issueId = req.params.issueId;
+      if (!issueId || typeof issueId !== "string") {
+        throw new ApiError(HttpStatusCode.BAD_REQUEST, "Issue ID is required");
+      }
+      if (!this._updateProposalUseCase) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Update proposal use case not initialized");
+      }
+
+      const proposal = await this._updateProposalUseCase.execute(issueId, providerId, req.body);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: "Proposal updated successfully",
+        proposal,
+      });
+    }
+  );
+
+  withdrawProposal = asyncHandler(
+    async (req: AuthRequest, res: Response): Promise<void> => {
+      const providerId = req.user!.userId;
+      const issueId = req.params.issueId;
+      if (!issueId || typeof issueId !== "string") {
+        throw new ApiError(HttpStatusCode.BAD_REQUEST, "Issue ID is required");
+      }
+      if (!this._withdrawProposalUseCase) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Withdraw proposal use case not initialized");
+      }
+
+      const result = await this._withdrawProposalUseCase.execute(issueId, providerId);
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: result.message,
       });
     }
   );

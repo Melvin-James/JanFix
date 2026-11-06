@@ -1,5 +1,5 @@
 import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueInterestRepository } from "../../../domain/interface/IIssueInterestRepository.js";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
 import type { IStorageService } from "../../services/IStorageService.js";
 import type { ProviderIssueResponseDTO } from "../../dto/provider/ProviderIssueResponseDTO.js";
 import type { IGetProviderIssueDetailsUseCase } from "../usecase interfaces/provider/IGetProviderIssueDetailsUseCase.js";
@@ -8,11 +8,12 @@ import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
+import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
 
 export class GetProviderIssueDetailsUseCase implements IGetProviderIssueDetailsUseCase {
     constructor(
         private readonly issueRepository: IIssueRepository,
-        private readonly issueInterestRepository: IIssueInterestRepository,
+        private readonly proposalRepository: IProposalRepository,
         private readonly storageService: IStorageService
     ) {}
 
@@ -38,15 +39,21 @@ export class GetProviderIssueDetailsUseCase implements IGetProviderIssueDetailsU
             this.storageService
         );
 
-        const hasExpressedInterest = await this.issueInterestRepository.exists(
-            issueId,
-            providerId
+        const [existingProposal, proposalCount] = await Promise.all([
+            this.proposalRepository.findByIssueAndProvider(issueId, providerId),
+            this.proposalRepository.countSubmittedByIssue(issueId),
+        ]);
+
+        const hasSubmittedProposal = Boolean(
+            existingProposal && existingProposal.status === ProposalStatus.SUBMITTED
         );
 
         return {
             ...response,
             images: refreshedImages,
-            hasExpressedInterest,
+            hasSubmittedProposal,
+            proposalCount,
+            hasExpressedInterest: hasSubmittedProposal,
         };
     }
 }

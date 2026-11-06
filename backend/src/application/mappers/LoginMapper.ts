@@ -6,7 +6,7 @@ import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
 
 export class LoginMapper {
 
-  static toAuthResponse(user: User, activeMode: ApplicationMode = "USER"): AuthUserDTO {
+  static toAuthResponse(user: User, activeMode: ApplicationMode = user.activeMode ?? "USER"): AuthUserDTO {
     const isApproved = user.providerProfile?.status?.applicationStatus === ApplicationStatus.APPROVED;
     const hasPayoutDetails = Boolean(
       user.providerProfile?.payoutDetails?.accountHolderName &&

@@ -26,6 +26,8 @@ export const ApiEndpoints = {
     ISSUES: "/issues",
     ISSUE_DETAILS: "/issues/:issueId",
     EXPRESS_INTEREST: "/issues/:issueId/interest",
+    PROPOSALS: "/issues/:issueId/proposals",
+    MY_PROPOSAL: "/issues/:issueId/proposals/me",
   },
   ADMIN: {
     BASE: "/api/v1/admin",

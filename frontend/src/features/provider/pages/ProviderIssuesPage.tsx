@@ -6,10 +6,7 @@ import { Pagination } from "../../../components/UI/Pagination";
 import { LoadingState } from "../../../components/UI/LoadingState";
 import { ErrorState } from "../../../components/UI/ErrorState";
 import { EmptyState } from "../../../components/UI/EmptyState";
-import {
-  getProviderIssues,
-  expressInterest,
-} from "../services/providerService";
+import { getProviderIssues } from "../services/providerService";
 import { getActiveIssueCategories } from "../../issues/services/issueService";
 import type { ProviderIssue } from "../types/providerTypes";
 import type { Category } from "../../admin/types/Category";
@@ -103,18 +100,7 @@ export default function ProviderIssuesPage() {
     setRefreshCount((c) => c + 1);
   }, []);
 
-  const handleExpressInterest = async (issueId: string): Promise<boolean> => {
-    const res = await expressInterest(issueId);
-    if (res.success) {
-      setIssues((prev) =>
-        prev.map((iss) =>
-          iss.id === issueId ? { ...iss, hasExpressedInterest: true } : iss,
-        ),
-      );
-      return true;
-    }
-    return false;
-  };
+
 
   const handleVisibilityChange = (val: string) => {
     setSelectedVisibility(val);
@@ -220,9 +206,8 @@ export default function ProviderIssuesPage() {
               {issues.map((issue) => (
                 <IssueCard
                   key={issue.id}
+                  variant="provider"
                   issue={issue}
-                  onExpressInterest={handleExpressInterest}
-                  hasExpressedInterest={issue.hasExpressedInterest}
                 />
               ))}
             </div>

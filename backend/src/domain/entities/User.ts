@@ -6,6 +6,8 @@ import type { ProviderProfile } from "./ProviderProfile.js";
 
 import type { AccountStatus } from "../enums/AccountStatus.js";
 
+import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+
 export interface User {
 
     id?: string;
@@ -17,6 +19,8 @@ export interface User {
     password?: string;
 
     roles: Role[];
+
+    activeMode: ApplicationMode;    
 
     isVerified: boolean;
 

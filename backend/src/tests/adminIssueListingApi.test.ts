@@ -505,7 +505,7 @@ async function runTests() {
         const verifiedFilterRes = await getReviewEligibleIssuesUseCase.execute(
             1,
             10,
-            { status: IssueStatus.VERIFIED },
+            { status: IssueStatus.VERIFIED, category: categoryId1.toString() },
             serverNow
         );
         const containsVerified = verifiedFilterRes.items.some((i) => i.id === olderVerifiedIssue._id.toString());
@@ -521,7 +521,7 @@ async function runTests() {
         const publicVerifiedRes = await getReviewEligibleIssuesUseCase.execute(
             1,
             10,
-            { status: IssueStatus.VERIFIED, visibility: IssueVisibility.PUBLIC },
+            { status: IssueStatus.VERIFIED, visibility: IssueVisibility.PUBLIC, category: categoryId1.toString() },
             serverNow
         );
         assert.equal(
@@ -538,7 +538,7 @@ async function runTests() {
         const privateVerifiedRes = await getReviewEligibleIssuesUseCase.execute(
             1,
             10,
-            { status: IssueStatus.VERIFIED, visibility: IssueVisibility.PRIVATE },
+            { status: IssueStatus.VERIFIED, visibility: IssueVisibility.PRIVATE, category: categoryId1.toString() },
             serverNow
         );
         assert.equal(
