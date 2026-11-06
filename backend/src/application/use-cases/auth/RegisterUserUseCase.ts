@@ -45,6 +45,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
                 email: dto.email,
                 password: hashedPassword,
                 roles: [Role.USER],
+                activeMode: "USER",
                 isVerified: false,
                 authProvider: AuthProvider.LOCAL,
                 accountStatus: AccountStatus.ACTIVE,
@@ -74,4 +75,4 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
         return RegisterUserMapper.toResponse(targetUser);
     }
-}
+}

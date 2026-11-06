@@ -1,6 +1,8 @@
 import type { Document } from "mongoose";
 import type { Issue } from "../../domain/entities/Issue.js";
 import type { IssueDocument } from "../models/IssueModel.js";
+import { IssueStatus } from "../../domain/enums/IssueStatus.js";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
 
 export class IssueMapper {
     static toEntity(doc: Document): Issue {
@@ -25,6 +27,15 @@ export class IssueMapper {
             ? rawCreatedBy.fullName
             : undefined;
 
+        const baseTimestamp = document.updatedAt || document.createdAt || new Date();
+        const proposalOpenedAt = document.proposalOpenedAt || (document.status === IssueStatus.VERIFIED ? baseTimestamp : undefined);
+        const proposalDeadlineAt = document.proposalDeadlineAt || (document.status === IssueStatus.VERIFIED ? new Date(baseTimestamp.getTime() + 5 * 24 * 60 * 60 * 1000) : undefined);
+        const proposalWindowStatus = document.proposalWindowStatus || (
+            document.status === IssueStatus.VERIFIED
+                ? (proposalDeadlineAt && new Date() >= proposalDeadlineAt ? ProposalWindowStatus.CLOSED : ProposalWindowStatus.OPEN)
+                : undefined
+        );
+
         return {
             id: document._id.toString(),
             createdBy: createdById,
@@ -38,6 +49,9 @@ export class IssueMapper {
             location: document.location,
             status: document.status,
             rejectionReason: document.rejectionReason,
+            proposalOpenedAt,
+            proposalDeadlineAt,
+            proposalWindowStatus,
             createdAt: document.createdAt,
             updatedAt: document.updatedAt,
         };

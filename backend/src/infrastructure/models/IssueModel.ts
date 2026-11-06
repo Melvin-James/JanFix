@@ -3,6 +3,7 @@ import { uploadedFileSchema } from "../database/schemas/uploadedFileSchema.js";
 import { issueLocationSchema } from "../database/schemas/issueLocationSchema.js";
 import { IssueVisibility } from "../../domain/enums/IssueVisibility.js";
 import { IssueStatus } from "../../domain/enums/IssueStatus.js";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
 import type { UploadedFile } from "../../domain/entities/UploadedFile.js";
 import type { IssueLocation } from "../../domain/entities/IssueLocation.js";
 
@@ -16,6 +17,9 @@ export interface IssueDocument extends Document {
     location: IssueLocation;
     status: IssueStatus;
     rejectionReason?: string;
+    proposalOpenedAt?: Date;
+    proposalDeadlineAt?: Date;
+    proposalWindowStatus?: ProposalWindowStatus;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -75,6 +79,18 @@ const issueSchema = new Schema<IssueDocument>(
             trim: true,
             maxlength: 1000,
         },
+        proposalOpenedAt: {
+            type: Date,
+        },
+        proposalDeadlineAt: {
+            type: Date,
+            index: true,
+        },
+        proposalWindowStatus: {
+            type: String,
+            enum: Object.values(ProposalWindowStatus),
+            index: true,
+        },
     },
     {
         timestamps: true,
@@ -86,5 +102,6 @@ issueSchema.index({ createdAt: -1 });
 issueSchema.index({ createdBy: 1, createdAt: -1 });
 issueSchema.index({ status: 1, visibility: 1 });
 issueSchema.index({ status: 1, createdAt: 1 });
+issueSchema.index({ status: 1, proposalWindowStatus: 1, proposalDeadlineAt: 1 });
 
 export const IssueModel = model<IssueDocument>("Issue", issueSchema);

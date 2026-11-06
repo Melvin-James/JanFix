@@ -8,7 +8,9 @@ export class RegisterUserMapper {
             fullName: user.fullName,
             email: user.email,
             roles: user.roles,
+            activeMode: user.activeMode ?? "USER",
             isVerified: user.isVerified,
+            accountStatus: user.accountStatus,
             ...(user.providerProfile && { providerProfile: user.providerProfile }),
         };
     }

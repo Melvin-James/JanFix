@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   AlertCircle,
   CheckCircle2,
-  RefreshCw,
-  HandHeart,
+  Clock,
+  FileText,
+  Send,
+  Edit3,
 } from "lucide-react";
 import ProviderLayout from "../components/workspace/ProviderLayout";
 import { LoadingState } from "../../../components/UI/LoadingState";
 import { ErrorState } from "../../../components/UI/ErrorState";
 import { IssueDetailsContent } from "../../issues/components/IssueDetailsContent";
 import { SimilarIssuesSection } from "../components/SimilarIssuesSection";
-import {
-  getProviderIssueDetails,
-  expressInterest,
-} from "../services/providerService";
+import { getProviderIssueDetails } from "../services/providerService";
 import type { ProviderIssueDetail } from "../types/providerTypes";
 
 export const ProviderIssueDetailsPage: React.FC = () => {
   const { issueId } = useParams<{ issueId: string }>();
+  const navigate = useNavigate();
   const [issue, setIssue] = useState<ProviderIssueDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [submittingInterest, setSubmittingInterest] = useState<boolean>(false);
-  const [feedbackMessage, setFeedbackMessage] = useState<string>("");
-  const [feedbackError, setFeedbackError] = useState<string>("");
 
   useEffect(() => {
     let isMounted = true;
@@ -61,36 +58,6 @@ export const ProviderIssueDetailsPage: React.FC = () => {
     };
   }, [issueId]);
 
-  // Auto-clear feedback notification
-  useEffect(() => {
-    if (feedbackMessage) {
-      const timer = setTimeout(() => setFeedbackMessage(""), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [feedbackMessage]);
-
-  const handleExpressInterest = async () => {
-    if (!issue || submittingInterest || issue.hasExpressedInterest) return;
-
-    try {
-      setSubmittingInterest(true);
-      setFeedbackError("");
-      const res = await expressInterest(issue.id);
-      if (res.success) {
-        setIssue((prev) => (prev ? { ...prev, hasExpressedInterest: true } : null));
-        setFeedbackMessage("Interest expressed successfully! Community members and administrators have been notified.");
-      }
-    } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ||
-        "Failed to express interest. Please try again.";
-      setFeedbackError(msg);
-    } finally {
-      setSubmittingInterest(false);
-    }
-  };
-
   const categoryId =
     issue &&
     (typeof issue.category === "object" && issue.category !== null
@@ -99,11 +66,16 @@ export const ProviderIssueDetailsPage: React.FC = () => {
       ? issue.category
       : "");
 
+  const hasSubmitted = Boolean(issue?.hasSubmittedProposal ?? issue?.hasExpressedInterest);
+  const proposalDeadline = issue?.proposalDeadlineAt ? new Date(issue.proposalDeadlineAt) : null;
+  const isDeadlinePassed = proposalDeadline ? new Date().getTime() >= proposalDeadline.getTime() : false;
+  const isWindowClosed = issue?.proposalWindowStatus === "CLOSED" || issue?.proposalWindowStatus === "CANCELLED" || isDeadlinePassed;
+
   return (
     <ProviderLayout>
       <div className="mx-auto max-w-5xl space-y-6">
-        {/* Navigation back */}
-        <div className="flex items-center justify-between">
+        {/* Navigation back and Deadline indicator */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <Link
             to="/provider/issues"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
@@ -111,40 +83,24 @@ export const ProviderIssueDetailsPage: React.FC = () => {
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Issues</span>
           </Link>
+
+          {proposalDeadline && (
+            <div
+              className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-semibold border ${
+                isWindowClosed
+                  ? "bg-red-50 text-red-700 border-red-200"
+                  : "bg-amber-50 text-amber-800 border-amber-200"
+              }`}
+            >
+              <Clock className="h-3.5 w-3.5" />
+              <span>
+                {isWindowClosed
+                  ? "Proposal Window Closed"
+                  : `Proposal Deadline: ${proposalDeadline.toLocaleDateString()} at ${proposalDeadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
+              </span>
+            </div>
+          )}
         </div>
-
-        {/* Feedback Banner */}
-        {feedbackMessage && (
-          <div className="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-3.5 text-sm text-emerald-800 shadow-xs">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-              <span className="font-semibold">{feedbackMessage}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setFeedbackMessage("")}
-              className="text-emerald-600 hover:text-emerald-800 font-bold ml-2 cursor-pointer"
-            >
-              &times;
-            </button>
-          </div>
-        )}
-
-        {feedbackError && (
-          <div className="flex items-center justify-between rounded-xl bg-red-50 border border-red-200 px-5 py-3.5 text-sm text-red-800 shadow-xs">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-red-600 shrink-0" />
-              <span>{feedbackError}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setFeedbackError("")}
-              className="text-red-600 hover:text-red-800 font-bold ml-2 cursor-pointer"
-            >
-              &times;
-            </button>
-          </div>
-        )}
 
         {loading ? (
           <div className="py-20">
@@ -172,36 +128,45 @@ export const ProviderIssueDetailsPage: React.FC = () => {
             <IssueDetailsContent
               issue={issue}
               actions={
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
-                  <div>
-                    <p className="text-xs text-slate-500">
-                      Express interest to offer your team's assistance in resolving this verified civic report.
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+                      <FileText className="h-4 w-4 text-slate-400" />
+                      <span>
+                        <strong>{issue.proposalCount ?? 0}</strong> {issue.proposalCount === 1 ? "proposal" : "proposals"} submitted
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    {issue.hasExpressedInterest ? (
-                      <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                        <span>Interest Expressed</span>
+
+                  <div className="flex items-center gap-2">
+                    {hasSubmitted ? (
+                      <div className="flex items-center gap-2">
+                        <div className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                          <span>Proposal Submitted</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/provider/issues/${issue.id}/proposal`)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+                        >
+                          <Edit3 className="h-3.5 w-3.5 text-slate-500" />
+                          <span>View / Edit Proposal</span>
+                        </button>
+                      </div>
+                    ) : isWindowClosed ? (
+                      <div className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 border border-slate-200 px-3.5 py-2 text-xs font-medium text-slate-600">
+                        <Clock className="h-3.5 w-3.5 text-slate-400" />
+                        <span>Proposal Window Closed</span>
                       </div>
                     ) : (
                       <button
                         type="button"
-                        onClick={handleExpressInterest}
-                        disabled={submittingInterest}
-                        className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-emerald-700 transition-colors disabled:opacity-50 cursor-pointer"
+                        onClick={() => navigate(`/provider/issues/${issue.id}/proposal`)}
+                        className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer"
                       >
-                        {submittingInterest ? (
-                          <>
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                            <span>Submitting Interest...</span>
-                          </>
-                        ) : (
-                          <>
-                            <HandHeart className="h-4 w-4" />
-                            <span>Express Interest</span>
-                          </>
-                        )}
+                        <Send className="h-3.5 w-3.5" />
+                        <span>Submit Proposal</span>
                       </button>
                     )}
                   </div>
@@ -224,4 +189,3 @@ export const ProviderIssueDetailsPage: React.FC = () => {
 };
 
 export default ProviderIssueDetailsPage;
-

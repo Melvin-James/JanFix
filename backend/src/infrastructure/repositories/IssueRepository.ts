@@ -9,6 +9,7 @@ import { IssueMapper } from "../mappers/IssueMapper.js";
 import type { PaginatedResult } from "../../shared/types/Pagination.js";
 import { IssueStatus } from "../../domain/enums/IssueStatus.js";
 import { IssueVisibility } from "../../domain/enums/IssueVisibility.js";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
 import { getReviewEligibilityThreshold } from "../../shared/utils/issueEligibility.js";
 
 type IssueFilter = QueryFilter<IssueDocument>;
@@ -437,6 +438,9 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
             updateDoc.rejectionReason = rejectionReason;
         } else if (newStatus === IssueStatus.VERIFIED) {
             updateDoc.$unset = { rejectionReason: 1 };
+            updateDoc.proposalOpenedAt = serverNow;
+            updateDoc.proposalDeadlineAt = new Date(serverNow.getTime() + 5 * 24 * 60 * 60 * 1000);
+            updateDoc.proposalWindowStatus = ProposalWindowStatus.OPEN;
         }
 
         const updated = await IssueModel.findOneAndUpdate(

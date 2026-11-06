@@ -115,7 +115,7 @@ async function runTests() {
         const res1 = await addIssueUpvoteUseCase.execute(publicIssueId, user1Id);
         assert.equal(res1.hasUpvoted, true);
         assert.equal(res1.upvoteCount, 1);
-        console.log("✔ Scenario 1 Passed: Vote registered successfully (count = 1, hasUpvoted = true)");
+        console.log("âœ” Scenario 1 Passed: Vote registered successfully (count = 1, hasUpvoted = true)");
 
         // -------------------------------------------------------------
         // SCENARIO 2: Repeated upvote requests do not create duplicate records
@@ -129,7 +129,7 @@ async function runTests() {
             userId: new Types.ObjectId(user1Id),
         });
         assert.equal(totalDocsUser1, 1, "Duplicate record MUST NOT be created in database");
-        console.log("✔ Scenario 2 Passed: Repeated vote call is idempotent without creating duplicate records");
+        console.log("âœ” Scenario 2 Passed: Repeated vote call is idempotent without creating duplicate records");
 
         // -------------------------------------------------------------
         // SCENARIO 3: Concurrent duplicate upvote attempts do not create duplicates
@@ -151,7 +151,7 @@ async function runTests() {
         assert.equal(totalDocsUser2, 1, "Under concurrent requests, exactly 1 vote record must exist for user2");
         const countAfterUser2 = await issueVoteRepository.countByIssueId(publicIssueId);
         assert.equal(countAfterUser2, 2, "Total upvote count should be 2 (user1 + user2)");
-        console.log("✔ Scenario 3 Passed: Concurrent upvote race conditions handled gracefully by unique compound index");
+        console.log("âœ” Scenario 3 Passed: Concurrent upvote race conditions handled gracefully by unique compound index");
 
         // -------------------------------------------------------------
         // SCENARIO 4: A user cannot upvote their own issue
@@ -168,7 +168,7 @@ async function runTests() {
                 return true;
             }
         );
-        console.log("✔ Scenario 4 Passed: Creator self-upvote rejected with 400 Bad Request");
+        console.log("âœ” Scenario 4 Passed: Creator self-upvote rejected with 400 Bad Request");
 
         // -------------------------------------------------------------
         // SCENARIO 5: Unauthenticated request is rejected by controller
@@ -195,7 +195,7 @@ async function runTests() {
         await issueController.addUpvote(unauthReq, mockRes, () => {});
         assert.equal(unauthStatusCode, HttpStatusCode.UNAUTHORIZED);
         assert.equal(unauthBody.success, false);
-        console.log("✔ Scenario 5 Passed: Unauthenticated request rejected with 401 Unauthorized");
+        console.log("âœ” Scenario 5 Passed: Unauthenticated request rejected with 401 Unauthorized");
 
         // -------------------------------------------------------------
         // SCENARIO 6: Malformed and nonexistent issue IDs
@@ -227,7 +227,7 @@ async function runTests() {
                 return true;
             }
         );
-        console.log("✔ Scenario 6 Passed: Malformed ID gives 400; nonexistent ID gives 404");
+        console.log("âœ” Scenario 6 Passed: Malformed ID gives 400; nonexistent ID gives 404");
 
         // -------------------------------------------------------------
         // SCENARIO 7: Unauthorized user cannot interact with approved private issue
@@ -266,7 +266,7 @@ async function runTests() {
                 return true;
             }
         );
-        console.log("✔ Scenario 7 Passed: Non-creator completely forbidden from approved private issue (POST, DELETE, GET)");
+        console.log("âœ” Scenario 7 Passed: Non-creator completely forbidden from approved private issue (POST, DELETE, GET)");
 
         // -------------------------------------------------------------
         // SCENARIO 8: User can remove own vote but cannot remove another's vote
@@ -278,7 +278,7 @@ async function runTests() {
 
         const user2StillVoted = await issueVoteRepository.hasUserVoted(publicIssueId, user2Id);
         assert.equal(user2StillVoted, true, "User2's vote must remain intact");
-        console.log("✔ Scenario 8 Passed: User1 vote removed; User2 vote remains unaffected");
+        console.log("âœ” Scenario 8 Passed: User1 vote removed; User2 vote remains unaffected");
 
         // -------------------------------------------------------------
         // SCENARIO 9: Repeated removal requests behave predictably
@@ -287,7 +287,7 @@ async function runTests() {
         const removeResAgain = await removeIssueUpvoteUseCase.execute(publicIssueId, user1Id);
         assert.equal(removeResAgain.hasUpvoted, false);
         assert.equal(removeResAgain.upvoteCount, 1);
-        console.log("✔ Scenario 9 Passed: Repeated remove vote call safely returns hasUpvoted: false and current count");
+        console.log("âœ” Scenario 9 Passed: Repeated remove vote call safely returns hasUpvoted: false and current count");
 
         // -------------------------------------------------------------
         // SCENARIO 10: Upvote counts and current user's vote state
@@ -304,7 +304,7 @@ async function runTests() {
         const user3Status = await getIssueUpvoteStatusUseCase.execute(publicIssueId, user3Id);
         assert.equal(user3Status.hasUpvoted, false);
         assert.equal(user3Status.upvoteCount, 1);
-        console.log("✔ Scenario 10 Passed: Upvote counts and per-user vote states verified");
+        console.log("âœ” Scenario 10 Passed: Upvote counts and per-user vote states verified");
 
         // -------------------------------------------------------------
         // SCENARIO 11: Removal allowed regardless of timestamp / deadline
@@ -313,7 +313,7 @@ async function runTests() {
         const removeResUser2 = await removeIssueUpvoteUseCase.execute(publicIssueId, user2Id);
         assert.equal(removeResUser2.hasUpvoted, false);
         assert.equal(removeResUser2.upvoteCount, 0);
-        console.log("✔ Scenario 11 Passed: Existing votes can always be removed while issue is accessible");
+        console.log("âœ” Scenario 11 Passed: Existing votes can always be removed while issue is accessible");
 
         // -------------------------------------------------------------
         // SCENARIO 12: Adding an upvote after interaction window expires is rejected
@@ -322,7 +322,7 @@ async function runTests() {
         const expiredIssueId = new Types.ObjectId().toString();
         const expiredIssue = createMockIssue(expiredIssueId, creatorId, IssueVisibility.PUBLIC, IssueStatus.REPORTED);
         // Created 10 minutes ago (> 1 minute interaction window)
-        expiredIssue.createdAt = new Date(Date.now() - 10 * 60 * 1000);
+        expiredIssue.createdAt = new Date(Date.now() - 25 * 60 * 60 * 1000);
         issuesMap.set(expiredIssueId, expiredIssue);
 
         await assert.rejects(
@@ -336,7 +336,7 @@ async function runTests() {
                 return true;
             }
         );
-        console.log("✔ Scenario 12 Passed: Adding upvote after expiry is rejected with 400 Bad Request");
+        console.log("âœ” Scenario 12 Passed: Adding upvote after expiry is rejected with 400 Bad Request");
 
         // -------------------------------------------------------------
         // SCENARIO 13: Removing one's own existing upvote after expiry succeeds
@@ -350,7 +350,7 @@ async function runTests() {
         const removeExpiredRes = await removeIssueUpvoteUseCase.execute(expiredIssueId, user1Id);
         assert.equal(removeExpiredRes.hasUpvoted, false);
         assert.equal(removeExpiredRes.upvoteCount, 0);
-        console.log("✔ Scenario 13 Passed: Removing own upvote after expiry succeeds and decrements count to 0");
+        console.log("âœ” Scenario 13 Passed: Removing own upvote after expiry succeeds and decrements count to 0");
 
         // -------------------------------------------------------------
         // SCENARIO 14: User cannot remove another user's upvote
@@ -365,7 +365,7 @@ async function runTests() {
         // User2's vote is unaffected and count remains 1
         assert.equal(unauthRemoveRes.upvoteCount, 1);
         assert.equal(await issueVoteRepository.hasUserVoted(expiredIssueId, user2Id), true);
-        console.log("✔ Scenario 14 Passed: User1 removal attempt does not affect User2's existing vote");
+        console.log("âœ” Scenario 14 Passed: User1 removal attempt does not affect User2's existing vote");
 
     } finally {
         // Cleanup test data
@@ -373,7 +373,7 @@ async function runTests() {
             issueId: { $in: [new Types.ObjectId(publicIssueId), new Types.ObjectId(privateApprovedIssueId)] },
         });
         await mongoose.disconnect();
-        console.log("\n✔ Database disconnected and test records cleaned up.");
+        console.log("\nâœ” Database disconnected and test records cleaned up.");
     }
 
     console.log("=== All 14 Scenarios Passed Successfully! ===");

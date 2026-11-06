@@ -21,6 +21,10 @@ import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
 
 import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import type { RefreshTokenPayload } from "../../../shared/types/RefreshTokenPayload.js";
 
 export class GoogleAuthUseCase implements IGoogleAuthUseCase{
     constructor(
@@ -57,6 +61,8 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
 
                 roles: [Role.USER],
 
+                activeMode: "USER",
+
                 isVerified: true,
 
                 authProvider: AuthProvider.GOOGLE,
@@ -67,6 +73,13 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
 
             });
         } else {
+
+            if(user.accountStatus === AccountStatus.BLOCKED) {
+                throw new ApiError(
+                    HttpStatusCode.FORBIDDEN,
+                    AppMessages.ERROR.ACCOUNT_BLOCKED
+                )
+            }
 
             if(user.authProvider === AuthProvider.LOCAL) {
                 throw new ApiError(
@@ -83,9 +96,22 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
             }
         }
 
+        const activeModeToResume: ApplicationMode =
+            user.activeMode === "SERVICE_PROVIDER" && 
+            user.providerProfile?.status.applicationStatus === ApplicationStatus.APPROVED &&
+            user.providerProfile?.status.providerStatus !== ProviderStatus.BLOCKED
+                ? "SERVICE_PROVIDER"
+                : "USER";
+
+        if(user.activeMode !== activeModeToResume) {
+            user.activeMode = activeModeToResume;
+            await this.userRepository.updateUser(user);
+        }
+
         const accessToken = this.jwtService.generateAccessToken(
             user.id as string,
-            user.roles
+            user.roles,
+            activeModeToResume
         );
 
         const refreshToken = this.jwtService.generateRefreshToken(
@@ -97,7 +123,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
 
             refreshToken,
 
-            user: UserMapper.toAuthResponse(user),
+            user: UserMapper.toAuthResponse(user, activeModeToResume),
         };
     }
 }

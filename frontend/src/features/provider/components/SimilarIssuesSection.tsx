@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Layers, AlertCircle } from "lucide-react";
 import { IssueCard } from "../../issues/components/IssueCard";
-import { getProviderIssues, expressInterest } from "../services/providerService";
+import { getProviderIssues } from "../services/providerService";
 import type { ProviderIssue } from "../types/providerTypes";
 
 interface SimilarIssuesSectionProps {
@@ -56,23 +56,6 @@ export const SimilarIssuesSection: React.FC<SimilarIssuesSectionProps> = ({
     };
   }, [categoryId, currentIssueId]);
 
-  const handleExpressInterest = async (issueId: string): Promise<boolean> => {
-    try {
-      const res = await expressInterest(issueId);
-      if (res.success) {
-        setSimilarIssues((prev) =>
-          prev.map((iss) =>
-            iss.id === issueId ? { ...iss, hasExpressedInterest: true } : iss
-          )
-        );
-        return true;
-      }
-    } catch (err) {
-      console.error("Failed to express interest from similar issues:", err);
-    }
-    return false;
-  };
-
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
@@ -122,8 +105,6 @@ export const SimilarIssuesSection: React.FC<SimilarIssuesSectionProps> = ({
             key={simIssue.id}
             variant="provider"
             issue={simIssue}
-            onExpressInterest={handleExpressInterest}
-            hasExpressedInterest={simIssue.hasExpressedInterest}
           />
         ))}
       </div>
@@ -132,4 +113,3 @@ export const SimilarIssuesSection: React.FC<SimilarIssuesSectionProps> = ({
 };
 
 export default SimilarIssuesSection;
-

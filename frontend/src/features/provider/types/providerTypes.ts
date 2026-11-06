@@ -21,7 +21,12 @@ export interface ProviderIssue {
   images: UploadedFile[];
   visibility: IssueVisibility;
   status: IssueStatus;
-  hasExpressedInterest: boolean;
+  hasSubmittedProposal?: boolean;
+  proposalCount?: number;
+  proposalOpenedAt?: string;
+  proposalDeadlineAt?: string;
+  proposalWindowStatus?: "OPEN" | "CLOSED" | "CANCELLED";
+  hasExpressedInterest?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -38,7 +43,9 @@ export interface ProviderIssuesResponse {
 }
 
 export interface ProviderIssueDetail extends Issue {
-  hasExpressedInterest: boolean;
+  hasSubmittedProposal: boolean;
+  proposalCount: number;
+  hasExpressedInterest?: boolean;
 }
 
 export interface ProviderIssueDetailsResponse {

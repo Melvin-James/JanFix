@@ -2,6 +2,7 @@ import type { UploadedFile } from "./UploadedFile.js";
 import type { IssueLocation } from "./IssueLocation.js";
 import type { IssueVisibility } from "../enums/IssueVisibility.js";
 import type { IssueStatus } from "../enums/IssueStatus.js";
+import type { ProposalWindowStatus } from "../enums/ProposalWindowStatus.js";
 
 export interface Issue {
     id?: string;
@@ -16,6 +17,9 @@ export interface Issue {
     location: IssueLocation;
     status: IssueStatus;
     rejectionReason?: string | undefined;
+    proposalOpenedAt?: Date | undefined;
+    proposalDeadlineAt?: Date | undefined;
+    proposalWindowStatus?: ProposalWindowStatus | undefined;
     createdAt?: Date;
     updatedAt?: Date;
 }

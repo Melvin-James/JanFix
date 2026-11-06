@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Clock, Eye, AlertCircle, Lock, MessageSquare } from "lucide-react";
+import { MapPin, Clock, Eye, AlertCircle, Lock, MessageSquare, FileText, CheckCircle2 } from "lucide-react";
 import type { Issue } from "../types/issue";
 import { StatusBadge } from "../../../components/UI/StatusBadge";
 import { formatRelativeTime } from "../../../utils/date";
@@ -59,6 +59,15 @@ export const IssueCard: React.FC<IssueCardProps> = ({
       : "Uncategorized";
 
   const isProviderCard = variant === "provider" || Boolean(onExpressInterest);
+
+  const hasSubmittedProposal =
+    ("hasSubmittedProposal" in issue && Boolean(issue.hasSubmittedProposal)) ||
+    Boolean(hasExpressedInterest);
+
+  const proposalCount =
+    "proposalCount" in issue && typeof issue.proposalCount === "number"
+      ? issue.proposalCount
+      : undefined;
 
   const handleCardClick = () => {
     if (isProviderCard) {
@@ -138,27 +147,34 @@ export const IssueCard: React.FC<IssueCardProps> = ({
             {/* Social Interactions & View Details */}
             {isProviderCard ? (
               <div className="flex items-center justify-between gap-2 pt-1">
-                {onExpressInterest ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void onExpressInterest?.(issue.id);
-                    }}
-                    disabled={hasExpressedInterest}
-                    className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {hasExpressedInterest ? "Interest Expressed" : "Express Interest"}
-                  </button>
-                ) : (
-                  <span className="text-xs font-medium text-slate-500">
-                    {hasExpressedInterest ? "Interest Expressed" : "Verified Issue"}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {proposalCount !== undefined && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">
+                      <FileText className="h-3 w-3 text-slate-400" />
+                      <span>{proposalCount} {proposalCount === 1 ? "proposal" : "proposals"}</span>
+                    </span>
+                  )}
+                </div>
 
-                <div className="flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:text-blue-700">
-                  <span>View</span>
-                  <Eye className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-2">
+                  {hasSubmittedProposal ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>Submitted</span>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/provider/issues/${issue.id}/proposal`);
+                      }}
+                      className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 transition-colors cursor-pointer shadow-2xs"
+                    >
+                      Express Interest
+                    </button>
+                  )}
+                  
                 </div>
               </div>
             ) : (

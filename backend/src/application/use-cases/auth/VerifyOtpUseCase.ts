@@ -1,5 +1,7 @@
 import { compareData } from "../../../shared/utils/hashUtil.js";
+
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+
 import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { VerifyOtpDTO } from "../../dto/auth/VerifyOtpDTO.js";
@@ -9,7 +11,9 @@ import ApiError from "../../../shared/utils/apiError.js";
 import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+
 import type { IVerifyOtpUseCase } from "../usecase interfaces/auth/IVerifyOtpUseCase.js";
+
 import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {
