@@ -29,7 +29,7 @@ export class SwitchModeUseCase implements ISwitchModeUseCase {
             ) {
                 throw new ApiError(
                     HttpStatusCode.FORBIDDEN,
-                    AppMessages.ERROR.FORBIDDEN
+                    "Only approved service providers can switch to provider mode."
                 );
             }
 

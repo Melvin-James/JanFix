@@ -379,7 +379,8 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
         // Only PUBLIC issues that are not REJECTED (e.g. REPORTED or VERIFIED)
         const andConditions: Record<string, unknown>[] = [
             {
-                status: IssueStatus.VERIFIED ,
+                status: IssueStatus.VERIFIED,
+                visibility: IssueVisibility.PUBLIC,
             },
         ];
 

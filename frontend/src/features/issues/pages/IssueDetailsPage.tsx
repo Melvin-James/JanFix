@@ -20,6 +20,9 @@ import type { Issue } from "../types/issue";
 import { IssueVoteButton } from "../components/IssueVoteButton";
 import { IssueCommentsModal } from "../components/IssueCommentsModal";
 import { IssueDetailsContent } from "../components/IssueDetailsContent";
+import { JanAICommunityAnalysisCard } from "../../admin/components/JanAICommunityAnalysisCard";
+import { getIssueAIAnalysis, triggerIssueAIAnalysis } from "../../admin/services/adminAIService";
+import type { IssueAIAnalysis } from "../../admin/types/adminAITypes";
 import { useAuthStore } from "../../../store/authStore";
 import {
   isIssueInteractionOpen,
@@ -45,6 +48,54 @@ export const IssueDetailsPage: React.FC = () => {
   const [isSubmittingDecision, setIsSubmittingDecision] = useState(false);
   const [decisionFeedback, setDecisionFeedback] = useState("");
   const [decisionError, setDecisionError] = useState("");
+
+  // JanAI Analysis State (for authorized admins)
+  const [analysis, setAnalysis] = useState<IssueAIAnalysis | null>(null);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(Boolean(isAdmin && issueId));
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [isRetryingAnalysis, setIsRetryingAnalysis] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isAdmin && issueId) {
+      getIssueAIAnalysis(issueId)
+        .then((res) => {
+          if (isMounted) setAnalysis(res.analysis);
+        })
+        .catch((err: unknown) => {
+          if (isMounted) {
+            const msg =
+              (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+              "Failed to load JanAI analysis.";
+            setAnalysisError(msg);
+          }
+        })
+        .finally(() => {
+          if (isMounted) setLoadingAnalysis(false);
+        });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin, issueId]);
+
+  const handleRetryAnalysis = async () => {
+    if (!issueId) return;
+    setIsRetryingAnalysis(true);
+    setAnalysisError(null);
+    try {
+      const response = await triggerIssueAIAnalysis(issueId);
+      setAnalysis(response.analysis);
+      setDecisionFeedback("JanAI analysis successfully updated.");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to analyze comments. Please try again later.";
+      setAnalysisError(msg);
+    } finally {
+      setIsRetryingAnalysis(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -260,6 +311,17 @@ export const IssueDetailsPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* JanAI Community Analysis (Authorized Admin view) */}
+            {isAdmin && (
+              <JanAICommunityAnalysisCard
+                analysis={analysis}
+                loading={loadingAnalysis}
+                error={analysisError}
+                onRetry={handleRetryAnalysis}
+                isRetrying={isRetryingAnalysis}
+              />
             )}
 
             {/* Shared Presentation Content */}

@@ -48,6 +48,8 @@ export const ApiEndpoints = {
     ISSUES: "/issues",
     APPROVE_ISSUE: "/issues/:issueId/approve",
     REJECT_ISSUE: "/issues/:issueId/reject",
+    ISSUE_AI_ANALYSIS: "/issues/:issueId/ai-analysis",
+    ANALYZE_ISSUE: "/issues/:issueId/ai-analysis/analyze",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",

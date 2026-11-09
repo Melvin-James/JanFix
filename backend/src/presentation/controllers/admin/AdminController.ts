@@ -34,6 +34,8 @@ import type { IUpdateCategoryStatusUseCase } from "../../../application/use-case
 import type { IGetReviewEligibleIssuesUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetReviewEligibleIssuesUseCase.js";
 import type { IApproveIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveIssueUseCase.js";
 import type { IRejectIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectIssueUseCase.js";
+import type { IGetIssueAIAnalysisUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueAIAnalysisUseCase.js";
+import type { IAnalyzeIssueCommentsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.js";
 import { Role } from "../../../domain/enums/Role.js";
 import ApiError from "../../../shared/utils/apiError.js";
 
@@ -74,6 +76,10 @@ export class AdminController {
         private readonly _approveIssueUseCase: IApproveIssueUseCase,
 
         private readonly _rejectIssueUseCase: IRejectIssueUseCase,
+
+        private readonly _getIssueAIAnalysisUseCase: IGetIssueAIAnalysisUseCase,
+
+        private readonly _analyzeIssueCommentsUseCase: IAnalyzeIssueCommentsUseCase,
 
     ) { }
 
@@ -482,6 +488,44 @@ export class AdminController {
                 success: true,
                 message: AppMessages.SUCCESS.ISSUE_REJECTED,
                 issue: updatedIssue,
+            });
+        }
+    );
+
+    getIssueAIAnalysis = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            
+            const issueId = req.params.issueId as string;
+            const analysis = await this._getIssueAIAnalysisUseCase.execute(issueId);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                analysis,
+            });
+        }
+    );
+
+    triggerIssueAIAnalysis = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!req.user) {
+                throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.UNAUTHORIZED);
+            }
+
+            if (!req.user.roles?.includes(Role.ADMIN)) {
+                throw new ApiError(HttpStatusCode.FORBIDDEN, AppMessages.ERROR.FORBIDDEN);
+            }
+
+            if (!this._analyzeIssueCommentsUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "JanAI service not wired");
+            }
+
+            const issueId = req.params.issueId as string;
+            const analysis = await this._analyzeIssueCommentsUseCase.execute(issueId);
+
+            res.status(HttpStatusCode.OK).json({
+                success: true,
+                message: "JanAI community comment analysis completed",
+                analysis,
             });
         }
     );

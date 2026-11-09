@@ -57,9 +57,13 @@ import { UpdateCategoryStatusUseCase } from "../../application/use-cases/categor
 import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
 import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
 import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.js";
+import { IssueAIAnalysisRepository } from "../../infrastructure/repositories/IssueAIAnalysisRepository.js";
+import { GeminiIssueAIService } from "../../infrastructure/services/GeminiIssueAIService.js";
 import { GetReviewEligibleIssuesUseCase } from "../../application/use-cases/admin/GetReviewEligibleIssuesUseCase.js";
 import { ApproveIssueUseCase } from "../../application/use-cases/admin/ApproveIssueUseCase.js";
 import { RejectIssueUseCase } from "../../application/use-cases/admin/RejectIssueUseCase.js";
+import { GetIssueAIAnalysisUseCase } from "../../application/use-cases/admin/GetIssueAIAnalysisUseCase.js";
+import { AnalyzeIssueCommentsUseCase } from "../../application/use-cases/admin/AnalyzeIssueCommentsUseCase.js";
 import { rejectIssueSchema } from "../validators/admin/rejectIssueValidator.js";
 
 const router = Router();
@@ -69,6 +73,10 @@ const userRepository = new UserRepository();
 const categoryRepository = new CategoryRepository();
 
 const issueRepository = new IssueRepository();
+
+const issueAIAnalysisRepository = new IssueAIAnalysisRepository();
+
+const geminiIssueAIService = new GeminiIssueAIService();
 
 const storageService = new S3StorageService();
 
@@ -83,6 +91,18 @@ const approveIssueUseCase = new ApproveIssueUseCase(
 const rejectIssueUseCase = new RejectIssueUseCase(
   issueRepository,
   storageService,
+);
+
+const analyzeIssueCommentsUseCase = new AnalyzeIssueCommentsUseCase(
+  issueRepository,
+  issueAIAnalysisRepository,
+  geminiIssueAIService,
+);
+
+const getIssueAIAnalysisUseCase = new GetIssueAIAnalysisUseCase(
+  issueRepository,
+  issueAIAnalysisRepository,
+  analyzeIssueCommentsUseCase,
 );
 
 const getProviderApplicationsUseCase = new GetProviderApplicationsUseCase(
@@ -160,6 +180,8 @@ const adminController = new AdminController(
   getReviewEligibleIssuesUseCase,
   approveIssueUseCase,
   rejectIssueUseCase,
+  getIssueAIAnalysisUseCase,
+  analyzeIssueCommentsUseCase,
 );
 
 router.get(
@@ -299,6 +321,21 @@ router.patch(
   authorizeRoles(Role.ADMIN),
   validate(rejectIssueSchema),
   adminController.rejectIssue,
+);
+
+// JanAI Community Analysis (authenticated, admin only)
+router.get(
+  ApiEndpoints.ADMIN.ISSUE_AI_ANALYSIS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getIssueAIAnalysis,
+);
+
+router.post(
+  ApiEndpoints.ADMIN.ANALYZE_ISSUE,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.triggerIssueAIAnalysis,
 );
 
 export default router;

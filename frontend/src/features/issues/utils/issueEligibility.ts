@@ -1,7 +1,7 @@
 export const PRODUCTION_INTERACTION_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-export const TEMPORARY_TESTING_WINDOW_MS = 1 * 60 * 1000; // 1 minute (temporary test setting)
+export const TEMPORARY_TESTING_WINDOW_MS = 5 * 60 * 1000; // 1 minute (temporary test setting)
 
-export const ISSUE_INTERACTION_WINDOW_MS = PRODUCTION_INTERACTION_WINDOW_MS;
+export const ISSUE_INTERACTION_WINDOW_MS = TEMPORARY_TESTING_WINDOW_MS;
 
 /**
  * Returns the exact Date when community interactions (upvoting/commenting) close.

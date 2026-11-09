@@ -434,13 +434,13 @@ async function runTests() {
         const providerIssues = await getProviderIssuesUseCase.execute(
             approvedActiveUserId.toString(),
             1,
-            10
+            100
         );
         const issueIds = providerIssues.items.map((i) => i.id);
 
-        // Public VERIFIED and Public REPORTED should be present
+        // Public VERIFIED should be present; unverified REPORTED must NOT appear in provider feed
         assert(issueIds.includes(publicVerifiedIssue._id.toString()));
-        assert(issueIds.includes(publicReportedIssue._id.toString()));
+        assert(!issueIds.includes(publicReportedIssue._id.toString()));
 
         // Private issue must NEVER be in provider feed
         assert(!issueIds.includes(privateIssue._id.toString()));
@@ -459,7 +459,7 @@ async function runTests() {
         const updatedIssues = await getProviderIssuesUseCase.execute(
             approvedActiveUserId.toString(),
             1,
-            10
+            100
         );
         const interestedIssue = updatedIssues.items.find(
             (i) => i.id === publicVerifiedIssue._id.toString()
