@@ -50,6 +50,7 @@ import UserManagementPage from "../features/admin/pages/UserManagementPage";
 
 import CategoryManagementPage from "../features/admin/pages/CategoryManagementPage";
 import AdminIssuesPage from "../features/admin/pages/AdminIssuesPage";
+import AdminIssueDetailsPage from "../features/admin/pages/AdminIssueDetailsPage";
 
 import ReportIssuePage from "../features/issues/pages/ReportIssuePage";
 import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
@@ -384,6 +385,17 @@ function AppRouter() {
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminLayout>
                 <AdminIssuesPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/issues/:issueId"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <AdminIssueDetailsPage />
               </AdminLayout>
             </RoleProtectedRoute>
           }

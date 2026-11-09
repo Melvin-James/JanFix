@@ -29,6 +29,10 @@ const envSchema = z.object({
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
     .default("info"),
+
+  GEMINI_API_KEY: z.string().min(1),
+
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
 });
 
 const result = envSchema.safeParse(process.env);
