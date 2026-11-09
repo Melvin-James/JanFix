@@ -138,7 +138,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
                 );
             }
 
-            let amountPaise = 0;
+            let amountPaise: number;
             if (typeof item.amountPaise === "number" && item.amountPaise > 0) {
                 amountPaise = Math.round(item.amountPaise);
             } else if (typeof item.amountRupees === "number" && item.amountRupees > 0) {

@@ -1,0 +1,6 @@
+export enum CommentClassification {
+  SUPPORTS_REPORT = "SUPPORTS_REPORT",
+  CHALLENGES_REPORT = "CHALLENGES_REPORT",
+  NEUTRAL = "NEUTRAL",
+}
+

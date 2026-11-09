@@ -17,4 +17,5 @@ export * from "./RejectApplicationModal";
 export * from "./RejectReasonModal";
 export * from "./CategoryModal";
 export * from "./ConfirmationModal";
+export * from "./JanAICommunityAnalysisCard";
 

@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Eye,
-  ThumbsUp,
-  MessageSquare,
   Lock,
   Globe,
   AlertCircle,
   MapPin,
   Clock,
   CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import {
   AdminCard,
@@ -375,9 +372,7 @@ export function AdminIssuesPage() {
           columns={[
             "Issue",
             "Category",
-            "Reporter",
             "Location",
-            "Community Signals",
             "Status",
             "Reported Date",
             { header: "Actions", align: "right" },
@@ -392,8 +387,6 @@ export function AdminIssuesPage() {
               issue.location?.address ||
               "Location provided";
 
-            // Backend permits decisions only on pending review statuses
-            const canDecide = issue.status === "REPORTED";
 
             return (
               <tr key={issue.id} className="hover:bg-slate-50/80 transition-colors">
@@ -441,39 +434,13 @@ export function AdminIssuesPage() {
                   </span>
                 </td>
 
-                {/* Reporter */}
-                <td className="px-6 py-4">
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">
-                      {issue.reporter?.fullName || "Anonymous"}
-                    </p>
-                    {issue.reporter?.email && (
-                      <p className="text-xs text-slate-400">
-                        {issue.reporter.email}
-                      </p>
-                    )}
-                  </div>
-                </td>
+               
 
                 {/* Location */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-1.5 text-sm text-slate-600 max-w-[180px] truncate">
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />
                     <span className="truncate">{locationText}</span>
-                  </div>
-                </td>
-
-                {/* Community Signals */}
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3 text-xs text-slate-600 font-medium">
-                    <span className="inline-flex items-center gap-1" title={`${issue.upvoteCount} community upvotes`}>
-                      <ThumbsUp className="h-3.5 w-3.5 text-blue-600" />
-                      <span>{issue.upvoteCount}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1" title={`${issue.commentCount} comments`}>
-                      <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
-                      <span>{issue.commentCount}</span>
-                    </span>
                   </div>
                 </td>
 
@@ -501,42 +468,10 @@ export function AdminIssuesPage() {
                 {/* Actions */}
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-1.5">
-                    {canDecide && (
-                      <>
-                        <AdminActionButton
-                          onClick={() => {
-                            setApproveModal({ isOpen: true, issue });
-                            setActionError("");
-                          }}
-                          disabled={isSubmitting}
-                          variant="success"
-                          icon={<CheckCircle2 className="size-4" />}
-                          label="Approve"
-                          title="Approve this civic issue"
-                        />
-                        <AdminActionButton
-                          onClick={() => {
-                            setRejectModal({
-                              isOpen: true,
-                              issue,
-                              reason: "",
-                              error: "",
-                            });
-                            setActionError("");
-                          }}
-                          disabled={isSubmitting}
-                          variant="danger"
-                          icon={<XCircle className="size-4" />}
-                          label="Reject"
-                          title="Reject this civic issue with a reason"
-                        />
-                      </>
-                    )}
-
                     <AdminActionButton
-                      onClick={() => navigate(`/issues/${issue.id}`)}
+                      onClick={() => navigate(`/admin/issues/${issue.id}`)}
                       icon={<Eye className="size-4" />}
-                      label="View Details"
+                      label="View"
                     />
                   </div>
                 </td>
