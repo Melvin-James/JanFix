@@ -25,7 +25,7 @@ export default function ProviderIssuesPage() {
   const [totalItems, setTotalItems] = useState<number>(0);
   const [selectedVisibility, setSelectedVisibility] = useState("ALL");
   
-  const pageSize = 9;
+  const pageSize = 12;
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,4 +1,4 @@
-import type { AccessTokenPayload, ApplicationMode } from "../../../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../../../shared/types/AccessTokenPayload.js";
 import type { AuthUserDTO } from "../../../dto/auth/AuthUserDTO.js";
 
 export interface SwitchModeResult {

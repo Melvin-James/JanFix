@@ -40,6 +40,7 @@ import { Role } from "../../../domain/enums/Role.js";
 import ApiError from "../../../shared/utils/apiError.js";
 
 import { AppMessages } from "../../../shared/constants/messages.js";
+import { sendSuccess, sendPaginated, sendError } from "../../../shared/response/index.js";
 
 export class AdminController {
 
@@ -77,9 +78,9 @@ export class AdminController {
 
         private readonly _rejectIssueUseCase: IRejectIssueUseCase,
 
-        private readonly _getIssueAIAnalysisUseCase: IGetIssueAIAnalysisUseCase,
+        private readonly _getIssueAIAnalysisUseCase?: IGetIssueAIAnalysisUseCase,
 
-        private readonly _analyzeIssueCommentsUseCase: IAnalyzeIssueCommentsUseCase,
+        private readonly _analyzeIssueCommentsUseCase?: IAnalyzeIssueCommentsUseCase,
 
     ) { }
 
@@ -97,11 +98,7 @@ export class AdminController {
                 { search, status, providerType }
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                applications: result.items,
-                pagination: result.pagination,
-            });
+            sendPaginated(res, result.items, result.pagination, "applications", HttpStatusCode.OK);
         }
     );
 
@@ -112,10 +109,7 @@ export class AdminController {
 
             const application = await this._getProviderApplicationDetailUseCase.execute(userId);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                application,
-            });
+            sendSuccess(res, application, undefined, HttpStatusCode.OK, { application });
         }
     );
 
@@ -126,10 +120,7 @@ export class AdminController {
 
             await this._approveProviderApplicationUseCase.execute(userId);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                message: AppMessages.SUCCESS.PROVIDER_APPLICATION_APPROVED
-            })
+            sendSuccess(res, undefined, AppMessages.SUCCESS.PROVIDER_APPLICATION_APPROVED, HttpStatusCode.OK);
         }
     )
 
@@ -146,10 +137,7 @@ export class AdminController {
                 rejectionReason
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                message: AppMessages.SUCCESS.PROVIDER_APPLICATION_REJECTED
-            });
+            sendSuccess(res, undefined, AppMessages.SUCCESS.PROVIDER_APPLICATION_REJECTED, HttpStatusCode.OK);
         }
     )
 
@@ -167,11 +155,7 @@ export class AdminController {
                 { search, providerType, status }
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                providers: result.items,
-                pagination: result.pagination,
-            });
+            sendPaginated(res, result.items, result.pagination, "providers", HttpStatusCode.OK);
         }
     );
 
@@ -185,10 +169,7 @@ export class AdminController {
 
             const provider = await this._getServiceProviderDetailsUseCase.execute(userId);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                provider,
-            })
+            sendSuccess(res, provider, undefined, HttpStatusCode.OK, { provider });
         }
     )
 
@@ -209,13 +190,7 @@ export class AdminController {
 
             );
 
-            res.status(HttpStatusCode.OK).json({
-
-                success: true,
-
-                provider,
-
-            });
+            sendSuccess(res, provider, undefined, HttpStatusCode.OK, { provider });
 
         }
     )
@@ -241,11 +216,7 @@ export class AdminController {
                 { search, role, verification, authProvider }
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                users: result.items,
-                pagination: result.pagination,
-            });
+            sendPaginated(res, result.items, result.pagination, "users", HttpStatusCode.OK);
         }
     );
 
@@ -261,10 +232,7 @@ export class AdminController {
                 status
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                user,
-            });
+            sendSuccess(res, user, undefined, HttpStatusCode.OK, { user });
         }
     );
 
@@ -275,10 +243,7 @@ export class AdminController {
                 req.body
             );
 
-            res.status(HttpStatusCode.CREATED).json({
-                success: true,
-                category,
-            })
+            sendSuccess(res, category, undefined, HttpStatusCode.CREATED, { category });
         }
     )
 
@@ -320,21 +285,14 @@ export class AdminController {
                 );
 
                 if ("items" in result) {
-                    res.status(HttpStatusCode.OK).json({
-                        success: true,
-                        categories: result.items,
-                        pagination: result.pagination,
-                    });
+                    sendPaginated(res, result.items, result.pagination, "categories", HttpStatusCode.OK);
                     return;
                 }
             }
 
             const categories = await this._getCategoriesUseCase.execute();
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                categories,
-            });
+            sendSuccess(res, categories, undefined, HttpStatusCode.OK, { categories });
         }
     );
 
@@ -349,10 +307,7 @@ export class AdminController {
                 req.body
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                category,
-            });
+            sendSuccess(res, category, undefined, HttpStatusCode.OK, { category });
 
         }
     );
@@ -369,10 +324,7 @@ export class AdminController {
             } else if (req.body.status === "BLOCKED") {
                 isActive = false;
             } else {
-                res.status(HttpStatusCode.BAD_REQUEST).json({
-                    success: false,
-                    message: AppMessages.ERROR.INVALID_STATUS_OR_IS_ACTIVE,
-                });
+                sendError(res, AppMessages.ERROR.INVALID_STATUS_OR_IS_ACTIVE, HttpStatusCode.BAD_REQUEST);
                 return;
             }
 
@@ -381,10 +333,7 @@ export class AdminController {
                 isActive
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                category,
-            });
+            sendSuccess(res, category, undefined, HttpStatusCode.OK, { category });
         }
     );
 
@@ -397,10 +346,7 @@ export class AdminController {
                 false
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                category,
-            });
+            sendSuccess(res, category, undefined, HttpStatusCode.OK, { category });
         }
     );
 
@@ -413,10 +359,7 @@ export class AdminController {
                 true
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                category,
-            });
+            sendSuccess(res, category, undefined, HttpStatusCode.OK, { category });
         }
     );
 
@@ -457,11 +400,7 @@ export class AdminController {
                 { search, status, category, visibility }
             );
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                issues: result.items,
-                pagination: result.pagination,
-            });
+            sendPaginated(res, result.items, result.pagination, "issues", HttpStatusCode.OK);
         }
     );
 
@@ -470,11 +409,7 @@ export class AdminController {
             const issueId = req.params.issueId as string;
             const updatedIssue = await this._approveIssueUseCase.execute(issueId);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                message: AppMessages.SUCCESS.ISSUE_APPROVED,
-                issue: updatedIssue,
-            });
+            sendSuccess(res, updatedIssue, AppMessages.SUCCESS.ISSUE_APPROVED, HttpStatusCode.OK, { issue: updatedIssue });
         }
     );
 
@@ -484,24 +419,19 @@ export class AdminController {
             const { rejectionReason } = req.body;
             const updatedIssue = await this._rejectIssueUseCase.execute(issueId, rejectionReason);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                message: AppMessages.SUCCESS.ISSUE_REJECTED,
-                issue: updatedIssue,
-            });
+            sendSuccess(res, updatedIssue, AppMessages.SUCCESS.ISSUE_REJECTED, HttpStatusCode.OK, { issue: updatedIssue });
         }
     );
 
     getIssueAIAnalysis = asyncHandler(
         async (req: AuthRequest, res: Response): Promise<void> => {
-            
+            if (!this._getIssueAIAnalysisUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "JanAI service not wired");
+            }
             const issueId = req.params.issueId as string;
             const analysis = await this._getIssueAIAnalysisUseCase.execute(issueId);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                analysis,
-            });
+            sendSuccess(res, analysis, undefined, HttpStatusCode.OK, { analysis });
         }
     );
 
@@ -522,11 +452,7 @@ export class AdminController {
             const issueId = req.params.issueId as string;
             const analysis = await this._analyzeIssueCommentsUseCase.execute(issueId);
 
-            res.status(HttpStatusCode.OK).json({
-                success: true,
-                message: "JanAI community comment analysis completed",
-                analysis,
-            });
+            sendSuccess(res, analysis, "JanAI community comment analysis completed", HttpStatusCode.OK, { analysis });
         }
     );
 

@@ -35,6 +35,7 @@ import { getProviderIssueDetails } from "../services/providerService";
 import type { ProviderIssueDetail } from "../types/providerTypes";
 import type { Proposal } from "../types/proposalTypes";
 import { useAuthStore } from "../../../store/authStore";
+import toast from "react-hot-toast";
 
 export const ProviderProposalSubmissionPage: React.FC = () => {
   const { issueId } = useParams<{ issueId: string }>();
@@ -71,7 +72,6 @@ export const ProviderProposalSubmissionPage: React.FC = () => {
       isNgo,
       estimatedTeamSize: 1,
       estimatedDurationHours: 4,
-      expectedStartDate: "",
       budgetItems: [],
       executionRoadmap: [],
       requiresFunding: false,
@@ -123,9 +123,6 @@ export const ProviderProposalSubmissionPage: React.FC = () => {
             isNgo,
             estimatedTeamSize: proposalRes.estimatedTeamSize,
             estimatedDurationHours: proposalRes.estimatedDurationHours,
-            expectedStartDate: proposalRes.expectedStartDate
-              ? proposalRes.expectedStartDate.split("T")[0]
-              : "",
             budgetItems: proposalRes.budgetItems.map((b) => ({
               heading: b.heading,
               amountRupees: b.amountRupees || b.amountPaise / 100,
@@ -176,7 +173,6 @@ export const ProviderProposalSubmissionPage: React.FC = () => {
       const payload = {
         estimatedTeamSize: Number(data.estimatedTeamSize),
         estimatedDurationHours: Number(data.estimatedDurationHours),
-        expectedStartDate: data.expectedStartDate,
         budgetItems: data.budgetItems.map((item) => ({
           heading: item.heading,
           amountRupees: item.amountRupees,
@@ -207,10 +203,12 @@ export const ProviderProposalSubmissionPage: React.FC = () => {
       if (existingProposal) {
         const res = await updateProposal(issueId, payload);
         setExistingProposal(res.proposal);
+        toast.success("Proposal updated")
         setFeedbackSuccess("Proposal updated successfully!");
       } else {
         const res = await submitProposal(issueId, payload);
         setExistingProposal(res.proposal);
+        toast.success("Proposal submitted")
         setFeedbackSuccess("Proposal submitted successfully!");
       }
 

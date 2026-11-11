@@ -15,9 +15,6 @@ export class ProposalAppMapper {
             },
             estimatedTeamSize: proposal.estimatedTeamSize,
             estimatedDurationHours: proposal.estimatedDurationHours,
-            expectedStartDate: proposal.expectedStartDate instanceof Date
-                ? proposal.expectedStartDate.toISOString()
-                : String(proposal.expectedStartDate),
             budgetItems: proposal.budgetItems.map((item) => ({
                 id: item.id,
                 heading: item.heading,

@@ -69,7 +69,8 @@ async function runProposalTests() {
     const getProviderIssuesUseCase = new GetProviderIssuesUseCase(
         issueRepository,
         proposalRepository,
-        mockStorageService
+        mockStorageService,
+        userRepository
     );
     const getProviderIssueDetailsUseCase = new GetProviderIssueDetailsUseCase(
         issueRepository,
@@ -165,7 +166,6 @@ async function runProposalTests() {
             await submitProposalUseCase.execute(reportedIssueId, individualId, {
                 estimatedTeamSize: 2,
                 estimatedDurationHours: 6,
-                expectedStartDate: new Date(Date.now() + 86400000 * 2).toISOString(),
                 budgetItems: [{ heading: "Tools", amountRupees: 500 }],
                 executionRoadmap: [
                     {
@@ -193,7 +193,6 @@ async function runProposalTests() {
             await submitProposalUseCase.execute(verifiedIssueId, individualId, {
                 estimatedTeamSize: 3,
                 estimatedDurationHours: 5,
-                expectedStartDate: new Date(Date.now() + 86400000 * 2).toISOString(),
                 budgetItems: [{ heading: "Tar & Gravel", amountRupees: 2500 }],
                 executionRoadmap: [
                     {
@@ -222,11 +221,9 @@ async function runProposalTests() {
     console.log("✓ Test 2 Passed: Rejected overlapping roadmap intervals");
 
     // Test 3: Valid Individual Proposal submission
-    const futureDate = new Date(Date.now() + 86400000 * 3).toISOString();
     const proposalRes = await submitProposalUseCase.execute(verifiedIssueId, individualId, {
         estimatedTeamSize: 4,
         estimatedDurationHours: 8,
-        expectedStartDate: futureDate,
         budgetItems: [
             { heading: "Cold Mix Asphalt", amountRupees: 8000 },
             { heading: "Transportation", amountRupees: 1500.5 },
@@ -261,7 +258,6 @@ async function runProposalTests() {
             await submitProposalUseCase.execute(verifiedIssueId, individualId, {
                 estimatedTeamSize: 4,
                 estimatedDurationHours: 8,
-                expectedStartDate: futureDate,
                 budgetItems: [{ heading: "Asphalt", amountRupees: 5000 }],
                 executionRoadmap: [
                     {
@@ -306,7 +302,6 @@ async function runProposalTests() {
     const ngoProposal = await submitProposalUseCase.execute(verifiedIssueId, ngoId, {
         estimatedTeamSize: 5,
         estimatedDurationHours: 6,
-        expectedStartDate: futureDate,
         budgetItems: [{ heading: "Supplies", amountRupees: 12000 }],
         executionRoadmap: [
             {
@@ -359,7 +354,6 @@ async function runProposalTests() {
     const resubmitted = await submitProposalUseCase.execute(verifiedIssueId, individualId, {
         estimatedTeamSize: 6,
         estimatedDurationHours: 12,
-        expectedStartDate: futureDate,
         budgetItems: [{ heading: "Final Asphalt Materials", amountRupees: 10000 }],
         executionRoadmap: [
             {
@@ -402,7 +396,6 @@ async function runProposalTests() {
             await submitProposalUseCase.execute(expiredIssueDoc._id.toString(), individualId, {
                 estimatedTeamSize: 2,
                 estimatedDurationHours: 4,
-                expectedStartDate: futureDate,
                 budgetItems: [{ heading: "Tools", amountRupees: 1000 }],
                 executionRoadmap: [
                     {

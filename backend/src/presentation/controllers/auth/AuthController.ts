@@ -4,6 +4,7 @@ import asyncHandler from "../../../shared/utils/asyncHandler.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
+import { sendSuccess } from "../../../shared/response/index.js";
 
 import type { RegisterUserDTO } from "../../../application/dto/auth/RegisterUserDTO.js";
 import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js";
@@ -57,17 +58,18 @@ export class AuthController {
     const dto: RegisterUserDTO = req.body;
     const createdUser = await this._registerUserUseCase.execute(dto);
 
-    res.status(HttpStatusCode.CREATED).json({
-      success: true,
-      message: AppMessages.SUCCESS.USER_REGISTERED,
-      data: {
+    sendSuccess(
+      res,
+      {
         id: createdUser.id,
         fullName: createdUser.fullName,
         email: createdUser.email,
         roles: createdUser.roles,
         isVerified: createdUser.isVerified,
       },
-    });
+      AppMessages.SUCCESS.USER_REGISTERED,
+      HttpStatusCode.CREATED
+    );
   });
 
   public googleAuth = asyncHandler(
@@ -84,13 +86,14 @@ export class AuthController {
       setAuthCookies(res, result.accessToken, result.refreshToken);
 
       // Do NOT expose tokens in the JSON response — they live only in HTTP-only cookies
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
-        data: {
+      sendSuccess(
+        res,
+        {
           user: result.user,
         },
-      });
+        AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
+        HttpStatusCode.OK
+      );
     }
   );
 
@@ -98,10 +101,12 @@ export class AuthController {
     const dto: VerifyOtpDTO = req.body;
     await this._verifyOtpUseCase.execute(dto);
 
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: AppMessages.SUCCESS.OTP_VERIFIED,
-    });
+    sendSuccess(
+      res,
+      undefined,
+      AppMessages.SUCCESS.OTP_VERIFIED,
+      HttpStatusCode.OK
+    );
   });
 
   public login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -112,19 +117,14 @@ export class AuthController {
 
     setAuthCookies(res, result.accessToken, result.refreshToken);
 
-    res.status(HttpStatusCode.OK).json({
-
-      success: true,
-
-      message: AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
-
-      data: {
-
+    sendSuccess(
+      res,
+      {
         user: result.user,
-
       },
-
-    });
+      AppMessages.SUCCESS.LOGIN_SUCCESSFUL,
+      HttpStatusCode.OK
+    );
 
   });
 
@@ -136,13 +136,12 @@ export class AuthController {
 
       await this._forgotPasswordUseCase.execute(dto);
 
-      res.status(HttpStatusCode.OK).json({
-
-        success: true,
-
-        message: AppMessages.SUCCESS.OTP_SENT_SUCCESS
-
-      })
+      sendSuccess(
+        res,
+        undefined,
+        AppMessages.SUCCESS.OTP_SENT_SUCCESS,
+        HttpStatusCode.OK
+      );
 
     }
     
@@ -154,13 +153,14 @@ export class AuthController {
 
       const resetToken = await this._verifyResetOtpUseCase.execute(dto);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: AppMessages.SUCCESS.RESET_OTP_VERIFIED,
-        data: {
+      sendSuccess(
+        res,
+        {
           resetToken,
-        }
-      })
+        },
+        AppMessages.SUCCESS.RESET_OTP_VERIFIED,
+        HttpStatusCode.OK
+      );
     }
   )
 
@@ -170,10 +170,12 @@ export class AuthController {
 
       await this._resetPasswordUseCase.execute(dto);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: AppMessages.SUCCESS.PASSWORD_RESET_SUCCESS
-      })
+      sendSuccess(
+        res,
+        undefined,
+        AppMessages.SUCCESS.PASSWORD_RESET_SUCCESS,
+        HttpStatusCode.OK
+      );
     }
   )
 
@@ -188,23 +190,26 @@ export class AuthController {
 
     setAccessTokenCookie(res, result.accessToken);
 
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: AppMessages.SUCCESS.TOKEN_REFRESHED,
-      data: {
+    sendSuccess(
+      res,
+      {
         user: result.user,
       },
-    });
+      AppMessages.SUCCESS.TOKEN_REFRESHED,
+      HttpStatusCode.OK
+    );
   });
 
   public logout = asyncHandler(async (_req: Request, res: Response): Promise<void> => {
 
     clearAuthCookies(res);
 
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: AppMessages.SUCCESS.LOGGED_OUT,
-    });
+    sendSuccess(
+      res,
+      undefined,
+      AppMessages.SUCCESS.LOGGED_OUT,
+      HttpStatusCode.OK
+    );
   });
 
   public resendOtp = asyncHandler(
@@ -214,10 +219,12 @@ export class AuthController {
 
       await this._resendOtpUseCase.execute(dto);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: AppMessages.SUCCESS.OTP_RESENT_SUCCESS
-      })
+      sendSuccess(
+        res,
+        undefined,
+        AppMessages.SUCCESS.OTP_RESENT_SUCCESS,
+        HttpStatusCode.OK
+      );
     }
   )
 
@@ -240,13 +247,14 @@ export class AuthController {
         setAccessTokenCookie(res, result.newAccessToken);
       }
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED,
-        data: {
+      sendSuccess(
+        res,
+        {
           user: result.user,
         },
-      });
+        AppMessages.SUCCESS.PROTECTED_ROUTE_ACCESSED,
+        HttpStatusCode.OK
+      );
     }
   );
 
@@ -264,13 +272,14 @@ export class AuthController {
       const { fullName } = req.body;
       const updatedUser = await this._updateUserProfileUseCase.execute(userId, { fullName });
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: "Profile updated successfully",
-        data: {
+      sendSuccess(
+        res,
+        {
           user: updatedUser,
         },
-      });
+        "Profile updated successfully",
+        HttpStatusCode.OK
+      );
     }
   );
 
@@ -290,15 +299,16 @@ export class AuthController {
 
       setAccessTokenCookie(res, result.accessToken);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: `Switched to ${result.activeMode === "SERVICE_PROVIDER" ? "Service Provider" : "User"} mode`,
-        data: {
+      sendSuccess(
+        res,
+        {
           activeMode: result.activeMode,
           isActivated: result.isActivated,
           user: result.user,
         },
-      });
+        `Switched to ${result.activeMode === "SERVICE_PROVIDER" ? "Service Provider" : "User"} mode`,
+        HttpStatusCode.OK
+      );
     }
   );
 }

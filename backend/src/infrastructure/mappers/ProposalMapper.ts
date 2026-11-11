@@ -17,7 +17,6 @@ export class ProposalMapper {
             },
             estimatedTeamSize: document.estimatedTeamSize,
             estimatedDurationHours: document.estimatedDurationHours,
-            expectedStartDate: document.expectedStartDate,
             budgetItems: (document.budgetItems || []).map((item) => ({
                 id: item._id ? item._id.toString() : undefined,
                 heading: item.heading,

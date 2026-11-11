@@ -6,8 +6,6 @@ import type { IGetIssueCommentsUseCase } from "../usecase interfaces/issue/IGetI
 import type { PaginatedResult } from "../../../shared/types/Pagination.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
 
 export class GetIssueCommentsUseCase implements IGetIssueCommentsUseCase {
     constructor(
@@ -26,20 +24,10 @@ export class GetIssueCommentsUseCase implements IGetIssueCommentsUseCase {
         }
 
         const issue = await this.issueRepository.findById(issueId);
+
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
-        }
-
-        const isCreator = Boolean(userId && issue.createdBy === userId);
-
-        // Enforce issue visibility rules
-        const isApprovedPrivateIssue =
-            issue.visibility === IssueVisibility.PRIVATE &&
-            issue.status === IssueStatus.VERIFIED;
-
-        if (isApprovedPrivateIssue && !isCreator) {
-            throw new ApiError(HttpStatusCode.FORBIDDEN, "You do not have permission to view this private issue");
-        }
+        }        
 
         return await this.issueCommentRepository.findCommentsByIssueId(issueId, page, pageSize);
     }

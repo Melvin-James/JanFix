@@ -40,7 +40,6 @@ export interface Proposal {
   issueSnapshot: ProposalIssueSnapshot;
   estimatedTeamSize: number;
   estimatedDurationHours: number;
-  expectedStartDate: string;
   budgetItems: BudgetItem[];
   totalBudgetPaise: number;
   totalBudgetRupees: number;
@@ -55,7 +54,6 @@ export interface Proposal {
 export interface SubmitProposalPayload {
   estimatedTeamSize: number;
   estimatedDurationHours: number;
-  expectedStartDate: string;
   budgetItems: {
     heading: string;
     amountRupees?: number;

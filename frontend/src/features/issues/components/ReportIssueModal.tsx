@@ -122,8 +122,8 @@ export function ReportIssueModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-xs">
-      <div className="relative my-8 max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-xs">
+      <div className="relative my-8 max-h-[92vh] w-full max-w-2xl overflow-y-auto scrollbar-hide rounded-xl bg-white shadow-2xl">
         {/* Modal Header */}
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur">
           <div>

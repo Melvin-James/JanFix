@@ -38,7 +38,6 @@ export interface ProposalDocument extends Document {
     issueSnapshot: ProposalIssueSnapshotSubdocument;
     estimatedTeamSize: number;
     estimatedDurationHours: number;
-    expectedStartDate: Date;
     budgetItems: BudgetItemSubdocument[];
     totalBudgetPaise: number;
     executionRoadmap: ExecutionRoadmapItemSubdocument[];
@@ -177,10 +176,6 @@ const proposalSchema = new Schema<ProposalDocument>(
             type: Number,
             required: true,
             min: 0.5,
-        },
-        expectedStartDate: {
-            type: Date,
-            required: true,
         },
         budgetItems: {
             type: [budgetItemSchema],

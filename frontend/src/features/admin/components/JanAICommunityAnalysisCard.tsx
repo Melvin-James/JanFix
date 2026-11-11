@@ -198,13 +198,13 @@ export const JanAICommunityAnalysisCard: React.FC<JanAICommunityAnalysisCardProp
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 text-white shadow-xs">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-blue-500 text-white shadow-xs">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-slate-900">JanAI Community Analysis</h3>
-              <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 border border-indigo-200">
+              <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 border border-blue-200">
                 Advisory
               </span>
             </div>
@@ -287,7 +287,7 @@ export const JanAICommunityAnalysisCard: React.FC<JanAICommunityAnalysisCardProp
         <div className="md:col-span-8 rounded-xl border border-slate-100 bg-slate-50/50 p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-              <Info className="h-3.5 w-3.5 text-indigo-600" />
+              <Info className="h-3.5 w-3.5 text-blue-600" />
               <span>Advisory Feedback Summary</span>
             </div>
             <p className="mt-2 text-sm text-slate-700 leading-relaxed">
@@ -336,8 +336,8 @@ export const JanAICommunityAnalysisCard: React.FC<JanAICommunityAnalysisCardProp
         </div>
 
         <div className="rounded-lg border border-slate-100 bg-white p-3.5 shadow-2xs">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-indigo-700">
-            <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
+          <div className="flex items-center gap-1.5 text-xs font-medium text-blue-700">
+            <Sparkles className="h-3.5 w-3.5 text-blue-600" />
             <span>Total Evaluated</span>
           </div>
           <p className="mt-1 text-xl font-bold text-slate-900">

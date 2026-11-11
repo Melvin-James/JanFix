@@ -98,17 +98,6 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
             );
         }
 
-        // 4. Validate Expected Start Date (strictly future)
-        const startDate = new Date(dto.expectedStartDate);
-        if (isNaN(startDate.getTime())) {
-            throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid expected start date");
-        }
-        if (startDate.getTime() <= serverNow.getTime()) {
-            throw new ApiError(
-                HttpStatusCode.BAD_REQUEST,
-                "Expected start date must be in the future"
-            );
-        }
 
         // 5. Validate Team Size & Duration
         const teamSize = Number(dto.estimatedTeamSize);
@@ -298,7 +287,6 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
                 },
                 estimatedTeamSize: teamSize,
                 estimatedDurationHours: durationHours,
-                expectedStartDate: startDate,
                 budgetItems: mappedBudgetItems,
                 totalBudgetPaise,
                 executionRoadmap: mappedRoadmap,
@@ -326,7 +314,6 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
             },
             estimatedTeamSize: teamSize,
             estimatedDurationHours: durationHours,
-            expectedStartDate: startDate,
             budgetItems: mappedBudgetItems,
             totalBudgetPaise,
             executionRoadmap: mappedRoadmap,

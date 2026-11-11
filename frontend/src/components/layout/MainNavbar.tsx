@@ -1,16 +1,35 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { User, LogOut, ChevronDown, Wrench, RefreshCw } from "lucide-react";
+import {
+  Menu,
+  X,
+  PanelLeft,
+  User,
+  LogOut,
+  ChevronDown,
+  Wrench,
+  RefreshCw,
+} from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { logoutUser, switchMode } from "../../features/auth/services/authService";
+import {
+  logoutUser,
+  switchMode,
+} from "../../features/auth/services/authService";
 import toast from "react-hot-toast";
 
-function MainNavbar() {
+interface MainNavbarProps {
+  onToggleSidebar?: () => void;
+  sidebarOpen?: boolean;
+}
+
+function MainNavbar({ onToggleSidebar, sidebarOpen = false }: MainNavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
   const isHome = location.pathname === "/" || location.pathname === "/home";
-  const isFeed = location.pathname.startsWith("/feed") || location.pathname.startsWith("/issues");
+  const isFeed =
+    location.pathname.startsWith("/feed") ||
+    location.pathname.startsWith("/issues");
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const user = useAuthStore((state) => state.user);
@@ -21,11 +40,15 @@ function MainNavbar() {
   const [isSwitchingMode, setIsSwitchingMode] = useState(false);
   const [switchError, setSwitchError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -65,7 +88,8 @@ function MainNavbar() {
     setIsSwitchingMode(true);
     setSwitchError(null);
     try {
-      const targetMode = activeMode === "SERVICE_PROVIDER" ? "USER" : "SERVICE_PROVIDER";
+      const targetMode =
+        activeMode === "SERVICE_PROVIDER" ? "USER" : "SERVICE_PROVIDER";
       const response = await switchMode(targetMode);
       setUser(response.data.user);
       toast.success("Service Provider mode activated");
@@ -83,7 +107,8 @@ function MainNavbar() {
       console.error("Failed to switch mode:", err);
       const message =
         err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
           : "Failed to switch mode.";
       setSwitchError(message || "Failed to switch mode.");
     } finally {
@@ -97,22 +122,55 @@ function MainNavbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
-        <Link
-          to="/home"
-          className="flex items-center gap-2 text-lg font-bold text-blue-700 hover:text-blue-800 transition-colors"
-        >
-          JanFix
-        </Link>
+        <div className="flex items-center gap-2">
+          {/* Main mobile navigation toggle */}
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen((prev) => !prev)}
+            className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 md:hidden"
+            aria-label={mobileNavOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={mobileNavOpen}
+          >
+            {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+
+          {/* Profile sidebar toggle - only inside ProfileLayout */}
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden"
+              aria-label={
+                sidebarOpen ? "Close profile sidebar" : "Open profile sidebar"
+              }
+              aria-expanded={sidebarOpen}
+            >
+              <PanelLeft size={22} />
+            </button>
+          )}
+
+          <Link
+            to="/home"
+            className="flex items-center gap-2 text-lg font-bold text-blue-700 hover:text-blue-800 transition-colors"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            JanFix
+          </Link>
+        </div>
 
         {/* Navigation */}
         <ul className="hidden gap-8 text-sm font-medium text-slate-600 md:flex">
           <li>
             <Link
               to="/"
-              className={isHome ? "text-blue-600 font-semibold" : "hover:text-slate-900 transition-colors"}
+              className={
+                isHome
+                  ? "text-blue-600 font-semibold"
+                  : "hover:text-slate-900 transition-colors"
+              }
             >
               Home
             </Link>
@@ -120,7 +178,11 @@ function MainNavbar() {
           <li>
             <Link
               to="/feed"
-              className={isFeed ? "text-blue-600 font-semibold" : "hover:text-slate-900 transition-colors"}
+              className={
+                isFeed
+                  ? "text-blue-600 font-semibold"
+                  : "hover:text-slate-900 transition-colors"
+              }
             >
               Feed
             </Link>
@@ -131,11 +193,60 @@ function MainNavbar() {
             </Link>
           </li>
           <li>
-            <Link to="/community" className="hover:text-slate-900 transition-colors">
+            <Link
+              to="/community"
+              className="hover:text-slate-900 transition-colors"
+            >
               Community Activities
             </Link>
           </li>
         </ul>
+
+        {mobileNavOpen && (
+          <div className="absolute left-0 right-0 top-full border-b border-slate-200 bg-white shadow-lg md:hidden">
+            <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-3">
+              <Link
+                to="/"
+                onClick={() => setMobileNavOpen(false)}
+                className={`rounded-lg px-4 py-3 text-sm font-medium ${
+                  isHome
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                Home
+              </Link>
+
+              <Link
+                to="/feed"
+                onClick={() => setMobileNavOpen(false)}
+                className={`rounded-lg px-4 py-3 text-sm font-medium ${
+                  isFeed
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                Feed
+              </Link>
+
+              <Link
+                to="/map"
+                onClick={() => setMobileNavOpen(false)}
+                className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+              >
+                Map
+              </Link>
+
+              <Link
+                to="/community"
+                onClick={() => setMobileNavOpen(false)}
+                className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+              >
+                Community Activities
+              </Link>
+            </nav>
+          </div>
+        )}
 
         {/* Account Profile Icon & Dropdown */}
         <div className="relative" ref={dropdownRef}>
@@ -208,14 +319,16 @@ function MainNavbar() {
                       {isSwitchingMode
                         ? "Switching Mode..."
                         : activeMode === "SERVICE_PROVIDER"
-                        ? "Switch to User Mode"
-                        : "Switch to Service Provider Mode"}
+                          ? "Switch to User Mode"
+                          : "Switch to Service Provider Mode"}
                     </span>
                   </button>
                 )}
 
                 {switchError && (
-                  <p className="px-4 py-1 text-xs text-red-600 leading-tight">{switchError}</p>
+                  <p className="px-4 py-1 text-xs text-red-600 leading-tight">
+                    {switchError}
+                  </p>
                 )}
               </div>
 

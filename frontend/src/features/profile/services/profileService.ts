@@ -21,7 +21,7 @@ export const getMyReports = async (
   params?: ReportFilterParams
 ): Promise<UserReportsResponse> => {
   const response = await axiosInstance.get<UserReportsResponse>(
-    "/issues/my-issues",
+    "/issues/my-reports",
     {
       params,
     }

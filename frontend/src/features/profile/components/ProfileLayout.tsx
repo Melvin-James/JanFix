@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import ProfileNavbar from "./ProfileNavbar";
 import ProfileSidebar from "./ProfileSidebar";
 import MainFooter from "../../../components/layout/MainFooter";
+import MainNavbar from "../../../components/layout/MainNavbar";
 
 export function ProfileLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,7 +10,7 @@ export function ProfileLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
       {/* Profile Header/Navbar */}
-      <ProfileNavbar
+      <MainNavbar
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
       />
