@@ -15,7 +15,6 @@ export class ProposalRepository implements IProposalRepository {
             issueSnapshot: proposal.issueSnapshot,
             estimatedTeamSize: proposal.estimatedTeamSize,
             estimatedDurationHours: proposal.estimatedDurationHours,
-            expectedStartDate: proposal.expectedStartDate,
             budgetItems: proposal.budgetItems.map((item) => ({
                 ...(item.id && Types.ObjectId.isValid(item.id) ? { _id: new Types.ObjectId(item.id) } : {}),
                 heading: item.heading,

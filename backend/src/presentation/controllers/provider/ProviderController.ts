@@ -16,7 +16,7 @@ import type { IUpdateProposalUseCase } from "../../../application/use-cases/usec
 import type { IWithdrawProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IWithdrawProposalUseCase.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
-import { UserMapper } from "../../../application/mappers/LoginMapper.js";
+import { sendSuccess, sendPaginated } from "../../../shared/response/index.js";
 
 export class ProviderController {
   constructor(
@@ -44,13 +44,14 @@ export class ProviderController {
         req.body,
       );
 
-      res.status(HttpStatusCode.CREATED).json({
-        success: true,
-        message: AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED,
-        data: {
+      sendSuccess(
+        res,
+        {
           user,
         },
-      });
+        AppMessages.SUCCESS.SERVICE_PROVIDER_PROFILE_CREATED,
+        HttpStatusCode.CREATED
+      );
     },
   );
 
@@ -64,13 +65,14 @@ export class ProviderController {
         req.body,
       );
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: AppMessages.SUCCESS.APPLICATION_RESUBMITTED,
-        data: {
+      sendSuccess(
+        res,
+        {
           user,
         },
-      });
+        AppMessages.SUCCESS.APPLICATION_RESUBMITTED,
+        HttpStatusCode.OK
+      );
     },
   );
 
@@ -83,12 +85,14 @@ export class ProviderController {
         req.user!.userId,
       );
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        data: {
+      sendSuccess(
+        res,
+        {
           profile,
         },
-      });
+        undefined,
+        HttpStatusCode.OK
+      );
     },
   );
 
@@ -106,12 +110,17 @@ export class ProviderController {
 
       const categories = await this._getCategoriesUseCase.execute();
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        data: {
+      sendSuccess(
+        res,
+        {
           categories,
         },
-      });
+        undefined,
+        HttpStatusCode.OK,
+        {
+          categories,
+        }
+      );
     },
   );
 
@@ -130,13 +139,14 @@ export class ProviderController {
         req.body,
       );
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: "Provider account activated successfully",
-        data: {
+      sendSuccess(
+        res,
+        {
           user,
         },
-      });
+        "Provider account activated successfully",
+        HttpStatusCode.OK
+      );
     },
   );
 
@@ -159,11 +169,7 @@ export class ProviderController {
         visibility,
       });
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        issues: result.items,
-        pagination: result.pagination,
-      });
+      sendPaginated(res, result.items, result.pagination, "issues", HttpStatusCode.OK);
     }
   );
 
@@ -180,10 +186,7 @@ export class ProviderController {
 
       const result = await this._expressIssueInterestUseCase.execute(issueId, providerId);
 
-      res.status(HttpStatusCode.CREATED).json({
-        success: true,
-        message: result.message,
-      });
+      sendSuccess(res, undefined, result.message, HttpStatusCode.CREATED);
     }
   );
 
@@ -200,10 +203,7 @@ export class ProviderController {
 
       const issue = await this._getProviderIssueDetailsUseCase.execute(issueId, providerId);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        issue,
-      });
+      sendSuccess(res, issue, undefined, HttpStatusCode.OK, { issue });
     }
   );
 
@@ -220,11 +220,7 @@ export class ProviderController {
 
       const proposal = await this._submitProposalUseCase.execute(issueId, providerId, req.body);
 
-      res.status(HttpStatusCode.CREATED).json({
-        success: true,
-        message: "Proposal submitted successfully",
-        proposal,
-      });
+      sendSuccess(res, proposal, "Proposal submitted successfully", HttpStatusCode.CREATED, { proposal });
     }
   );
 
@@ -241,10 +237,7 @@ export class ProviderController {
 
       const proposal = await this._getProviderProposalUseCase.execute(issueId, providerId);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        proposal,
-      });
+      sendSuccess(res, proposal, undefined, HttpStatusCode.OK, { proposal });
     }
   );
 
@@ -261,11 +254,7 @@ export class ProviderController {
 
       const proposal = await this._updateProposalUseCase.execute(issueId, providerId, req.body);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: "Proposal updated successfully",
-        proposal,
-      });
+      sendSuccess(res, proposal, "Proposal updated successfully", HttpStatusCode.OK, { proposal });
     }
   );
 
@@ -282,10 +271,7 @@ export class ProviderController {
 
       const result = await this._withdrawProposalUseCase.execute(issueId, providerId);
 
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: result.message,
-      });
+      sendSuccess(res, undefined, result.message, HttpStatusCode.OK);
     }
   );
 }

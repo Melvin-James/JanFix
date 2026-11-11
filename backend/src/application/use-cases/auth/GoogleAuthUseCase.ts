@@ -21,10 +21,12 @@ import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
 
 import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
-import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+
 import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+
 import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
-import type { RefreshTokenPayload } from "../../../shared/types/RefreshTokenPayload.js";
 
 export class GoogleAuthUseCase implements IGoogleAuthUseCase{
     constructor(

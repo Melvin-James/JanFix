@@ -13,6 +13,7 @@ import { UploadFolder } from "../../../domain/enums/UploadFolder.js";
 import { AppMessages } from "../../../shared/constants/messages.js";
 
 import type { UploadFileResponseDTO } from "../../../application/dto/upload/UploadFileResponseDTO.js";
+import { sendSuccess } from "../../../shared/response/index.js";
 
 export class UploadController {
 
@@ -35,7 +36,7 @@ export class UploadController {
             file: uploadedFile,
         };
 
-        res.status(HttpStatusCode.OK).json({ success: true, data: response });
+        sendSuccess(res, response, undefined, HttpStatusCode.OK);
 
     });
 

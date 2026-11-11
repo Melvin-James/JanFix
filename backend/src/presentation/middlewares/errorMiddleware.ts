@@ -1,4 +1,4 @@
-import type{
+import type {
   NextFunction,
   Request,
   Response,
@@ -11,6 +11,7 @@ import { AppMessages } from "../../shared/constants/messages.js";
 import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
 
 import logger from "../../shared/utils/logger.js";
+import { sendError } from "../../shared/response/index.js";
 
 const errorMiddleware = (
   err: Error,
@@ -40,10 +41,7 @@ const errorMiddleware = (
     statusCode = err.statusCode;
     message = err.message;
   }
-  res.status(statusCode).json({
-    success: false,
-    message,
-  });
+  sendError(res, message, statusCode);
 };
 
 export default errorMiddleware;

@@ -7,6 +7,7 @@ import asyncHandler from "../../../shared/utils/asyncHandler.js";
 import ApiError from "../../../shared/utils/apiError.js";
 
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { sendSuccess, sendPaginated, sendError } from "../../../shared/response/index.js";
 
 import type { ICreateIssueUseCase } from "../../../application/use-cases/usecase interfaces/issue/ICreateIssueUseCase.js";
 
@@ -52,10 +53,7 @@ export class IssueController {
     createIssue = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            res.status(HttpStatusCode.UNAUTHORIZED).json({
-                success: false,
-                message: "Unauthorized",
-            });
+            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -71,11 +69,7 @@ export class IssueController {
             location,
         });
 
-        res.status(HttpStatusCode.CREATED).json({
-            success: true,
-            message: "Issue reported successfully",
-            issue,
-        });
+        sendSuccess(res, issue, "Issue reported successfully", HttpStatusCode.CREATED, { issue });
     });
 
     getIssueById = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
@@ -84,10 +78,7 @@ export class IssueController {
         const issueId = req.params.issueId as string;
         const issue = await this._getIssueByIdUseCase.execute(issueId, userId, userRoles);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            issue,
-        });
+        sendSuccess(res, issue, undefined, HttpStatusCode.OK, { issue });
     });
 
     getFeedIssues = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
@@ -104,20 +95,13 @@ export class IssueController {
 
         const result = await this._getFeedIssuesUseCase.execute(userId, page, pageSize, filters);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            issues: result.items,
-            pagination: result.pagination,
-        });
+        sendPaginated(res, result.items, result.pagination, "issues", HttpStatusCode.OK);
     });
 
     getUserIssues = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            res.status(HttpStatusCode.UNAUTHORIZED).json({
-                success: false,
-                message: "Unauthorized",
-            });
+            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -133,11 +117,7 @@ export class IssueController {
 
         const result = await this._getUserIssuesUseCase.execute(userId, page, pageSize, filters);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            issues: result.items,
-            pagination: result.pagination,
-        });
+        sendPaginated(res, result.items, result.pagination, "issues", HttpStatusCode.OK);
     });
 
     getActiveCategories = asyncHandler(async (_req: AuthRequest, res: Response): Promise<void> => {
@@ -146,28 +126,20 @@ export class IssueController {
             ? result.filter((cat) => cat.isActive)
             : result.items.filter((cat) => cat.isActive);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            categories: activeCategories,
-        });
+        sendSuccess(res, activeCategories, undefined, HttpStatusCode.OK, { categories: activeCategories });
     });
 
     addUpvote = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            res.status(HttpStatusCode.UNAUTHORIZED).json({
-                success: false,
-                message: "Unauthorized",
-            });
+            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
         const issueId = req.params.issueId as string;
         const result = await this._addIssueUpvoteUseCase.execute(issueId, userId);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            message: "Issue upvoted successfully",
+        sendSuccess(res, result, "Issue upvoted successfully", HttpStatusCode.OK, {
             hasUpvoted: result.hasUpvoted,
             upvoteCount: result.upvoteCount,
         });
@@ -176,19 +148,14 @@ export class IssueController {
     removeUpvote = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            res.status(HttpStatusCode.UNAUTHORIZED).json({
-                success: false,
-                message: "Unauthorized",
-            });
+            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
         const issueId = req.params.issueId as string;
         const result = await this._removeIssueUpvoteUseCase.execute(issueId, userId);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            message: "Upvote removed successfully",
+        sendSuccess(res, result, "Upvote removed successfully", HttpStatusCode.OK, {
             hasUpvoted: result.hasUpvoted,
             upvoteCount: result.upvoteCount,
         });
@@ -199,8 +166,7 @@ export class IssueController {
         const issueId = req.params.issueId as string;
         const result = await this._getIssueUpvoteStatusUseCase.execute(issueId, userId);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
+        sendSuccess(res, result, undefined, HttpStatusCode.OK, {
             hasUpvoted: result.hasUpvoted,
             upvoteCount: result.upvoteCount,
         });
@@ -209,10 +175,7 @@ export class IssueController {
     createComment = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            res.status(HttpStatusCode.UNAUTHORIZED).json({
-                success: false,
-                message: "Unauthorized",
-            });
+            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -220,20 +183,13 @@ export class IssueController {
         const { body } = req.body;
         const comment = await this._createIssueCommentUseCase.execute(issueId, userId, body);
 
-        res.status(HttpStatusCode.CREATED).json({
-            success: true,
-            message: "Comment added successfully",
-            comment,
-        });
+        sendSuccess(res, comment, "Comment added successfully", HttpStatusCode.CREATED, { comment });
     });
 
     getComments = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            res.status(HttpStatusCode.UNAUTHORIZED).json({
-                success: false,
-                message: "Unauthorized",
-            });
+            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -258,10 +214,6 @@ export class IssueController {
 
         const result = await this._getIssueCommentsUseCase.execute(issueId, userId, page, pageSize);
 
-        res.status(HttpStatusCode.OK).json({
-            success: true,
-            comments: result.items,
-            pagination: result.pagination,
-        });
+        sendPaginated(res, result.items, result.pagination, "comments", HttpStatusCode.OK);
     });
 }

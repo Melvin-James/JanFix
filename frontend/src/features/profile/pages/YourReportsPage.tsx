@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
   Eye,
-  PlusCircle,
   Calendar,
   Lock,
   Globe,
   Tag,
   AlertCircle,
+  Plus,
 } from "lucide-react";
 import { getMyReports, getIssueCategories } from "../services/profileService";
 import type { Issue } from "../../issues/types/issue";
@@ -20,6 +20,7 @@ import SearchBar from "../../../components/UI/SearchBar";
 import LoadingState from "../../../components/UI/LoadingState";
 import EmptyState from "../../../components/UI/EmptyState";
 import ErrorState from "../../../components/UI/ErrorState";
+import { ReportIssueModal } from "../../issues/components/ReportIssueModal";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "All Statuses" },
@@ -52,6 +53,8 @@ export function YourReportsPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -91,14 +94,15 @@ export function YourReportsPage() {
         }
       } catch (err: unknown) {
         const msg =
-          (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          (err as { response?: { data?: { message?: string } } })?.response
+            ?.data?.message ||
           "Failed to load your civic reports. Please try again.";
         setError(msg);
       } finally {
         setIsLoading(false);
       }
     },
-    [statusFilter, visibilityFilter, categoryFilter, debouncedSearch]
+    [statusFilter, visibilityFilter, categoryFilter, debouncedSearch],
   );
 
   useEffect(() => {
@@ -158,13 +162,14 @@ export function YourReportsPage() {
           </p>
         </div>
 
-        <Link
-          to="/report"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all cursor-pointer"
+        <button
+          type="button"
+          onClick={() => setIsReportModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-xs hover:bg-blue-700 transition-colors cursor-pointer shrink-0"
         >
-          <PlusCircle className="h-4 w-4" />
-          <span>Report New Issue</span>
-        </Link>
+          <Plus className="h-4 w-4" />
+          <span>Report an Issue</span>
+        </button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -232,7 +237,10 @@ export function YourReportsPage() {
           <div className="py-16 text-center">
             <EmptyState
               message={
-                searchQuery || statusFilter !== "ALL" || visibilityFilter !== "ALL" || categoryFilter !== "ALL"
+                searchQuery ||
+                statusFilter !== "ALL" ||
+                visibilityFilter !== "ALL" ||
+                categoryFilter !== "ALL"
                   ? "No civic reports match your filter criteria. Try resetting your filters."
                   : "You haven't reported any civic issues yet. Click 'Report New Issue' to get started."
               }
@@ -244,7 +252,10 @@ export function YourReportsPage() {
             <div className="hidden md:block">
               <Table columns={columns}>
                 {reports.map((issue) => (
-                  <tr key={issue.id} className="hover:bg-slate-50/80 transition-colors">
+                  <tr
+                    key={issue.id}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
                     {/* Title & Description */}
                     <td className="px-6 py-4">
                       <div className="max-w-xs xl:max-w-md">
@@ -257,14 +268,15 @@ export function YourReportsPage() {
                         <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
                           {issue.description}
                         </p>
-                        {issue.status === "REJECTED" && issue.rejectionReason && (
-                          <div className="mt-1 flex items-start gap-1 text-[11px] text-red-600 bg-red-50 px-2 py-0.5 rounded-sm border border-red-100 max-w-sm">
-                            <AlertCircle className="h-3 w-3 shrink-0 mt-0.5" />
-                            <span className="line-clamp-1">
-                              <strong>Reason:</strong> {issue.rejectionReason}
-                            </span>
-                          </div>
-                        )}
+                        {issue.status === "REJECTED" &&
+                          issue.rejectionReason && (
+                            <div className="mt-1 flex items-start gap-1 text-[11px] text-red-600 bg-red-50 px-2 py-0.5 rounded-sm border border-red-100 max-w-sm">
+                              <AlertCircle className="h-3 w-3 shrink-0 mt-0.5" />
+                              <span className="line-clamp-1">
+                                <strong>Reason:</strong> {issue.rejectionReason}
+                              </span>
+                            </div>
+                          )}
                       </div>
                     </td>
 
@@ -348,7 +360,8 @@ export function YourReportsPage() {
                     <div className="flex items-start gap-1.5 text-xs text-red-600 bg-red-50 p-2 rounded-md border border-red-100">
                       <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
                       <div>
-                        <strong>Rejection Reason:</strong> {issue.rejectionReason}
+                        <strong>Rejection Reason:</strong>{" "}
+                        {issue.rejectionReason}
                       </div>
                     </div>
                   )}
@@ -409,6 +422,15 @@ export function YourReportsPage() {
             )}
           </>
         )}
+        {isReportModalOpen && (
+                  <ReportIssueModal
+                    isOpen={true}
+                    onClose={() => setIsReportModalOpen(false)}
+                    onSuccess={() => {
+                      setIsReportModalOpen(false);
+                    }}
+                  />
+                )}
       </div>
     </div>
   );

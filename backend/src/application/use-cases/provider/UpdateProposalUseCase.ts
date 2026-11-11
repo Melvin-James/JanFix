@@ -4,7 +4,7 @@ import type { IIssueRepository } from "../../../domain/interface/IIssueRepositor
 import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
 import type { UpdateProposalDTO } from "../../dto/proposal/SubmitProposalDTO.js";
 import type { ProposalResponseDTO } from "../../dto/proposal/ProposalResponseDTO.js";
-import type { BudgetItem, ExecutionRoadmapItem, ProposalNgoDetails } from "../../../domain/entities/Proposal.js";
+import type { BudgetItem } from "../../../domain/entities/Proposal.js";
 import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
 import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
 import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
@@ -82,22 +82,7 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
             );
         }
 
-        const updates: Record<string, unknown> = {};
-
-        // 3. Validate and apply Expected Start Date if provided
-        if (dto.expectedStartDate !== undefined) {
-            const startDate = new Date(dto.expectedStartDate);
-            if (isNaN(startDate.getTime())) {
-                throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid expected start date");
-            }
-            if (startDate.getTime() <= serverNow.getTime()) {
-                throw new ApiError(
-                    HttpStatusCode.BAD_REQUEST,
-                    "Expected start date must be in the future"
-                );
-            }
-            updates.expectedStartDate = startDate;
-        }
+        const updates: Record<string, unknown> = {};   
 
         // 4. Validate Team Size if provided
         if (dto.estimatedTeamSize !== undefined) {

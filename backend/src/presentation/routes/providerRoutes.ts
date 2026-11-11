@@ -45,7 +45,7 @@ const getProviderProfileUseCase = new GetProviderProfileUseCase(userRepository, 
 const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository);
 const activateProviderUseCase = new ActivateProviderUseCase(userRepository);
 
-const getProviderIssuesUseCase = new GetProviderIssuesUseCase(issueRepository, proposalRepository, storageService);
+const getProviderIssuesUseCase = new GetProviderIssuesUseCase(issueRepository, proposalRepository, storageService,userRepository);
 const expressIssueInterestUseCase = new ExpressIssueInterestUseCase(issueRepository, issueInterestRepository);
 const getProviderIssueDetailsUseCase = new GetProviderIssueDetailsUseCase(issueRepository, proposalRepository, storageService);
 

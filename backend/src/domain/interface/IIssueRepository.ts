@@ -55,6 +55,7 @@ export interface IIssueRepository {
     findProviderIssues(
         page: number,
         pageSize: number,
+        providerCategoryIds: string[],
         filters?: { category?: string | undefined; search?: string | undefined; visibility?: string | undefined}
     ): Promise<PaginatedResult<Issue>>;
     findReviewEligibleIssues(
