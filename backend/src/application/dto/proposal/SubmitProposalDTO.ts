@@ -24,7 +24,6 @@ export interface ProposalNgoDetailsInputDTO {
 export interface SubmitProposalDTO {
     estimatedTeamSize: number;
     estimatedDurationHours: number;
-    expectedStartDate: string | Date;
     budgetItems: BudgetItemInputDTO[];
     executionRoadmap: ExecutionRoadmapItemInputDTO[];
     ngoDetails?: ProposalNgoDetailsInputDTO;

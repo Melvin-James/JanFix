@@ -16,7 +16,7 @@ import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
 
 import type { RefreshTokenPayload } from "../../../shared/types/RefreshTokenPayload.js";
 
-import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
 
 import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
 

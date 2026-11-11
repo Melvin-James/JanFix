@@ -39,7 +39,6 @@ export interface ProposalResponseDTO {
     issueSnapshot: ProposalIssueSnapshotDTO;
     estimatedTeamSize: number;
     estimatedDurationHours: number;
-    expectedStartDate: string; // ISO date string
     budgetItems: BudgetItemDTO[];
     totalBudgetPaise: number;
     totalBudgetRupees: number;

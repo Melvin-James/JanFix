@@ -24,7 +24,7 @@ export function ProfileSidebar({ open, onNavigate }: ProfileSidebarProps) {
         <button
           type="button"
           aria-label="Close sidebar navigation"
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs md:hidden"
+          className="fixed inset-x-0 bottom-0 top-16 z-30 bg-slate-900/40 backdrop-blur-xs md:hidden"
           onClick={onNavigate}
         />
       )}
@@ -32,7 +32,7 @@ export function ProfileSidebar({ open, onNavigate }: ProfileSidebarProps) {
       {/* Sidebar container */}
       <aside
         aria-label="Profile navigation"
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white shadow-xl md:shadow-none transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:border-r md:bg-white md:rounded-xl md:border md:shadow-xs md:h-fit md:min-h-[460px] ${
+        className={`fixed top-16 bottom-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 ease-in-out md:sticky md:top-20 md:z-auto md:bottom-auto md:h-fit md:min-h-[460px] md:translate-x-0 md:rounded-xl md:border md:shadow-xs ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -78,7 +78,9 @@ export function ProfileSidebar({ open, onNavigate }: ProfileSidebarProps) {
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${active ? "text-white" : "text-slate-500"}`} />
+                <Icon
+                  className={`h-4 w-4 shrink-0 ${active ? "text-white" : "text-slate-500"}`}
+                />
                 <span>{item.label}</span>
               </NavLink>
             );

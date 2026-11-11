@@ -370,17 +370,27 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
     async findProviderIssues(
         page: number,
         pageSize: number,
+        providerCategoryIds: string[],
         filters?: { category?: string | undefined; search?: string | undefined; visibility?: string | undefined }
     ): Promise<PaginatedResult<Issue>> {
         const safePage = Number.isInteger(page) && page > 0 ? page : 1;
         const safePageSize = Number.isInteger(pageSize) && pageSize > 0 ? Math.min(pageSize, 100) : 10;
 
-        // Strict provider feed visibility rule:
-        // Only PUBLIC issues that are not REJECTED (e.g. REPORTED or VERIFIED)
         const andConditions: Record<string, unknown>[] = [
             {
                 status: IssueStatus.VERIFIED,
-                visibility: IssueVisibility.PUBLIC,
+
+                visibility: {
+                    $in: [
+                        IssueVisibility.PUBLIC,
+                        IssueVisibility.PRIVATE,
+                    ],
+                },
+                category: {
+                    $in: providerCategoryIds.map(
+                        (id) => new Types.ObjectId(id)
+                    ),
+                },
             },
         ];
 

@@ -61,7 +61,6 @@ export const ApiEndpoints = {
     FEED: "/feed",
     CATEGORIES: "/categories",
     MY_ISSUES: "/my-reports",
-    MY_REPORTS: "/my-reports",
     DETAILS: "/:issueId",
     BY_ID: "/:issueId",
     UPVOTE: "/:issueId/upvote",

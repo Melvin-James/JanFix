@@ -141,7 +141,6 @@ async function runTests() {
 
     const publicReported = testIssues[0]!;
     const publicRejected = testIssues[1]!;
-    const privateVerified = testIssues[2]!;
     const privateRejected = testIssues[3]!;
     const bobIssue = testIssues[4]!;
 

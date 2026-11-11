@@ -66,10 +66,6 @@ export const submitProposalSchema = z.object({
         .coerce
         .number()
         .positive("Duration must be greater than 0 hours"),
-    expectedStartDate: z
-        .string()
-        .min(1, "Expected start date is required")
-        .refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format for start date" }),
     budgetItems: z
         .array(budgetItemInputSchema)
         .min(1, "At least one budget item is required"),

@@ -38,7 +38,6 @@ export interface Proposal {
     issueSnapshot: ProposalIssueSnapshot;
     estimatedTeamSize: number;
     estimatedDurationHours: number;
-    expectedStartDate: Date;
     budgetItems: BudgetItem[];
     totalBudgetPaise: number;
     executionRoadmap: ExecutionRoadmapItem[];

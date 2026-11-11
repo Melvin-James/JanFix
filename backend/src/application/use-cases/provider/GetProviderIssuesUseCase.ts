@@ -8,12 +8,14 @@ import type { IGetProviderIssuesUseCase, ProviderIssueFilters } from "../usecase
 import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
 import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
 import { IssueInterestModel } from "../../../infrastructure/models/IssueInterestModel.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
 
 export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
     constructor(
         private readonly issueRepository: IIssueRepository,
         private readonly proposalRepository: IProposalRepository,
-        private readonly storageService: IStorageService
+        private readonly storageService: IStorageService,
+        private readonly userRepository: IUserRepository
     ) {}
 
     async execute(
@@ -22,9 +24,31 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
         pageSize = 10,
         filters?: ProviderIssueFilters
     ): Promise<PaginatedResult<ProviderIssueResponseDTO>> {
+
+        const provider = await this.userRepository.findById(providerId);
+
+        if(!provider){
+            throw new Error("Provider not found");
+        }
+
+        const providerCategoryIds = provider.providerProfile?.workPreferences?.categoriesWillingToWork ?? [];
+
+        if(providerCategoryIds.length === 0) {
+            return {
+                items: [],
+                pagination: {
+                    page: Math.max(1, page),
+                    pageSize: Math.min(100, Math.max(1, pageSize)),
+                    totalItems: 0,
+                    totalPages: 0,
+                },
+            };
+        }
+
         const paginated = await this.issueRepository.findProviderIssues(
             page,
             pageSize,
+            providerCategoryIds,
             filters
         );
 

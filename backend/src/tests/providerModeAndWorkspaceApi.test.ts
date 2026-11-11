@@ -63,7 +63,8 @@ async function runTests() {
     const getProviderIssuesUseCase = new GetProviderIssuesUseCase(
         issueRepository,
         proposalRepository,
-        mockStorageService
+        mockStorageService,
+        userRepository
     );
     const expressIssueInterestUseCase = new ExpressIssueInterestUseCase(
         issueRepository,

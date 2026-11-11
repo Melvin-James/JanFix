@@ -75,22 +75,6 @@ export const proposalFormSchema = z
       })
       .positive("Estimated duration must be greater than 0 hours")
       .max(500, "Duration must be reasonable (maximum 500 hours)"),
-    expectedStartDate: z
-      .string()
-      .min(1, "Expected start date is required")
-      .refine(
-        (val) => {
-          const date = new Date(val);
-          if (isNaN(date.getTime())) return false;
-          // Must be tomorrow or later in local date
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const chosen = new Date(date);
-          chosen.setHours(0, 0, 0, 0);
-          return chosen.getTime() > today.getTime();
-        },
-        { message: "Expected start date must be a future date (starting tomorrow or later)" }
-      ),
     budgetItems: z
       .array(budgetItemFormSchema)
       .min(1, "At least one budget item is required"),
