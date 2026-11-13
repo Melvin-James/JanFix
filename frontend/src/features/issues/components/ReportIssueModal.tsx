@@ -30,6 +30,8 @@ interface ReportIssueModalProps {
   onSuccess?: (createdIssue: Issue) => void;
 }
 
+type LocationStatus = "idle" | "resolving" | "resolved";
+
 export function ReportIssueModal({
   isOpen,
   onClose,
@@ -46,6 +48,7 @@ export function ReportIssueModal({
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
 
   if (!isOpen) return null;
 
@@ -223,6 +226,7 @@ export function ReportIssueModal({
                 setLocation(selectedLocation);
                 clearFieldError("location");
               }}
+              onResolutionChange={setLocationStatus}
             />
             <FormError message={formErrors.location} />
           </div>
