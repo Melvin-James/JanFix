@@ -118,10 +118,10 @@ export class CreateIssueUseCase implements ICreateIssueUseCase {
                     latitude,
                     longitude,
                 },
-                locality: dto.location.locality?.trim(),
-                city: dto.location.city?.trim() || "Kochi",
-                state: dto.location.state?.trim() || "Kerala",
-                postalCode: dto.location.postalCode?.trim(),
+                locality: dto.location.locality?.trim() || undefined,
+                city: dto.location.city?.trim() || undefined,
+                state: dto.location.state?.trim() || undefined,
+                postalCode: dto.location.postalCode?.trim() || undefined,
             },
             status: IssueStatus.REPORTED, // strictly enforced server-side
         });

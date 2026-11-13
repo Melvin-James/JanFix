@@ -52,7 +52,6 @@ import CategoryManagementPage from "../features/admin/pages/CategoryManagementPa
 import AdminIssuesPage from "../features/admin/pages/AdminIssuesPage";
 import AdminIssueDetailsPage from "../features/admin/pages/AdminIssueDetailsPage";
 
-import ReportIssuePage from "../features/issues/pages/ReportIssuePage";
 import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
 import IssueDetailsPage from "../features/issues/pages/IssueDetailsPage";
 
@@ -149,16 +148,7 @@ function AppRouter() {
           }
         />
 
-        <Route
-          path="/report"
-          element={
-            <ProtectedRoute>
-              <UserModeRoute>
-                <ReportIssuePage />
-              </UserModeRoute>
-            </ProtectedRoute>
-          }
-        />
+        
 
         <Route
           path="/feed"
