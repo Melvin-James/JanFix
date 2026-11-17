@@ -36,6 +36,11 @@ import type { IApproveIssueUseCase } from "../../../application/use-cases/usecas
 import type { IRejectIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectIssueUseCase.js";
 import type { IGetIssueAIAnalysisUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueAIAnalysisUseCase.js";
 import type { IAnalyzeIssueCommentsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.js";
+import type { IGetIssuesWithProposalsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssuesWithProposalsUseCase.js";
+import type { IGetProposalsForIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalsForIssueUseCase.js";
+import type { IGetAdminProposalDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetAdminProposalDetailsUseCase.js";
+import type { IGetIssueProposalsRecommendationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueProposalsRecommendationUseCase.js";
+import type { IGetProposalAISummaryUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalAISummaryUseCase.js";
 import { Role } from "../../../domain/enums/Role.js";
 import ApiError from "../../../shared/utils/apiError.js";
 
@@ -81,6 +86,16 @@ export class AdminController {
         private readonly _getIssueAIAnalysisUseCase?: IGetIssueAIAnalysisUseCase,
 
         private readonly _analyzeIssueCommentsUseCase?: IAnalyzeIssueCommentsUseCase,
+
+        private readonly _getIssuesWithProposalsUseCase?: IGetIssuesWithProposalsUseCase,
+
+        private readonly _getProposalsForIssueUseCase?: IGetProposalsForIssueUseCase,
+
+        private readonly _getAdminProposalDetailsUseCase?: IGetAdminProposalDetailsUseCase,
+
+        private readonly _getIssueProposalsRecommendationUseCase?: IGetIssueProposalsRecommendationUseCase,
+
+        private readonly _getProposalAISummaryUseCase?: IGetProposalAISummaryUseCase,
 
     ) { }
 
@@ -453,6 +468,109 @@ export class AdminController {
             const analysis = await this._analyzeIssueCommentsUseCase.execute(issueId);
 
             sendSuccess(res, analysis, "JanAI community comment analysis completed", HttpStatusCode.OK, { analysis });
+        }
+    );
+
+    getIssuesWithProposals = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._getIssuesWithProposalsUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Proposal service not wired");
+            }
+
+            if (req.query.page !== undefined) {
+                const parsedPage = Number(req.query.page);
+                if (!Number.isInteger(parsedPage) || parsedPage < 1) {
+                    throw new ApiError(HttpStatusCode.BAD_REQUEST, "Page must be a positive integer");
+                }
+            }
+
+            if (req.query.pageSize !== undefined) {
+                const parsedPageSize = Number(req.query.pageSize);
+                if (!Number.isInteger(parsedPageSize) || parsedPageSize < 1 || parsedPageSize > 100) {
+                    throw new ApiError(HttpStatusCode.BAD_REQUEST, "Page size must be between 1 and 100");
+                }
+            }
+
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 10;
+            const search = req.query.search as string | undefined;
+            const category = req.query.category as string | undefined;
+            const sortBy = req.query.sortBy as string | undefined;
+
+            const result = await this._getIssuesWithProposalsUseCase.execute(page, pageSize, {
+                search,
+                category,
+                sortBy,
+            });
+
+            sendPaginated(res, result.items, result.pagination, "issues", HttpStatusCode.OK);
+        }
+    );
+
+    getProposalsForIssue = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._getProposalsForIssueUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Proposal service not wired");
+            }
+
+            const issueId = req.params.issueId as string;
+            const result = await this._getProposalsForIssueUseCase.execute(issueId);
+
+            sendSuccess(res, result, undefined, HttpStatusCode.OK, {
+                issue: result.issue,
+                proposals: result.proposals,
+                proposalCount: result.proposalCount,
+            });
+        }
+    );
+
+    getAdminProposalDetails = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._getAdminProposalDetailsUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Proposal service not wired");
+            }
+
+            const issueId = req.params.issueId as string;
+            const proposalId = req.params.proposalId as string;
+
+            const result = await this._getAdminProposalDetailsUseCase.execute(issueId, proposalId);
+
+            sendSuccess(res, result, undefined, HttpStatusCode.OK, {
+                proposal: result.proposal,
+                issue: result.issue,
+                provider: result.provider,
+            });
+        }
+    );
+
+    getIssueProposalsRecommendation = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._getIssueProposalsRecommendationUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "JanAI service not wired");
+            }
+
+            const issueId = req.params.issueId as string;
+            const forceRefresh = req.query.forceRefresh === "true";
+
+            const result = await this._getIssueProposalsRecommendationUseCase.execute(issueId, forceRefresh);
+
+            sendSuccess(res, result, undefined, HttpStatusCode.OK, { recommendation: result });
+        }
+    );
+
+    getProposalAISummary = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._getProposalAISummaryUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "JanAI service not wired");
+            }
+
+            const issueId = req.params.issueId as string;
+            const proposalId = req.params.proposalId as string;
+            const forceRefresh = req.query.forceRefresh === "true";
+
+            const result = await this._getProposalAISummaryUseCase.execute(issueId, proposalId, forceRefresh);
+
+            sendSuccess(res, result, undefined, HttpStatusCode.OK, { summary: result });
         }
     );
 

@@ -50,6 +50,11 @@ export const ApiEndpoints = {
     REJECT_ISSUE: "/issues/:issueId/reject",
     ISSUE_AI_ANALYSIS: "/issues/:issueId/ai-analysis",
     ANALYZE_ISSUE: "/issues/:issueId/ai-analysis/analyze",
+    PROPOSALS: "/proposals",
+    ISSUE_PROPOSALS: "/proposals/issues/:issueId",
+    PROPOSAL_DETAILS: "/proposals/issues/:issueId/proposals/:proposalId",
+    ISSUE_PROPOSALS_AI_RECOMMENDATION: "/proposals/issues/:issueId/ai-recommendation",
+    PROPOSAL_AI_SUMMARY: "/proposals/issues/:issueId/proposals/:proposalId/ai-summary",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",

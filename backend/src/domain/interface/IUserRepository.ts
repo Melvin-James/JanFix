@@ -32,6 +32,8 @@ export interface IUserRepository {
 
     findById(id: string): Promise<User | null>;
 
+    findByIds(ids: string[]): Promise<User[]>;    
+
     findUsersWithProviderApplications(): Promise<User[]>;
 
     findPaginatedProviderApplications(

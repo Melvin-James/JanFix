@@ -38,10 +38,13 @@ export interface ProposalResponseDTO {
     status: ProposalStatus;
     issueSnapshot: ProposalIssueSnapshotDTO;
     estimatedTeamSize: number;
+    teamSize?: number | undefined;
     estimatedDurationHours: number;
+    durationHours?: number | undefined;
     budgetItems: BudgetItemDTO[];
     totalBudgetPaise: number;
     totalBudgetRupees: number;
+    totalBudget?: number | undefined;
     executionRoadmap: ExecutionRoadmapItemDTO[];
     ngoDetails?: ProposalNgoDetailsDTO | undefined;
     submittedAt: string; // ISO date string

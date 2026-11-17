@@ -61,6 +61,15 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     if (!document) return null;
     return UserMapper.toEntity(document);
   }
+  
+  override async findByIds(ids: string[]): Promise<User[]> {
+    const documents = await UserModel.find({
+      _id: { $in: ids }
+    }).populate("providerProfile.workPreferences.categoriesWillingToWork");
+    return documents.map(UserMapper.toEntity);
+  }
+
+  
 
   async updateUser(user: User): Promise<User> {
 
