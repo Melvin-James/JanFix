@@ -18,4 +18,9 @@ export * from "./RejectReasonModal";
 export * from "./CategoryModal";
 export * from "./ConfirmationModal";
 export * from "./JanAICommunityAnalysisCard";
+export * from "./IssueLocationPreviewMap";
+export * from "./JanAIProposalRecommendationCard";
+export * from "./JanAIProposalSummaryCard";
+export * from "./AdminProviderProfileCard";
+export * from "./proposals/AdminIssueProposalCard";
 

@@ -65,6 +65,14 @@ import { RejectIssueUseCase } from "../../application/use-cases/admin/RejectIssu
 import { GetIssueAIAnalysisUseCase } from "../../application/use-cases/admin/GetIssueAIAnalysisUseCase.js";
 import { AnalyzeIssueCommentsUseCase } from "../../application/use-cases/admin/AnalyzeIssueCommentsUseCase.js";
 import { rejectIssueSchema } from "../validators/admin/rejectIssueValidator.js";
+import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.js";
+import { ProposalAIAnalysisRepository } from "../../infrastructure/repositories/ProposalAIAnalysisRepository.js";
+import { GeminiProposalAIService } from "../../infrastructure/services/GeminiProposalAIService.js";
+import { GetIssuesWithProposalsUseCase } from "../../application/use-cases/admin/GetIssuesWithProposalsUseCase.js";
+import { GetProposalsForIssueUseCase } from "../../application/use-cases/admin/GetProposalsForIssueUseCase.js";
+import { GetAdminProposalDetailsUseCase } from "../../application/use-cases/admin/GetAdminProposalDetailsUseCase.js";
+import { GetIssueProposalsRecommendationUseCase } from "../../application/use-cases/admin/GetIssueProposalsRecommendationUseCase.js";
+import { GetProposalAISummaryUseCase } from "../../application/use-cases/admin/GetProposalAISummaryUseCase.js";
 
 const router = Router();
 
@@ -150,6 +158,46 @@ const updateCategoryStatusUseCase = new UpdateCategoryStatusUseCase(
   categoryRepository,
 );
 
+const proposalRepository = new ProposalRepository();
+const proposalAIAnalysisRepository = new ProposalAIAnalysisRepository();
+const geminiProposalAIService = new GeminiProposalAIService();
+
+const getIssuesWithProposalsUseCase = new GetIssuesWithProposalsUseCase(
+  proposalRepository,
+  storageService,
+);
+
+const getProposalsForIssueUseCase = new GetProposalsForIssueUseCase(
+  issueRepository,
+  proposalRepository,
+  userRepository,
+  storageService,
+);
+
+const getAdminProposalDetailsUseCase = new GetAdminProposalDetailsUseCase(
+  issueRepository,
+  proposalRepository,
+  userRepository,
+  storageService,
+);
+
+const getIssueProposalsRecommendationUseCase =
+  new GetIssueProposalsRecommendationUseCase(
+    issueRepository,
+    proposalRepository,
+    userRepository,
+    proposalAIAnalysisRepository,
+    geminiProposalAIService,
+  );
+
+const getProposalAISummaryUseCase = new GetProposalAISummaryUseCase(
+  issueRepository,
+  proposalRepository,
+  userRepository,
+  proposalAIAnalysisRepository,
+  geminiProposalAIService,
+);
+
 const adminController = new AdminController(
   getProviderApplicationsUseCase,
 
@@ -182,6 +230,11 @@ const adminController = new AdminController(
   rejectIssueUseCase,
   getIssueAIAnalysisUseCase,
   analyzeIssueCommentsUseCase,
+  getIssuesWithProposalsUseCase,
+  getProposalsForIssueUseCase,
+  getAdminProposalDetailsUseCase,
+  getIssueProposalsRecommendationUseCase,
+  getProposalAISummaryUseCase,
 );
 
 router.get(
@@ -336,6 +389,43 @@ router.post(
   authenticate,
   authorizeRoles(Role.ADMIN),
   adminController.triggerIssueAIAnalysis,
+);
+
+// Multiple Proposals Review (authenticated, admin only)
+router.get(
+  ApiEndpoints.ADMIN.PROPOSALS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  searchRateLimit,
+  adminController.getIssuesWithProposals,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.ISSUE_PROPOSALS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getProposalsForIssue,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.PROPOSAL_DETAILS,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getAdminProposalDetails,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.ISSUE_PROPOSALS_AI_RECOMMENDATION,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getIssueProposalsRecommendation,
+);
+
+router.get(
+  ApiEndpoints.ADMIN.PROPOSAL_AI_SUMMARY,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.getProposalAISummary,
 );
 
 export default router;

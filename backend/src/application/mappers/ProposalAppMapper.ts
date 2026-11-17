@@ -14,7 +14,9 @@ export class ProposalAppMapper {
                 description: proposal.issueSnapshot.description,
             },
             estimatedTeamSize: proposal.estimatedTeamSize,
+            teamSize: proposal.estimatedTeamSize,
             estimatedDurationHours: proposal.estimatedDurationHours,
+            durationHours: proposal.estimatedDurationHours,
             budgetItems: proposal.budgetItems.map((item) => ({
                 id: item.id,
                 heading: item.heading,
@@ -23,6 +25,7 @@ export class ProposalAppMapper {
             })),
             totalBudgetPaise: proposal.totalBudgetPaise,
             totalBudgetRupees: proposal.totalBudgetPaise / 100,
+            totalBudget: proposal.totalBudgetPaise / 100,
             executionRoadmap: proposal.executionRoadmap.map((item) => ({
                 id: item.id,
                 heading: item.heading,
