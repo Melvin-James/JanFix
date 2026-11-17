@@ -3,4 +3,3 @@ export enum ProposalWindowStatus {
   CLOSED = "CLOSED",
   CANCELLED = "CANCELLED",
 }
-

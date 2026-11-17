@@ -51,6 +51,9 @@ import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import CategoryManagementPage from "../features/admin/pages/CategoryManagementPage";
 import AdminIssuesPage from "../features/admin/pages/AdminIssuesPage";
 import AdminIssueDetailsPage from "../features/admin/pages/AdminIssueDetailsPage";
+import AdminProposalsPage from "../features/admin/pages/AdminProposalsPage";
+import AdminIssueProposalsPage from "../features/admin/pages/AdminIssueProposalsPage";
+import AdminProposalDetailsPage from "../features/admin/pages/AdminProposalDetailsPage";
 
 import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
 import IssueDetailsPage from "../features/issues/pages/IssueDetailsPage";
@@ -386,6 +389,39 @@ function AppRouter() {
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminLayout>
                 <AdminIssueDetailsPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/proposals"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <AdminProposalsPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/proposals/issues/:issueId"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <AdminIssueProposalsPage />
+              </AdminLayout>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/proposals/issues/:issueId/proposals/:proposalId"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <AdminProposalDetailsPage />
               </AdminLayout>
             </RoleProtectedRoute>
           }
