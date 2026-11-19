@@ -41,6 +41,7 @@ import type { IGetProposalsForIssueUseCase } from "../../../application/use-case
 import type { IGetAdminProposalDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetAdminProposalDetailsUseCase.js";
 import type { IGetIssueProposalsRecommendationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueProposalsRecommendationUseCase.js";
 import type { IGetProposalAISummaryUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalAISummaryUseCase.js";
+import type { ISelectProposalUseCase } from "../../../application/use-cases/usecase interfaces/admin/ISelectProposalUseCase.js";
 import { Role } from "../../../domain/enums/Role.js";
 import ApiError from "../../../shared/utils/apiError.js";
 
@@ -96,6 +97,8 @@ export class AdminController {
         private readonly _getIssueProposalsRecommendationUseCase?: IGetIssueProposalsRecommendationUseCase,
 
         private readonly _getProposalAISummaryUseCase?: IGetProposalAISummaryUseCase,
+
+        private readonly _selectProposalUseCase?: ISelectProposalUseCase,
 
     ) { }
 
@@ -571,6 +574,27 @@ export class AdminController {
             const result = await this._getProposalAISummaryUseCase.execute(issueId, proposalId, forceRefresh);
 
             sendSuccess(res, result, undefined, HttpStatusCode.OK, { summary: result });
+        }
+    );
+
+    selectProposal = asyncHandler(
+        async (req: AuthRequest, res: Response): Promise<void> => {
+            if (!this._selectProposalUseCase) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Proposal selection service not wired");
+            }
+
+            const issueId = req.params.issueId as string;
+            const proposalId = req.params.proposalId as string;
+
+            const result = await this._selectProposalUseCase.execute(issueId, proposalId);
+
+            sendSuccess(
+                res,
+                result,
+                "Proposal selected successfully for this civic issue",
+                HttpStatusCode.OK,
+                { selection: result }
+            );
         }
     );
 

@@ -92,6 +92,14 @@ export interface AdminProposalDetailsResponse {
   provider: ServiceProviderDetails;
 }
 
+export interface SelectProposalResult {
+  issueId: string;
+  selectedProposalId: string;
+  selectedProposalStatus: ProposalStatus;
+  proposalSelectedAt: string;
+  proposalWindowStatus: ProposalWindowStatus;
+}
+
 export interface AdminProposalAIRecommendation {
   issueId: string;
   recommendedProposalId: string | null;

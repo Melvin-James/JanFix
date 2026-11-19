@@ -55,6 +55,10 @@ export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Proposal has already been withdrawn");
         }
 
+        if (proposal.status !== ProposalStatus.SUBMITTED) {
+            throw new ApiError(HttpStatusCode.BAD_REQUEST, "Only submitted proposals can be withdrawn");
+        }
+
         const updated = await this.proposalRepository.update(proposal.id!, {
             status: ProposalStatus.WITHDRAWN,
             withdrawnAt: serverNow,

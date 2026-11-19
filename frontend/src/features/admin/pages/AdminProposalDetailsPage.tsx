@@ -139,6 +139,34 @@ export const AdminProposalDetailsPage: React.FC = () => {
     }
   };
 
+  const getProposalStatusBadge = (status: string) => {
+    switch (status) {
+      case "SELECTED":
+        return "bg-emerald-50 text-emerald-800 border-emerald-300";
+      case "NOT_SELECTED":
+        return "bg-slate-100 text-slate-600 border-slate-300";
+      case "WITHDRAWN":
+        return "bg-amber-50 text-amber-800 border-amber-300";
+      case "SUBMITTED":
+      default:
+        return "bg-blue-50 text-blue-800 border-blue-200";
+    }
+  };
+
+  const getProposalStatusLabel = (status: string) => {
+    switch (status) {
+      case "SELECTED":
+        return "Selected";
+      case "NOT_SELECTED":
+        return "Not Selected";
+      case "WITHDRAWN":
+        return "Withdrawn";
+      case "SUBMITTED":
+      default:
+        return "Submitted";
+    }
+  };
+
   if (loadingData) {
     return (
       <div className="p-6">
@@ -225,8 +253,12 @@ export const AdminProposalDetailsPage: React.FC = () => {
                 >
                   {proposal.providerType.replace("_", " ")}
                 </span>
-                <span className="inline-flex items-center rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-                  {proposal.status}
+                <span
+                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getProposalStatusBadge(
+                    proposal.status
+                  )}`}
+                >
+                  {getProposalStatusLabel(proposal.status)}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">

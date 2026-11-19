@@ -1,4 +1,6 @@
 export enum ProposalStatus {
   SUBMITTED = "SUBMITTED",
   WITHDRAWN = "WITHDRAWN",
+  SELECTED = "SELECTED",
+  NOT_SELECTED = "NOT_SELECTED",
 }

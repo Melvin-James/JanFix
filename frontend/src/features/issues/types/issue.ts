@@ -34,6 +34,8 @@ export interface Issue {
   proposalOpenedAt?: string;
   proposalDeadlineAt?: string;
   proposalWindowStatus?: "OPEN" | "CLOSED" | "CANCELLED";
+  selectedProposalId?: string;
+  proposalSelectedAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }

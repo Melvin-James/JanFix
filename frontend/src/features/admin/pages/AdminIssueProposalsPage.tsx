@@ -12,6 +12,10 @@ import {
   HeartHandshake,
   Image as ImageIcon,
   CheckCircle2,
+  Check,
+  Award,
+  AlertCircle,
+  Info,
 } from "lucide-react";
 import {
   AdminPageHeader,
@@ -20,10 +24,12 @@ import {
   AdminErrorState,
   AdminEmptyState,
 } from "../components";
+import ConfirmationModal from "../components/ConfirmationModal";
 import JanAIProposalRecommendationCard from "../components/JanAIProposalRecommendationCard";
 import {
   getProposalsForIssue,
   getIssueProposalRecommendation,
+  selectProposal,
 } from "../services/adminProposalService";
 import type {
   AdminIssueProposalsComparisonResponse,
@@ -88,6 +94,42 @@ export const AdminIssueProposalsPage: React.FC = () => {
   const [dataError, setDataError] = useState("");
   const [aiError, setAiError] = useState<string | null>(null);
   const [isRetryingAI, setIsRetryingAI] = useState(false);
+
+  // Selection states
+  const [selectingProposalId, setSelectingProposalId] = useState<string | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionError, setSelectionError] = useState<string | null>(null);
+  const [selectionSuccessMessage, setSelectionSuccessMessage] = useState<string | null>(null);
+
+  const fetchProposalsData = async () => {
+    if (!issueId) return;
+    try {
+      setDataError("");
+      const data = await getProposalsForIssue(issueId);
+      setComparisonData(data);
+    } catch {
+      setDataError("Failed to load proposals for this issue. Please try again.");
+    }
+  };
+
+  const handleConfirmSelection = async () => {
+    if (!issueId || !selectingProposalId || isSelecting) return;
+    try {
+      setIsSelecting(true);
+      setSelectionError(null);
+      await selectProposal(issueId, selectingProposalId);
+      setSelectionSuccessMessage("Proposal selected successfully. Civic work assignment is finalized.");
+      setSelectingProposalId(null);
+      await fetchProposalsData();
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Failed to select proposal. Please try again.";
+      setSelectionError(message);
+    } finally {
+      setIsSelecting(false);
+    }
+  };
 
   // Manual retry handler for JanAI recommendation
   const handleRetryAI = async () => {
@@ -199,6 +241,25 @@ export const AdminIssueProposalsPage: React.FC = () => {
   const { issue, proposals, submittedProposalCount } = comparisonData;
   const issueImage = issue.images?.[0]?.url;
 
+  const isAlreadySelected = Boolean(
+    issue.selectedProposalId || proposals.some((p) => p.status === "SELECTED")
+  );
+  const selectedProposal = proposals.find(
+    (p) => p.status === "SELECTED" || p.proposalId === issue.selectedProposalId
+  );
+  const deadlineDate = issue.proposalDeadlineAt
+    ? new Date(issue.proposalDeadlineAt)
+    : null;
+  const isDeadlinePassed = deadlineDate
+    ? new Date().getTime() >= deadlineDate.getTime()
+    : false;
+  const isWindowCancelled = issue.proposalWindowStatus === "CANCELLED";
+  const canSelectProposals =
+    isDeadlinePassed &&
+    !isAlreadySelected &&
+    !isWindowCancelled &&
+    issue.status === "VERIFIED";
+
   return (
     <div className="space-y-6 p-6">
       {/* Top Navigation & Breadcrumb */}
@@ -223,6 +284,70 @@ export const AdminIssueProposalsPage: React.FC = () => {
           submittedProposalCount === 1 ? "proposal" : "proposals"
         } for: ${issue.title}`}
       />
+
+      {/* Proposal Selection Lifecycle State Banner */}
+      {isAlreadySelected ? (
+        <div className="flex items-start gap-3 rounded-xl border border-emerald-300 bg-emerald-50 p-4 shadow-2xs">
+          <Award className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-bold text-emerald-900">
+              Proposal Selection Complete
+            </h4>
+            <p className="text-xs text-emerald-800 leading-relaxed">
+              Provider <strong>{selectedProposal?.providerName || "Assigned Provider"}</strong> has been selected for this project
+              {issue.proposalSelectedAt && (
+                <span> on {formatDate(issue.proposalSelectedAt)}</span>
+              )}. All other submitted proposals have been finalized as not selected.
+            </p>
+          </div>
+        </div>
+      ) : !isDeadlinePassed ? (
+        <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-indigo-50 p-4 shadow-2xs">
+          <Info className="h-5 w-5 text-indigo-700 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-bold text-indigo-900">
+              Proposal Submission Window Active
+            </h4>
+            <p className="text-xs text-indigo-800 leading-relaxed">
+              Service providers can submit and update proposals until the 5-day window ends
+              {issue.proposalDeadlineAt && (
+                <span> on <strong>{formatDate(issue.proposalDeadlineAt)}</strong></span>
+              )}. Proposal selection will become available immediately after the deadline passes.
+            </p>
+          </div>
+        </div>
+      ) : isWindowCancelled ? (
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 shadow-2xs">
+          <AlertCircle className="h-5 w-5 text-red-700 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-bold text-red-900">
+              Proposal Window Cancelled
+            </h4>
+            <p className="text-xs text-red-800 leading-relaxed">
+              The proposal submission window for this civic issue was cancelled. Proposals cannot be selected.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 shadow-2xs">
+          <AlertCircle className="h-5 w-5 text-amber-800 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-bold text-amber-900">
+              Submission Window Closed – Provider Selection Available
+            </h4>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              The 5-day submission window has closed. Compare the proposals below and select exactly one provider to execute this project.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {selectionSuccessMessage && (
+        <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800 font-medium">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+          <span>{selectionSuccessMessage}</span>
+        </div>
+      )}
 
       {/* Issue Details Summary Card */}
       <AdminCard className="p-5 overflow-hidden">
@@ -315,14 +440,20 @@ export const AdminIssueProposalsPage: React.FC = () => {
             {proposals.map((prop) => {
               const isRecommended =
                 recommendation?.recommendedProposalId === prop.proposalId;
+              const isSelected = prop.status === "SELECTED";
+              const isNotSelected = prop.status === "NOT_SELECTED";
 
               return (
                 <div
                   key={prop.proposalId}
-                  className={`rounded-xl border bg-white p-5 shadow-xs transition-all duration-200 hover:shadow-md flex flex-col justify-between ${
-                    isRecommended
-                      ? "border-emerald-300 ring-2 ring-emerald-500/20"
-                      : "border-slate-200"
+                  className={`rounded-xl border bg-white p-5 shadow-xs transition-all duration-200 flex flex-col justify-between ${
+                    isSelected
+                      ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/15 shadow-sm"
+                      : isNotSelected
+                      ? "border-slate-200 opacity-75 bg-slate-50/40"
+                      : isRecommended
+                      ? "border-emerald-300 ring-2 ring-emerald-500/20 hover:shadow-md"
+                      : "border-slate-200 hover:shadow-md"
                   }`}
                 >
                   <div className="space-y-4">
@@ -355,11 +486,26 @@ export const AdminIssueProposalsPage: React.FC = () => {
                         </div>
                       </div>
 
-                      {isRecommended && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 text-xs font-bold text-emerald-800 shrink-0">
-                          Recommended
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2 flex-wrap justify-end">
+                        {isSelected && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 text-xs font-bold text-emerald-800 shrink-0">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" />
+                            Selected Provider
+                          </span>
+                        )}
+
+                        {isNotSelected && (
+                          <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-300 px-2.5 py-0.5 text-xs font-medium text-slate-600 shrink-0">
+                            Not Selected
+                          </span>
+                        )}
+
+                        {isRecommended && !isNotSelected && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 text-xs font-bold text-emerald-800 shrink-0">
+                            JanAI Recommended
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Key Proposal Metrics Grid */}
@@ -402,26 +548,53 @@ export const AdminIssueProposalsPage: React.FC = () => {
                   </div>
 
                   {/* Bottom Action */}
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="pt-4 mt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs text-slate-400">
                       Status:{" "}
                       <strong className="text-slate-700 capitalize">
-                        {String(prop.status || "Submitted").toLowerCase()}
+                        {prop.status === "SELECTED"
+                          ? "Selected"
+                          : prop.status === "NOT_SELECTED"
+                          ? "Not Selected"
+                          : "Submitted"}
                       </strong>
                     </span>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate(
-                          `/admin/proposals/issues/${issueId}/proposals/${prop.proposalId}`
-                        )
-                      }
-                      className="inline-flex items-center gap-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-                    >
-                      <span>Review Proposal</span>
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {canSelectProposals && prop.status === "SUBMITTED" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectionError(null);
+                            setSelectingProposalId(prop.proposalId);
+                          }}
+                          disabled={isSelecting}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                          <span>Select this proposal</span>
+                        </button>
+                      )}
+
+                      {!isDeadlinePassed && !isAlreadySelected && (
+                        <span className="text-[11px] text-slate-400 italic">
+                          Selection opens after deadline
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigate(
+                            `/admin/proposals/issues/${issueId}/proposals/${prop.proposalId}`
+                          )
+                        }
+                        className="inline-flex items-center gap-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                      >
+                        <span>Review Proposal</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -429,6 +602,26 @@ export const AdminIssueProposalsPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal for Proposal Selection */}
+      <ConfirmationModal
+        isOpen={Boolean(selectingProposalId)}
+        title="Select this proposal?"
+        message="Are you sure you want to select this provider for this project? All other submitted proposals for this issue will be marked as not selected. This decision cannot be undone through this action."
+        confirmLabel="Confirm Selection"
+        cancelLabel="Cancel"
+        loadingLabel="Selecting..."
+        variant="primary"
+        isLoading={isSelecting}
+        errorMessage={selectionError || undefined}
+        onConfirm={handleConfirmSelection}
+        onClose={() => {
+          if (!isSelecting) {
+            setSelectingProposalId(null);
+            setSelectionError(null);
+          }
+        }}
+      />
     </div>
   );
 };

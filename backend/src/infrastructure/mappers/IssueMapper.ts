@@ -52,6 +52,8 @@ export class IssueMapper {
             proposalOpenedAt,
             proposalDeadlineAt,
             proposalWindowStatus,
+            selectedProposalId: document.selectedProposalId ? document.selectedProposalId.toString() : undefined,
+            proposalSelectedAt: document.proposalSelectedAt,
             createdAt: document.createdAt,
             updatedAt: document.updatedAt,
         };

@@ -20,6 +20,8 @@ export interface IssueResponseDTO {
     proposalOpenedAt?: Date | undefined;
     proposalDeadlineAt?: Date | undefined;
     proposalWindowStatus?: ProposalWindowStatus | undefined;
+    selectedProposalId?: string | undefined;
+    proposalSelectedAt?: Date | undefined;
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;
 }
