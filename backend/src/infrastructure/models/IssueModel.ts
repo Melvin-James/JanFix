@@ -20,6 +20,8 @@ export interface IssueDocument extends Document {
     proposalOpenedAt?: Date;
     proposalDeadlineAt?: Date;
     proposalWindowStatus?: ProposalWindowStatus;
+    selectedProposalId?: Types.ObjectId;
+    proposalSelectedAt?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -90,6 +92,14 @@ const issueSchema = new Schema<IssueDocument>(
             type: String,
             enum: Object.values(ProposalWindowStatus),
             index: true,
+        },
+        selectedProposalId: {
+            type: Schema.Types.ObjectId,
+            ref: "Proposal",
+            index: true,
+        },
+        proposalSelectedAt: {
+            type: Date,
         },
     },
     {

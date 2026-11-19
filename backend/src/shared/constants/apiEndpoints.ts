@@ -55,6 +55,7 @@ export const ApiEndpoints = {
     PROPOSAL_DETAILS: "/proposals/issues/:issueId/proposals/:proposalId",
     ISSUE_PROPOSALS_AI_RECOMMENDATION: "/proposals/issues/:issueId/ai-recommendation",
     PROPOSAL_AI_SUMMARY: "/proposals/issues/:issueId/proposals/:proposalId/ai-summary",
+    SELECT_PROPOSAL: "/proposals/issues/:issueId/select/:proposalId",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",

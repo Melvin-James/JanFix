@@ -73,6 +73,8 @@ import { GetProposalsForIssueUseCase } from "../../application/use-cases/admin/G
 import { GetAdminProposalDetailsUseCase } from "../../application/use-cases/admin/GetAdminProposalDetailsUseCase.js";
 import { GetIssueProposalsRecommendationUseCase } from "../../application/use-cases/admin/GetIssueProposalsRecommendationUseCase.js";
 import { GetProposalAISummaryUseCase } from "../../application/use-cases/admin/GetProposalAISummaryUseCase.js";
+import { ProposalSelectionRepository } from "../../infrastructure/repositories/ProposalSelectionRepository.js";
+import { SelectProposalUseCase } from "../../application/use-cases/admin/SelectProposalUseCase.js";
 
 const router = Router();
 
@@ -198,6 +200,11 @@ const getProposalAISummaryUseCase = new GetProposalAISummaryUseCase(
   geminiProposalAIService,
 );
 
+const proposalSelectionRepository = new ProposalSelectionRepository();
+const selectProposalUseCase = new SelectProposalUseCase(
+  proposalSelectionRepository,
+);
+
 const adminController = new AdminController(
   getProviderApplicationsUseCase,
 
@@ -235,6 +242,7 @@ const adminController = new AdminController(
   getAdminProposalDetailsUseCase,
   getIssueProposalsRecommendationUseCase,
   getProposalAISummaryUseCase,
+  selectProposalUseCase,
 );
 
 router.get(
@@ -426,6 +434,13 @@ router.get(
   authenticate,
   authorizeRoles(Role.ADMIN),
   adminController.getProposalAISummary,
+);
+
+router.patch(
+  ApiEndpoints.ADMIN.SELECT_PROPOSAL,
+  authenticate,
+  authorizeRoles(Role.ADMIN),
+  adminController.selectProposal,
 );
 
 export default router;

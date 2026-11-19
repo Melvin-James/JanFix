@@ -45,7 +45,7 @@ export class GetProviderIssueDetailsUseCase implements IGetProviderIssueDetailsU
         ]);
 
         const hasSubmittedProposal = Boolean(
-            existingProposal && existingProposal.status === ProposalStatus.SUBMITTED
+            existingProposal && existingProposal.status !== ProposalStatus.WITHDRAWN
         );
 
         return {
