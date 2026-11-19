@@ -278,6 +278,16 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
                 );
             }
 
+            if (
+                existingProposal.status === ProposalStatus.SELECTED ||
+                existingProposal.status === ProposalStatus.NOT_SELECTED
+            ) {
+                throw new ApiError(
+                    HttpStatusCode.CONFLICT,
+                    "A proposal for this issue has already been decided. New proposal submissions are not permitted."
+                );
+            }
+
             // Resubmit previously withdrawn proposal
             const updated = await this.proposalRepository.update(existingProposal.id!, {
                 status: ProposalStatus.SUBMITTED,

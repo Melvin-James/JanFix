@@ -144,7 +144,7 @@ export class ProposalRepository implements IProposalRepository {
         if (!Types.ObjectId.isValid(issueId)) return 0;
         return await ProposalModel.countDocuments({
             issueId: new Types.ObjectId(issueId),
-            status: ProposalStatus.SUBMITTED,
+            status: { $in: [ProposalStatus.SUBMITTED, ProposalStatus.SELECTED, ProposalStatus.NOT_SELECTED] },
         });
     }
 
@@ -156,7 +156,7 @@ export class ProposalRepository implements IProposalRepository {
             {
                 $match: {
                     issueId: { $in: validIds },
-                    status: ProposalStatus.SUBMITTED,
+                    status: { $in: [ProposalStatus.SUBMITTED, ProposalStatus.SELECTED, ProposalStatus.NOT_SELECTED] },
                 },
             },
             {
@@ -178,7 +178,7 @@ export class ProposalRepository implements IProposalRepository {
         if (!Types.ObjectId.isValid(issueId)) return [];
         const docs = await ProposalModel.find({
             issueId: new Types.ObjectId(issueId),
-            status: ProposalStatus.SUBMITTED,
+            status: { $in: [ProposalStatus.SUBMITTED, ProposalStatus.SELECTED, ProposalStatus.NOT_SELECTED] },
         }).sort({ submittedAt: -1 });
 
         return docs.map(ProposalMapper.toEntity);
@@ -189,7 +189,6 @@ export class ProposalRepository implements IProposalRepository {
         const doc = await ProposalModel.findOne({
             _id: new Types.ObjectId(id),
             issueId: new Types.ObjectId(issueId),
-            status: ProposalStatus.SUBMITTED,
         });
         return doc ? ProposalMapper.toEntity(doc) : null;
     }
@@ -203,9 +202,9 @@ export class ProposalRepository implements IProposalRepository {
         const safePageSize = Number.isInteger(pageSize) && pageSize > 0 ? Math.min(pageSize, 100) : 10;
         const skip = (safePage - 1) * safePageSize;
 
-        // Step 1: Match active submitted proposals
+        // Step 1: Match active submitted/decided proposals (exclude withdrawn)
         const matchStage: Record<string, unknown> = {
-            status: ProposalStatus.SUBMITTED,
+            status: { $in: [ProposalStatus.SUBMITTED, ProposalStatus.SELECTED, ProposalStatus.NOT_SELECTED] },
         };
 
         // Step 2: Group by issueId to get counts, latest submission, and provider IDs
@@ -377,7 +376,7 @@ export class ProposalRepository implements IProposalRepository {
         const docs = await ProposalModel.find({
             providerId: new Types.ObjectId(providerId),
             issueId: { $in: validIds },
-            status: ProposalStatus.SUBMITTED,
+            status: { $in: [ProposalStatus.SUBMITTED, ProposalStatus.SELECTED, ProposalStatus.NOT_SELECTED] },
         }).select("issueId").lean();
 
         return docs.map((d) => d.issueId.toString());

@@ -1,6 +1,13 @@
 export type ProviderProposalType = "INDIVIDUAL" | "VOLUNTEER_GROUP" | "NGO";
-export type ProposalStatus = "SUBMITTED" | "WITHDRAWN";
+
+export type ProposalStatus =
+  | "SUBMITTED"
+  | "WITHDRAWN"
+  | "SELECTED"
+  | "NOT_SELECTED";
+
 export type ProposalWindowStatus = "OPEN" | "CLOSED" | "CANCELLED";
+
 export type NgoParticipationMode = "TEAM_ONLY" | "OPEN_COMMUNITY";
 
 export interface BudgetItem {

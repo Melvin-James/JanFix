@@ -20,6 +20,8 @@ export interface Issue {
     proposalOpenedAt?: Date | undefined;
     proposalDeadlineAt?: Date | undefined;
     proposalWindowStatus?: ProposalWindowStatus | undefined;
+    selectedProposalId?: string | undefined;
+    proposalSelectedAt?: Date | undefined;
     createdAt?: Date;
     updatedAt?: Date;
 }

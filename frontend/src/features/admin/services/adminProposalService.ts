@@ -6,6 +6,7 @@ import type {
   AdminProposalDetailsResponse,
   AdminProposalAIRecommendation,
   AdminProposalAISummary,
+  SelectProposalResult,
 } from "../types/adminProposalTypes";
 import type { PaginatedResponse } from "../types/Pagination";
 
@@ -94,5 +95,16 @@ export const getProposalAISummary = async (
     }
   );
   return response.data.data || response.data.summary || response.data;
+};
+
+export const selectProposal = async (
+  issueId: string,
+  proposalId: string
+): Promise<SelectProposalResult> => {
+  const response = await axiosInstance.patch(
+    `/admin/proposals/issues/${issueId}/select/${proposalId}`
+  );
+  const payload = response.data.data;
+  return payload.selection || payload;
 };
 
