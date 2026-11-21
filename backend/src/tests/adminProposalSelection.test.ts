@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import mongoose, { Types } from "mongoose";
 import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(process.cwd(), "backend/.env") });
+dotenv.config();
 import { IssueStatus } from "../domain/enums/IssueStatus.js";
 import { IssueVisibility } from "../domain/enums/IssueVisibility.js";
 import { ProviderType } from "../domain/enums/ProviderType.js";
@@ -13,8 +17,6 @@ import { ProposalSelectionRepository } from "../infrastructure/repositories/Prop
 import { SelectProposalUseCase } from "../application/use-cases/admin/SelectProposalUseCase.js";
 import ApiError from "../shared/utils/apiError.js";
 import { HttpStatusCode } from "../shared/enums/HttpStatusCode.js";
-
-dotenv.config();
 
 async function runProposalSelectionTests() {
     console.log("=== Starting Admin Proposal Selection Tests ===");
@@ -140,7 +142,7 @@ async function runProposalSelectionTests() {
         assert.strictEqual(refreshedP3?.status, ProposalStatus.WITHDRAWN, "P3 must remain WITHDRAWN");
         assert.strictEqual(refreshedIssue1?.selectedProposalId?.toString(), p1._id.toString());
         assert.strictEqual(refreshedIssue1?.proposalWindowStatus, ProposalWindowStatus.CLOSED);
-        assert.strictEqual(refreshedIssue1?.status, IssueStatus.VERIFIED, "Issue status must remain VERIFIED");
+        assert.strictEqual(refreshedIssue1?.status, IssueStatus.FUNDRAISING, "Issue status must transition to FUNDRAISING");
         assert(refreshedIssue1?.proposalSelectedAt, "proposalSelectedAt must be populated");
         console.log("Passed: Selected proposal became SELECTED, other became NOT_SELECTED, withdrawn stayed WITHDRAWN, issue updated.");
 

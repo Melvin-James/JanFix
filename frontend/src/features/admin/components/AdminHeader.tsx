@@ -1,10 +1,11 @@
-import { Bell, HelpCircle, Menu, X } from "lucide-react";
+import { HelpCircle, Menu, X } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../../../store/authStore";
 
 import { logoutUser } from "../../auth/services/authService";
+import { NotificationBell } from "../../notifications/components/NotificationBell";
 
 interface AdminHeaderProps {
   sidebarOpen: boolean;
@@ -50,14 +51,7 @@ export default function AdminHeader({ sidebarOpen, onToggleSidebar }: AdminHeade
       </button>
 
       <div className="ml-auto flex items-center gap-2 sm:gap-4">
-        <button
-          type="button"
-          className="relative inline-flex size-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"
-          aria-label="Notifications"
-        >
-          <Bell className="size-5" />
-          <span className="absolute right-2 top-2 size-1.5 rounded-full bg-red-500" />
-        </button>
+        <NotificationBell />
         <button
           type="button"
           className="inline-flex size-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"

@@ -74,6 +74,7 @@ import { GetAdminProposalDetailsUseCase } from "../../application/use-cases/admi
 import { GetIssueProposalsRecommendationUseCase } from "../../application/use-cases/admin/GetIssueProposalsRecommendationUseCase.js";
 import { GetProposalAISummaryUseCase } from "../../application/use-cases/admin/GetProposalAISummaryUseCase.js";
 import { ProposalSelectionRepository } from "../../infrastructure/repositories/ProposalSelectionRepository.js";
+import { NotificationRepository } from "../../infrastructure/repositories/NotificationRepository.js";
 import { SelectProposalUseCase } from "../../application/use-cases/admin/SelectProposalUseCase.js";
 
 const router = Router();
@@ -201,8 +202,12 @@ const getProposalAISummaryUseCase = new GetProposalAISummaryUseCase(
 );
 
 const proposalSelectionRepository = new ProposalSelectionRepository();
+const notificationRepository = new NotificationRepository();
 const selectProposalUseCase = new SelectProposalUseCase(
   proposalSelectionRepository,
+  proposalRepository,
+  issueRepository,
+  notificationRepository,
 );
 
 const adminController = new AdminController(

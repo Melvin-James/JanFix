@@ -1,4 +1,5 @@
 import type { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
+import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
 
 export interface BudgetItemInputDTO {
     heading: string;
@@ -22,6 +23,7 @@ export interface ProposalNgoDetailsInputDTO {
 }
 
 export interface SubmitProposalDTO {
+    fundingType?: ProposalFundingType;
     estimatedTeamSize: number;
     estimatedDurationHours: number;
     budgetItems: BudgetItemInputDTO[];

@@ -6,6 +6,7 @@ import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
 import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.js";
 
 export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
     constructor(
@@ -31,7 +32,7 @@ export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
         }
 
         const fallbackDeadline = new Date(
-            (issue.updatedAt || issue.createdAt || serverNow).getTime() + 5 * 24 * 60 * 60 * 1000
+            (issue.updatedAt || issue.createdAt || serverNow).getTime() + PROPOSAL_SUBMISSION_WINDOW_MS
         );
         const proposalDeadline = issue.proposalDeadlineAt || fallbackDeadline;
 

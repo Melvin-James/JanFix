@@ -1,6 +1,7 @@
 import type { ProviderType } from "../../../domain/enums/ProviderType.js";
 import type { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
 import type { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
+import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
 
 export interface BudgetItemDTO {
     id?: string | undefined;
@@ -36,6 +37,7 @@ export interface ProposalResponseDTO {
     providerId: string;
     providerType: ProviderType;
     status: ProposalStatus;
+    fundingType?: ProposalFundingType | undefined;
     issueSnapshot: ProposalIssueSnapshotDTO;
     estimatedTeamSize: number;
     teamSize?: number | undefined;

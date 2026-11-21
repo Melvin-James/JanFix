@@ -2,6 +2,7 @@ import { Schema, model, type Document, Types } from "mongoose";
 import { ProviderType } from "../../domain/enums/ProviderType.js";
 import { ProposalStatus } from "../../domain/enums/ProposalStatus.js";
 import { NgoParticipationMode } from "../../domain/enums/NgoParticipationMode.js";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
 
 export interface BudgetItemSubdocument {
     _id: Types.ObjectId;
@@ -35,6 +36,7 @@ export interface ProposalDocument extends Document {
     providerId: Types.ObjectId;
     providerType: ProviderType;
     status: ProposalStatus;
+    fundingType: ProposalFundingType;
     issueSnapshot: ProposalIssueSnapshotSubdocument;
     estimatedTeamSize: number;
     estimatedDurationHours: number;
@@ -163,6 +165,12 @@ const proposalSchema = new Schema<ProposalDocument>(
             required: true,
             index: true,
         },
+        fundingType: {
+            type: String,
+            enum: Object.values(ProposalFundingType),
+            default: ProposalFundingType.COMMUNITY_FUNDING,
+            required: true,
+        },
         issueSnapshot: {
             type: issueSnapshotSchema,
             required: true,
@@ -179,16 +187,23 @@ const proposalSchema = new Schema<ProposalDocument>(
         },
         budgetItems: {
             type: [budgetItemSchema],
-            validate: [
-                (val: BudgetItemSubdocument[]) => val.length >= 1,
-                "Proposal must contain at least one budget item",
-            ],
+            validate: {
+                validator: function (this: any, val: BudgetItemSubdocument[]) {
+                    const doc = typeof this?.ownerDocument === "function" ? this.ownerDocument() : this;
+                    const fType = doc?.fundingType ?? doc?._doc?.fundingType;
+                    if (fType === ProposalFundingType.NGO_OWN_FUNDING) {
+                        return true;
+                    }
+                    return Array.isArray(val) && val.length >= 1;
+                },
+                message: "Proposal must contain at least one budget item",
+            },
             default: [],
         },
         totalBudgetPaise: {
             type: Number,
             required: true,
-            min: 1,
+            min: 0,
         },
         executionRoadmap: {
             type: [executionRoadmapItemSchema],

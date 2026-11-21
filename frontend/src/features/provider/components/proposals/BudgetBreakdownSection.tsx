@@ -8,6 +8,8 @@ interface BudgetBreakdownSectionProps {
   onChange: (items: BudgetItemFormData[]) => void;
   error?: string;
   isReadOnly?: boolean;
+  isDisabled?: boolean;
+  disabledMessage?: string;
 }
 
 export const BudgetBreakdownSection: React.FC<BudgetBreakdownSectionProps> = ({
@@ -15,6 +17,8 @@ export const BudgetBreakdownSection: React.FC<BudgetBreakdownSectionProps> = ({
   onChange,
   error,
   isReadOnly = false,
+  isDisabled = false,
+  disabledMessage,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -67,7 +71,7 @@ export const BudgetBreakdownSection: React.FC<BudgetBreakdownSectionProps> = ({
           </p>
         </div>
 
-        {!isReadOnly && (
+        {!isReadOnly && !isDisabled && (
           <button
             type="button"
             onClick={handleOpenAdd}
@@ -79,82 +83,97 @@ export const BudgetBreakdownSection: React.FC<BudgetBreakdownSectionProps> = ({
         )}
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-          <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {items.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center">
-          <p className="text-xs text-slate-500">
-            No budget items added yet. Click &quot;Add Budget Item&quot; to begin your itemized estimate.
+      {isDisabled ? (
+        <div className="rounded-lg border border-indigo-200 bg-indigo-50/70 p-6 text-center space-y-2">
+          <div className="flex items-center justify-center gap-2 text-indigo-900 font-semibold text-sm sm:text-base">
+            <IndianRupee className="h-5 w-5 text-indigo-600" />
+            <span>NGO Self-Funding Active</span>
+          </div>
+          <p className="text-xs text-indigo-700 max-w-xl mx-auto leading-relaxed">
+            {disabledMessage ||
+              "Your organization has chosen to fund this initiative independently. Itemized budget estimates and community fundraising are not required."}
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-100">
-          <table className="min-w-full divide-y divide-slate-100 text-left text-sm">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
-              <tr>
-                <th scope="col" className="px-4 py-3">#</th>
-                <th scope="col" className="px-4 py-3">Expense Item</th>
-                <th scope="col" className="px-4 py-3 text-right">Estimated Amount</th>
-                {!isReadOnly && (
-                  <th scope="col" className="px-4 py-3 text-right w-24">Actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
-              {items.map((item, idx) => (
-                <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="px-4 py-3 text-xs text-slate-400 font-medium">
-                    {idx + 1}
-                  </td>
-                  <td className="px-4 py-3 text-xs sm:text-sm font-medium text-slate-900">
-                    {item.heading}
-                  </td>
-                  <td className="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-slate-800 font-mono">
-                    {formatINR(item.amountRupees)}
-                  </td>
-                  {!isReadOnly && (
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(idx)}
-                          title="Edit Item"
-                          className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteItem(idx)}
-                          title="Delete Item"
-                          className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+        <>
+          {error && (
+            <div className="flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-200 p-3 text-xs text-blue-700">
+              <AlertCircle className="h-4 w-4 shrink-0 text-blue-500" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {items.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center">
+              <p className="text-xs text-slate-500">
+                No budget items added yet. Click &quot;Add Budget Item&quot; to begin your itemized estimate.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-slate-100">
+              <table className="min-w-full divide-y divide-slate-100 text-left text-sm">
+                <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
+                  <tr>
+                    <th scope="col" className="px-4 py-3">#</th>
+                    <th scope="col" className="px-4 py-3">Expense Item</th>
+                    <th scope="col" className="px-4 py-3 text-right">Estimated Amount</th>
+                    {!isReadOnly && (
+                      <th scope="col" className="px-4 py-3 text-right w-24">Actions</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {items.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-4 py-3 text-xs text-slate-400 font-medium">
+                        {idx + 1}
+                      </td>
+                      <td className="px-4 py-3 text-xs sm:text-sm font-medium text-slate-900">
+                        {item.heading}
+                      </td>
+                      <td className="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-slate-800 font-mono">
+                        {formatINR(item.amountRupees)}
+                      </td>
+                      {!isReadOnly && (
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(idx)}
+                              title="Edit Item"
+                              className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteItem(idx)}
+                              title="Delete Item"
+                              className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-slate-50 border-t-2 border-slate-200">
+                    <td colSpan={2} className="px-4 py-3 text-xs sm:text-sm font-bold text-slate-900 uppercase">
+                      Estimated Total
                     </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-slate-50 border-t-2 border-slate-200">
-                <td colSpan={2} className="px-4 py-3 text-xs sm:text-sm font-bold text-slate-900 uppercase">
-                  Estimated Total
-                </td>
-                <td className="px-4 py-3 text-right text-sm sm:text-base font-bold text-emerald-700 font-mono">
-                  {formatINR(totalBudget)}
-                </td>
-                {!isReadOnly && <td />}
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+                    <td className="px-4 py-3 text-right text-sm sm:text-base font-bold text-emerald-700 font-mono">
+                      {formatINR(totalBudget)}
+                    </td>
+                    {!isReadOnly && <td />}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </>
       )}
 
       {modalOpen && (

@@ -3,6 +3,18 @@ import type { IssueLocation } from "./IssueLocation.js";
 import type { IssueVisibility } from "../enums/IssueVisibility.js";
 import type { IssueStatus } from "../enums/IssueStatus.js";
 import type { ProposalWindowStatus } from "../enums/ProposalWindowStatus.js";
+import type { ProposalFundingType } from "../enums/ProposalFundingType.js";
+
+export interface IssueFundingSnapshot {
+    fundingType: ProposalFundingType;
+    providerBudgetPaise: number;
+    platformFeeRatePercent: number;
+    platformFeePaise: number;
+    fundingTargetPaise: number;
+    amountRaisedPaise: number;
+    selectedProposalId: string;
+    selectedAt: Date;
+}
 
 export interface Issue {
     id?: string;
@@ -22,6 +34,7 @@ export interface Issue {
     proposalWindowStatus?: ProposalWindowStatus | undefined;
     selectedProposalId?: string | undefined;
     proposalSelectedAt?: Date | undefined;
+    fundingSnapshot?: IssueFundingSnapshot | undefined;
     createdAt?: Date;
     updatedAt?: Date;
 }
