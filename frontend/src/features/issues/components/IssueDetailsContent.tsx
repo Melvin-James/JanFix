@@ -7,10 +7,16 @@ import {
   Globe,
   AlertCircle,
   User,
+  Sparkles,
 } from "lucide-react";
 import { StatusBadge } from "../../../components/UI/StatusBadge";
 import type { Issue } from "../types/issue";
 import { formatRelativeTime } from "../../../utils/date";
+import { IssueLocationPreviewMap } from "../../admin/components/IssueLocationPreviewMap";
+import { ProjectTimelineSection } from "./project/ProjectTimelineSection";
+import { ProjectFundingSection } from "./project/ProjectFundingSection";
+import { ProjectSelectedProviderCard } from "./project/ProjectSelectedProviderCard";
+import { ProjectProposalDetailsSection } from "./project/ProjectProposalDetailsSection";
 
 export interface IssueDetailsContentProps {
   issue: Issue;
@@ -33,6 +39,8 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
     }
   }, [issue.id, issue.images]);
 
+  const hasSelectedProposal = Boolean(issue.selectedProposalId || issue.selectedProposal);
+
   return (
     <div className="space-y-6">
       {/* Rejection Notice (Shown when status is REJECTED and rejectionReason is accessible) */}
@@ -49,6 +57,26 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Active Civic Project Banner */}
+      {hasSelectedProposal && (
+        <div className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-4 shadow-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="h-5 w-5 text-indigo-600 shrink-0" />
+            <div>
+              <h2 className="text-sm font-semibold text-indigo-900">
+                Active Civic Project Implementation
+              </h2>
+              <p className="text-xs text-indigo-700">
+                A structured execution proposal has been approved and selected for this civic issue.
+              </p>
+            </div>
+          </div>
+          <span className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white shadow-2xs shrink-0">
+            {issue.status}
+          </span>
         </div>
       )}
 
@@ -110,6 +138,31 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
         )}
       </div>
 
+      {/* Public Project Details: Timeline, Funding, Provider Profile, Proposal Details */}
+      {hasSelectedProposal && (
+        <div className="space-y-6 pt-2">
+          {/* 1. Project Lifecycle Timeline */}
+          {issue.timelineEvents && issue.timelineEvents.length > 0 && (
+            <ProjectTimelineSection events={issue.timelineEvents} />
+          )}
+
+          {/* 2. Funding Information & 5% Platform Fee Transparency */}
+          {issue.fundingSnapshot && (
+            <ProjectFundingSection snapshot={issue.fundingSnapshot} />
+          )}
+
+          {/* 3. Selected Service Provider Profile */}
+          {issue.selectedProvider && (
+            <ProjectSelectedProviderCard provider={issue.selectedProvider} />
+          )}
+
+          {/* 4. Execution Roadmap & Proposal Breakdown */}
+          {issue.selectedProposal && (
+            <ProjectProposalDetailsSection proposal={issue.selectedProposal} />
+          )}
+        </div>
+      )}
+
       {/* Photos Section */}
       {issue.images && issue.images.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
@@ -150,8 +203,8 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
 
       {/* Location & Metadata */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Location Card */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-3">
+        {/* Location Card with Map Preview */}
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2 font-semibold text-slate-900">
             <MapPin className="h-5 w-5 text-blue-600" />
             <h2>Location Details</h2>
@@ -174,25 +227,25 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
             {issue.location.postalCode && (
               <p className="text-slate-500">PIN: {issue.location.postalCode}</p>
             )}
-            {issue.location.coordinates && (
-              <p className="text-xs text-slate-400 pt-2 font-mono">
-                Coordinates: {issue.location.coordinates.latitude.toFixed(5)},{" "}
-                {issue.location.coordinates.longitude.toFixed(5)}
-              </p>
-            )}
           </div>
+
+          <IssueLocationPreviewMap
+            coordinates={issue.location.coordinates}
+            address={issue.location.address}
+            className="h-44 w-full rounded-lg overflow-hidden border border-slate-200"
+          />
         </div>
 
         {/* Status Timeline / Info Card */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-3">
           <div className="flex items-center gap-2 font-semibold text-slate-900">
             <Calendar className="h-5 w-5 text-emerald-600" />
-            <h2>Timeline & Verification</h2>
+            <h2>Overview & Status</h2>
           </div>
           <div className="space-y-2 text-sm text-slate-600">
             <div className="flex justify-between border-b border-slate-100 pb-2">
               <span className="text-slate-500">Current Status</span>
-              <span className="font-medium text-slate-800">{issue.status}</span>
+              <StatusBadge status={issue.status} />
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-2">
               <span className="text-slate-500">Reported By</span>
@@ -222,4 +275,3 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
 };
 
 export default IssueDetailsContent;
-

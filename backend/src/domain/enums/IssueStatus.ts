@@ -2,4 +2,9 @@ export enum IssueStatus {
     REPORTED = "REPORTED",
     VERIFIED = "VERIFIED",
     REJECTED = "REJECTED",
+    FUNDRAISING = "FUNDRAISING",
+    PLANNED = "PLANNED",
+    ONGOING = "ONGOING",
+    COMPLETED = "COMPLETED",
 }
+

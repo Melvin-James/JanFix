@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
 
-export class BaseRepository<T> {
+export abstract class BaseRepository<T> {
   constructor(
     protected model: {
       create(data: unknown): Promise<Document>;

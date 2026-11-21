@@ -11,6 +11,7 @@ import { IssueStatus } from "../../domain/enums/IssueStatus.js";
 import { IssueVisibility } from "../../domain/enums/IssueVisibility.js";
 import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
 import { getReviewEligibilityThreshold } from "../../shared/utils/issueEligibility.js";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../shared/constants/proposal.constants.js";
 
 type IssueFilter = QueryFilter<IssueDocument>;
 
@@ -102,9 +103,17 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
         // Base Access Conditions according to JanFix business rules:
         // 1. PUBLIC issues are visible across non-rejected statuses (rejected issues are excluded from general feed)
         // 2. Pre-approval PRIVATE issues (non-verified, non-rejected) are visible in general listings
-        // 3. Approved PRIVATE issues (status === VERIFIED) are visible ONLY to original reporter
+        // 3. Approved/Selected PRIVATE issues (status !== REPORTED and !== REJECTED) are visible ONLY to original reporter
         //    (and explicitly added members once membership support is introduced)
         // 4. Rejected issues (PUBLIC or PRIVATE) must NOT appear in general user-facing issue listings
+        const postApprovalPrivateStatuses = [
+            IssueStatus.VERIFIED,
+            IssueStatus.FUNDRAISING,
+            IssueStatus.PLANNED,
+            IssueStatus.ONGOING,
+            IssueStatus.COMPLETED,
+        ];
+
         const baseAccessConditions: Record<string, unknown>[] = [
             {
                 visibility: IssueVisibility.PUBLIC,
@@ -112,14 +121,14 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
             },
             {
                 visibility: IssueVisibility.PRIVATE,
-                status: { $nin: [IssueStatus.VERIFIED, IssueStatus.REJECTED] },
+                status: { $nin: [...postApprovalPrivateStatuses, IssueStatus.REJECTED] },
             },
         ];
 
         if (validRequestingUserId) {
             baseAccessConditions.push({
                 visibility: IssueVisibility.PRIVATE,
-                status: IssueStatus.VERIFIED,
+                status: { $in: postApprovalPrivateStatuses },
                 createdBy: validRequestingUserId,
             });
         }
@@ -450,7 +459,7 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
         } else if (newStatus === IssueStatus.VERIFIED) {
             updateDoc.$unset = { rejectionReason: 1 };
             updateDoc.proposalOpenedAt = serverNow;
-            updateDoc.proposalDeadlineAt = new Date(serverNow.getTime() + 5 * 24 * 60 * 60 * 1000);
+            updateDoc.proposalDeadlineAt = new Date(serverNow.getTime() + PROPOSAL_SUBMISSION_WINDOW_MS);
             updateDoc.proposalWindowStatus = ProposalWindowStatus.OPEN;
         }
 

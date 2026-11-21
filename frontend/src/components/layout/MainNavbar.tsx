@@ -15,6 +15,7 @@ import {
   logoutUser,
   switchMode,
 } from "../../features/auth/services/authService";
+import { NotificationBell } from "../../features/notifications/components/NotificationBell";
 import toast from "react-hot-toast";
 
 interface MainNavbarProps {
@@ -248,8 +249,12 @@ function MainNavbar({ onToggleSidebar, sidebarOpen = false }: MainNavbarProps) {
           </div>
         )}
 
-        {/* Account Profile Icon & Dropdown */}
-        <div className="relative" ref={dropdownRef}>
+        {/* Right Actions: Notifications & Account Profile */}
+        <div className="flex items-center gap-3">
+          <NotificationBell />
+
+          {/* Account Profile Icon & Dropdown */}
+          <div className="relative" ref={dropdownRef}>
           <button
             type="button"
             id="user-profile-menu-button"
@@ -345,6 +350,7 @@ function MainNavbar({ onToggleSidebar, sidebarOpen = false }: MainNavbarProps) {
               </div>
             </div>
           )}
+          </div>
         </div>
       </nav>
     </header>

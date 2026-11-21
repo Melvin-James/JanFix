@@ -75,9 +75,7 @@ export const proposalFormSchema = z
       })
       .positive("Estimated duration must be greater than 0 hours")
       .max(500, "Duration must be reasonable (maximum 500 hours)"),
-    budgetItems: z
-      .array(budgetItemFormSchema)
-      .min(1, "At least one budget item is required"),
+    budgetItems: z.array(budgetItemFormSchema),
     executionRoadmap: z
       .array(roadmapItemFormSchema)
       .min(1, "At least one roadmap item is required"),
@@ -114,7 +112,19 @@ export const proposalFormSchema = z
       }
     }
 
-    // 2. NGO Conditional Validations
+    // 2. Budget Items Requirement (waived for NGO self-funding)
+    const isNgoOwnFunding = data.isNgo && data.requiresFunding === false;
+    if (!isNgoOwnFunding) {
+      if (!data.budgetItems || data.budgetItems.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "At least one budget item is required",
+          path: ["budgetItems"],
+        });
+      }
+    }
+
+    // 3. NGO Conditional Validations
     if (data.isNgo) {
       if (typeof data.requiresFunding !== "boolean") {
         ctx.addIssue({

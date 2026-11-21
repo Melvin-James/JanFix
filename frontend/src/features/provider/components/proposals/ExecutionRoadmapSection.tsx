@@ -89,8 +89,8 @@ export const ExecutionRoadmapSection: React.FC<ExecutionRoadmapSectionProps> = (
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-          <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+        <div className="flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-200 p-3 text-xs text-blue-700">
+          <AlertCircle className="h-4 w-4 shrink-0 text-blue-500" />
           <span>{error}</span>
         </div>
       )}

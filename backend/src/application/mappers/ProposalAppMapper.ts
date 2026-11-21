@@ -9,6 +9,7 @@ export class ProposalAppMapper {
             providerId: proposal.providerId,
             providerType: proposal.providerType,
             status: proposal.status,
+            fundingType: proposal.fundingType,
             issueSnapshot: {
                 title: proposal.issueSnapshot.title,
                 description: proposal.issueSnapshot.description,

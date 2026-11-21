@@ -5,6 +5,9 @@ export type StatusBadgeVariant =
     | "red"
     | "amber"
     | "slate"
+    | "blue"
+    | "indigo"
+    | "purple"
     | "success"
     | "danger"
     | "warning"
@@ -24,6 +27,9 @@ const variantStyles: Record<string, string> = {
     danger: "bg-red-50 text-red-700",
     amber: "bg-amber-50 text-amber-700",
     warning: "bg-amber-50 text-amber-700",
+    blue: "bg-blue-50 text-blue-700",
+    indigo: "bg-indigo-50 text-indigo-700",
+    purple: "bg-purple-50 text-purple-700",
     slate: "bg-slate-100 text-slate-700",
     neutral: "bg-slate-100 text-slate-700",
 };
@@ -35,7 +41,9 @@ function getVariantFromStatus(status?: string): StatusBadgeVariant {
         normalized === "ACTIVE" ||
         normalized === "VERIFIED" ||
         normalized === "APPROVED" ||
-        normalized === "RESOLVED"
+        normalized === "RESOLVED" ||
+        normalized === "COMPLETED" ||
+        normalized === "SELECTED"
     ) {
         return "emerald";
     }
@@ -46,13 +54,20 @@ function getVariantFromStatus(status?: string): StatusBadgeVariant {
     ) {
         return "red";
     }
+    if (normalized === "FUNDRAISING") {
+        return "indigo";
+    }
+    if (normalized === "PLANNED") {
+        return "blue";
+    }
     if (
         normalized === "NOT_VERIFIED" ||
         normalized === "SUBMITTED" ||
         normalized === "UNDER_REVIEW" ||
         normalized === "PENDING" ||
         normalized === "REPORTED" ||
-        normalized === "IN_PROGRESS"
+        normalized === "IN_PROGRESS" ||
+        normalized === "ONGOING"
     ) {
         return "amber";
     }

@@ -1,5 +1,7 @@
 export type ProviderProposalType = "INDIVIDUAL" | "VOLUNTEER_GROUP" | "NGO";
 
+export type ProposalFundingType = "COMMUNITY_FUNDING" | "NGO_OWN_FUNDING";
+
 export type ProposalStatus =
   | "SUBMITTED"
   | "WITHDRAWN"
@@ -44,6 +46,7 @@ export interface Proposal {
   providerId: string;
   providerType: ProviderProposalType;
   status: ProposalStatus;
+  fundingType?: ProposalFundingType;
   issueSnapshot: ProposalIssueSnapshot;
   estimatedTeamSize: number;
   estimatedDurationHours: number;
@@ -59,6 +62,7 @@ export interface Proposal {
 }
 
 export interface SubmitProposalPayload {
+  fundingType?: ProposalFundingType;
   estimatedTeamSize: number;
   estimatedDurationHours: number;
   budgetItems: {

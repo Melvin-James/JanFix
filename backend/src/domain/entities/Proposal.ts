@@ -1,6 +1,7 @@
 import type { ProviderType } from "../enums/ProviderType.js";
 import type { ProposalStatus } from "../enums/ProposalStatus.js";
 import type { NgoParticipationMode } from "../enums/NgoParticipationMode.js";
+import type { ProposalFundingType } from "../enums/ProposalFundingType.js";
 
 export interface BudgetItem {
     id?: string | undefined;
@@ -35,6 +36,7 @@ export interface Proposal {
     providerId: string;
     providerType: ProviderType;
     status: ProposalStatus;
+    fundingType?: ProposalFundingType | undefined;
     issueSnapshot: ProposalIssueSnapshot;
     estimatedTeamSize: number;
     estimatedDurationHours: number;

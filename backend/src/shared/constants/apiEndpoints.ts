@@ -73,4 +73,10 @@ export const ApiEndpoints = {
     UPVOTE_STATUS: "/:issueId/upvote-status",
     COMMENTS: "/:issueId/comments",
   },
+  NOTIFICATIONS: {
+    BASE: "/api/v1/notifications",
+    ROOT: "/",
+    READ_SINGLE: "/:id/read",
+    READ_ALL: "/read-all",
+  },
 } as const;

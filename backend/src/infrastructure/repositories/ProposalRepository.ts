@@ -17,6 +17,7 @@ export class ProposalRepository implements IProposalRepository {
             providerId: new Types.ObjectId(proposal.providerId),
             providerType: proposal.providerType,
             status: proposal.status,
+            fundingType: proposal.fundingType,
             issueSnapshot: proposal.issueSnapshot,
             estimatedTeamSize: proposal.estimatedTeamSize,
             estimatedDurationHours: proposal.estimatedDurationHours,

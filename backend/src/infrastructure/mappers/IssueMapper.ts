@@ -3,6 +3,7 @@ import type { Issue } from "../../domain/entities/Issue.js";
 import type { IssueDocument } from "../models/IssueModel.js";
 import { IssueStatus } from "../../domain/enums/IssueStatus.js";
 import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../shared/constants/proposal.constants.js";
 
 export class IssueMapper {
     static toEntity(doc: Document): Issue {
@@ -29,7 +30,7 @@ export class IssueMapper {
 
         const baseTimestamp = document.updatedAt || document.createdAt || new Date();
         const proposalOpenedAt = document.proposalOpenedAt || (document.status === IssueStatus.VERIFIED ? baseTimestamp : undefined);
-        const proposalDeadlineAt = document.proposalDeadlineAt || (document.status === IssueStatus.VERIFIED ? new Date(baseTimestamp.getTime() + 5 * 24 * 60 * 60 * 1000) : undefined);
+        const proposalDeadlineAt = document.proposalDeadlineAt || (document.status === IssueStatus.VERIFIED ? new Date(baseTimestamp.getTime() + PROPOSAL_SUBMISSION_WINDOW_MS) : undefined);
         const proposalWindowStatus = document.proposalWindowStatus || (
             document.status === IssueStatus.VERIFIED
                 ? (proposalDeadlineAt && new Date() >= proposalDeadlineAt ? ProposalWindowStatus.CLOSED : ProposalWindowStatus.OPEN)
@@ -54,6 +55,18 @@ export class IssueMapper {
             proposalWindowStatus,
             selectedProposalId: document.selectedProposalId ? document.selectedProposalId.toString() : undefined,
             proposalSelectedAt: document.proposalSelectedAt,
+            fundingSnapshot: document.fundingSnapshot
+                ? {
+                    fundingType: document.fundingSnapshot.fundingType,
+                    providerBudgetPaise: document.fundingSnapshot.providerBudgetPaise,
+                    platformFeeRatePercent: document.fundingSnapshot.platformFeeRatePercent,
+                    platformFeePaise: document.fundingSnapshot.platformFeePaise,
+                    fundingTargetPaise: document.fundingSnapshot.fundingTargetPaise,
+                    amountRaisedPaise: document.fundingSnapshot.amountRaisedPaise,
+                    selectedProposalId: document.fundingSnapshot.selectedProposalId.toString(),
+                    selectedAt: document.fundingSnapshot.selectedAt,
+                }
+                : undefined,
             createdAt: document.createdAt,
             updatedAt: document.updatedAt,
         };

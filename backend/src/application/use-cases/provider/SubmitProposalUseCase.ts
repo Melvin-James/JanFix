@@ -10,11 +10,13 @@ import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
 import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
 import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
 import { ProviderType } from "../../../domain/enums/ProviderType.js";
+import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
 import { Role } from "../../../domain/enums/Role.js";
 import { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
 import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.js";
 
 function parseTimeToMinutes(timeStr: string): number {
     const parts = timeStr.split(":").map(Number);
@@ -58,7 +60,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
 
         // 2. Enforce 5-day proposal submission window
         const fallbackDeadline = new Date(
-            (issue.updatedAt || issue.createdAt || serverNow).getTime() + 5 * 24 * 60 * 60 * 1000
+            (issue.updatedAt || issue.createdAt || serverNow).getTime() + PROPOSAL_SUBMISSION_WINDOW_MS
         );
         const proposalDeadline = issue.proposalDeadlineAt || fallbackDeadline;
 
@@ -110,47 +112,59 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Estimated duration must be greater than 0 hours");
         }
 
-        // 6. Validate Budget Items & Compute Total Budget in Paise
-        if (!Array.isArray(dto.budgetItems) || dto.budgetItems.length === 0) {
-            throw new ApiError(HttpStatusCode.BAD_REQUEST, "At least one budget item is required");
+        // Derive fundingType
+        let fundingType = ProposalFundingType.COMMUNITY_FUNDING;
+        if (providerType === ProviderType.NGO) {
+            if (dto.fundingType === ProposalFundingType.NGO_OWN_FUNDING || dto.ngoDetails?.requiresFunding === false) {
+                fundingType = ProposalFundingType.NGO_OWN_FUNDING;
+            }
         }
 
+        // 6. Validate Budget Items & Compute Total Budget in Paise
         const mappedBudgetItems: BudgetItem[] = [];
         let totalBudgetPaise = 0;
 
-        for (const item of dto.budgetItems) {
-            const heading = item.heading?.trim();
-            if (!heading || heading.length > 100) {
-                throw new ApiError(
-                    HttpStatusCode.BAD_REQUEST,
-                    "Each budget item must have a valid heading (maximum 100 characters)"
-                );
+        if (fundingType === ProposalFundingType.NGO_OWN_FUNDING) {
+            // For NGO self-funding, budget is not required / is zero
+        } else {
+            if (!Array.isArray(dto.budgetItems) || dto.budgetItems.length === 0) {
+                throw new ApiError(HttpStatusCode.BAD_REQUEST, "At least one budget item is required");
             }
 
-            let amountPaise: number;
-            if (typeof item.amountPaise === "number" && item.amountPaise > 0) {
-                amountPaise = Math.round(item.amountPaise);
-            } else if (typeof item.amountRupees === "number" && item.amountRupees > 0) {
-                amountPaise = Math.round(item.amountRupees * 100);
-            } else {
-                throw new ApiError(
-                    HttpStatusCode.BAD_REQUEST,
-                    `Invalid amount for budget item "${heading}". Amount must be positive.`
-                );
-            }
+            for (const item of dto.budgetItems) {
+                const heading = item.heading?.trim();
+                if (!heading || heading.length > 100) {
+                    throw new ApiError(
+                        HttpStatusCode.BAD_REQUEST,
+                        "Each budget item must have a valid heading (maximum 100 characters)"
+                    );
+                }
 
-            if (amountPaise <= 0) {
-                throw new ApiError(
-                    HttpStatusCode.BAD_REQUEST,
-                    `Budget item "${heading}" must have an amount greater than zero`
-                );
-            }
+                let amountPaise: number;
+                if (typeof item.amountPaise === "number" && item.amountPaise > 0) {
+                    amountPaise = Math.round(item.amountPaise);
+                } else if (typeof item.amountRupees === "number" && item.amountRupees > 0) {
+                    amountPaise = Math.round(item.amountRupees * 100);
+                } else {
+                    throw new ApiError(
+                        HttpStatusCode.BAD_REQUEST,
+                        `Invalid amount for budget item "${heading}". Amount must be positive.`
+                    );
+                }
 
-            mappedBudgetItems.push({
-                heading,
-                amountPaise,
-            });
-            totalBudgetPaise += amountPaise;
+                if (amountPaise <= 0) {
+                    throw new ApiError(
+                        HttpStatusCode.BAD_REQUEST,
+                        `Budget item "${heading}" must have an amount greater than zero`
+                    );
+                }
+
+                mappedBudgetItems.push({
+                    heading,
+                    amountPaise,
+                });
+                totalBudgetPaise += amountPaise;
+            }
         }
 
         // 7. Validate Execution Roadmap (Daily Schedule Timetable)
@@ -291,6 +305,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
             // Resubmit previously withdrawn proposal
             const updated = await this.proposalRepository.update(existingProposal.id!, {
                 status: ProposalStatus.SUBMITTED,
+                fundingType,
                 issueSnapshot: {
                     title: issue.title,
                     description: issue.description,
@@ -318,6 +333,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
             providerId,
             providerType,
             status: ProposalStatus.SUBMITTED,
+            fundingType,
             issueSnapshot: {
                 title: issue.title,
                 description: issue.description,
