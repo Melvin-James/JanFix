@@ -2,7 +2,14 @@ import type { UploadedFile } from "../../provider/types/uploadedFile";
 
 export type IssueVisibility = "PUBLIC" | "PRIVATE";
 
-export type IssueStatus = "REPORTED" | "VERIFIED" | "REJECTED";
+export type IssueStatus =
+  | "REPORTED"
+  | "VERIFIED"
+  | "REJECTED"
+  | "FUNDRAISING"
+  | "PLANNED"
+  | "ONGOING"
+  | "COMPLETED";
 
 export interface Coordinates {
   latitude: number;
@@ -16,6 +23,72 @@ export interface IssueLocation {
   city?: string;
   state?: string;
   postalCode?: string;
+}
+
+export interface IssueFundingSnapshot {
+  fundingType: "COMMUNITY_FUNDING" | "NGO_OWN_FUNDING";
+  providerBudgetPaise: number;
+  providerBudgetRupees: number;
+  platformFeeRatePercent: number;
+  platformFeePaise: number;
+  platformFeeRupees: number;
+  fundingTargetPaise: number;
+  fundingTargetRupees: number;
+  amountRaisedPaise: number;
+  amountRaisedRupees: number;
+  selectedProposalId: string;
+  selectedAt: string;
+}
+
+export interface PublicSelectedProposal {
+  id: string;
+  estimatedTeamSize: number;
+  estimatedDurationHours: number;
+  fundingType: "COMMUNITY_FUNDING" | "NGO_OWN_FUNDING";
+  budgetItems: {
+    id?: string;
+    heading: string;
+    amountPaise: number;
+    amountRupees: number;
+  }[];
+  totalBudgetPaise: number;
+  totalBudgetRupees: number;
+  executionRoadmap: {
+    id?: string;
+    heading: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+    order: number;
+  }[];
+  ngoDetails?: {
+    requiresFunding: boolean;
+    participationMode: string;
+    expectedParticipants?: number;
+    requiresCommunityChat: boolean;
+  };
+  submittedAt: string;
+}
+
+export interface PublicProviderProfile {
+  id: string;
+  fullName: string;
+  providerType: string;
+  organizationName?: string;
+  bio?: string;
+  profileImage?: string;
+  logo?: string;
+  teamSize?: number;
+  communityPhotos?: string[];
+}
+
+export interface IssueTimelineEvent {
+  status: IssueStatus;
+  title: string;
+  description: string;
+  timestamp?: string;
+  isCompleted: boolean;
+  isCurrent: boolean;
 }
 
 export interface Issue {
@@ -36,6 +109,10 @@ export interface Issue {
   proposalWindowStatus?: "OPEN" | "CLOSED" | "CANCELLED";
   selectedProposalId?: string;
   proposalSelectedAt?: string;
+  fundingSnapshot?: IssueFundingSnapshot;
+  selectedProposal?: PublicSelectedProposal;
+  selectedProvider?: PublicProviderProfile;
+  timelineEvents?: IssueTimelineEvent[];
   createdAt?: string;
   updatedAt?: string;
 }

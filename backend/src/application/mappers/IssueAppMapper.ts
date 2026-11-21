@@ -24,6 +24,24 @@ export class IssueAppMapper {
             proposalWindowStatus: issue.proposalWindowStatus,
             selectedProposalId: issue.selectedProposalId,
             proposalSelectedAt: issue.proposalSelectedAt,
+            fundingSnapshot: issue.fundingSnapshot
+                ? {
+                    fundingType: issue.fundingSnapshot.fundingType,
+                    providerBudgetPaise: issue.fundingSnapshot.providerBudgetPaise,
+                    providerBudgetRupees: issue.fundingSnapshot.providerBudgetPaise / 100,
+                    platformFeeRatePercent: issue.fundingSnapshot.platformFeeRatePercent,
+                    platformFeePaise: issue.fundingSnapshot.platformFeePaise,
+                    platformFeeRupees: issue.fundingSnapshot.platformFeePaise / 100,
+                    fundingTargetPaise: issue.fundingSnapshot.fundingTargetPaise,
+                    fundingTargetRupees: issue.fundingSnapshot.fundingTargetPaise / 100,
+                    amountRaisedPaise: issue.fundingSnapshot.amountRaisedPaise,
+                    amountRaisedRupees: issue.fundingSnapshot.amountRaisedPaise / 100,
+                    selectedProposalId: issue.fundingSnapshot.selectedProposalId,
+                    selectedAt: issue.fundingSnapshot.selectedAt instanceof Date
+                        ? issue.fundingSnapshot.selectedAt.toISOString()
+                        : String(issue.fundingSnapshot.selectedAt),
+                }
+                : undefined,
             createdAt: issue.createdAt,
             updatedAt: issue.updatedAt,
             ...(options?.includeRejectionReason && issue.rejectionReason

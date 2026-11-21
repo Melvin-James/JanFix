@@ -9,6 +9,7 @@ import { IssueModel } from "../models/IssueModel.js";
 import { ProposalStatus } from "../../domain/enums/ProposalStatus.js";
 import { IssueStatus } from "../../domain/enums/IssueStatus.js";
 import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
 
 export class ProposalSelectionRepository implements IProposalSelectionRepository {
     async selectProposalAtomic(
@@ -88,7 +89,52 @@ export class ProposalSelectionRepository implements IProposalSelectionRepository
                 );
             }
 
-            // 3. Concurrency Protection: Claim the issue conditionally within the transaction
+            // 3. Concurrency Protection & Status Determination:
+            const fundingType = proposal.fundingType
+
+            if(
+                fundingType !== ProposalFundingType.COMMUNITY_FUNDING &&
+                fundingType !== ProposalFundingType.NGO_OWN_FUNDING
+            ) {
+                throw new ProposalSelectionError(
+                    "INVALID_FUNDING_TYPE",
+                    "Proposal must have a valid funding type before selection"
+                );
+            }
+
+            let targetIssueStatus: IssueStatus;
+            let providerBudgetPaise = 0;
+            let platformFeeRatePercent = 0;
+            let platformFeePaise = 0;
+            let fundingTargetPaise = 0;
+
+            switch(fundingType) {
+                case ProposalFundingType.NGO_OWN_FUNDING:
+                    targetIssueStatus = IssueStatus.PLANNED;
+                    break;
+                
+                case ProposalFundingType.COMMUNITY_FUNDING:
+                    targetIssueStatus = IssueStatus.FUNDRAISING;
+                    providerBudgetPaise = proposal.totalBudgetPaise ?? 0;
+                    platformFeeRatePercent = 5;
+                    platformFeePaise = Math.round(
+                        (providerBudgetPaise * platformFeeRatePercent) / 100
+                    );
+                    fundingTargetPaise = providerBudgetPaise + platformFeePaise;
+                    break;
+            }
+
+            const fundingSnapshot = {
+                fundingType,
+                providerBudgetPaise,
+                platformFeeRatePercent,
+                platformFeePaise,
+                fundingTargetPaise,
+                amountRaisedPaise: 0,
+                selectedProposalId: proposalObjectId,
+                selectedAt: serverNow,
+            };
+
             const claimedIssue = await IssueModel.findOneAndUpdate(
                 {
                     _id: issueObjectId,
@@ -102,9 +148,11 @@ export class ProposalSelectionRepository implements IProposalSelectionRepository
                 },
                 {
                     $set: {
+                        status: targetIssueStatus,
                         selectedProposalId: proposalObjectId,
                         proposalSelectedAt: serverNow,
                         proposalWindowStatus: ProposalWindowStatus.CLOSED,
+                        fundingSnapshot,
                     },
                 },
                 { session, returnDocument: "after" }
@@ -167,10 +215,21 @@ export class ProposalSelectionRepository implements IProposalSelectionRepository
 
             return {
                 issueId: claimedIssue._id.toString(),
+                issueStatus: targetIssueStatus,
                 selectedProposalId: updatedProposal._id.toString(),
                 selectedProposalStatus: ProposalStatus.SELECTED,
                 proposalSelectedAt: serverNow,
                 proposalWindowStatus: ProposalWindowStatus.CLOSED,
+                fundingSnapshot: {
+                    fundingType,
+                    providerBudgetPaise,
+                    platformFeeRatePercent,
+                    platformFeePaise,
+                    fundingTargetPaise,
+                    amountRaisedPaise: 0,
+                    selectedProposalId: updatedProposal._id.toString(),
+                    selectedAt: serverNow,
+                },
             };
         } catch (error: unknown) {
             await session.abortTransaction();

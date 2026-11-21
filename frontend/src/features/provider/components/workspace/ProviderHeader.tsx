@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../../../../store/authStore";
 import { logoutUser, switchMode } from "../../../auth/services/authService";
+import { NotificationBell } from "../../../notifications/components/NotificationBell";
 import toast from "react-hot-toast";
 
 interface ProviderHeaderProps {
@@ -86,6 +87,7 @@ export default function ProviderHeader({
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <NotificationBell />
       
         <div className="flex items-center gap-2">
 

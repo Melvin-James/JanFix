@@ -4,8 +4,20 @@ import { issueLocationSchema } from "../database/schemas/issueLocationSchema.js"
 import { IssueVisibility } from "../../domain/enums/IssueVisibility.js";
 import { IssueStatus } from "../../domain/enums/IssueStatus.js";
 import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
 import type { UploadedFile } from "../../domain/entities/UploadedFile.js";
 import type { IssueLocation } from "../../domain/entities/IssueLocation.js";
+
+export interface IssueFundingSnapshotSubdocument {
+    fundingType: ProposalFundingType;
+    providerBudgetPaise: number;
+    platformFeeRatePercent: number;
+    platformFeePaise: number;
+    fundingTargetPaise: number;
+    amountRaisedPaise: number;
+    selectedProposalId: Types.ObjectId;
+    selectedAt: Date;
+}
 
 export interface IssueDocument extends Document {
     createdBy: Types.ObjectId;
@@ -22,9 +34,56 @@ export interface IssueDocument extends Document {
     proposalWindowStatus?: ProposalWindowStatus;
     selectedProposalId?: Types.ObjectId;
     proposalSelectedAt?: Date;
+    fundingSnapshot?: IssueFundingSnapshotSubdocument;
     createdAt: Date;
     updatedAt: Date;
 }
+
+const fundingSnapshotSchema = new Schema<IssueFundingSnapshotSubdocument>(
+    {
+        fundingType: {
+            type: String,
+            enum: Object.values(ProposalFundingType),
+            required: true,
+        },
+        providerBudgetPaise: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        platformFeeRatePercent: {
+            type: Number,
+            required: true,
+            default: 5,
+        },
+        platformFeePaise: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        fundingTargetPaise: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        amountRaisedPaise: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        selectedProposalId: {
+            type: Schema.Types.ObjectId,
+            ref: "Proposal",
+            required: true,
+        },
+        selectedAt: {
+            type: Date,
+            required: true,
+            default: Date.now,
+        },
+    },
+    { _id: false }
+);
 
 const issueSchema = new Schema<IssueDocument>(
     {
@@ -100,6 +159,9 @@ const issueSchema = new Schema<IssueDocument>(
         },
         proposalSelectedAt: {
             type: Date,
+        },
+        fundingSnapshot: {
+            type: fundingSnapshotSchema,
         },
     },
     {

@@ -9,10 +9,12 @@ import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
 import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
 import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
 import { ProviderType } from "../../../domain/enums/ProviderType.js";
+import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
 import { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
 import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.js";
 import ApiError from "../../../shared/utils/apiError.js";
 import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.js";
 
 function parseTimeToMinutes(timeStr: string): number {
     const parts = timeStr.split(":").map(Number);
@@ -54,7 +56,7 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
         }
 
         const fallbackDeadline = new Date(
-            (issue.updatedAt || issue.createdAt || serverNow).getTime() + 5 * 24 * 60 * 60 * 1000
+            (issue.updatedAt || issue.createdAt || serverNow).getTime() + PROPOSAL_SUBMISSION_WINDOW_MS
         );
         const proposalDeadline = issue.proposalDeadlineAt || fallbackDeadline;
 
@@ -82,7 +84,20 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
             );
         }
 
-        const updates: Record<string, unknown> = {};   
+        const updates: Record<string, unknown> = {};
+
+        let currentFundingType = proposal.fundingType || ProposalFundingType.COMMUNITY_FUNDING;
+        if (proposal.providerType === ProviderType.NGO) {
+            if (dto.fundingType !== undefined) {
+                currentFundingType = dto.fundingType;
+                updates.fundingType = currentFundingType;
+            } else if (dto.ngoDetails?.requiresFunding !== undefined) {
+                currentFundingType = dto.ngoDetails.requiresFunding
+                    ? ProposalFundingType.COMMUNITY_FUNDING
+                    : ProposalFundingType.NGO_OWN_FUNDING;
+                updates.fundingType = currentFundingType;
+            }
+        }
 
         // 4. Validate Team Size if provided
         if (dto.estimatedTeamSize !== undefined) {
@@ -103,7 +118,10 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
         }
 
         // 6. Validate Budget Items & Total if provided
-        if (dto.budgetItems !== undefined) {
+        if (currentFundingType === ProposalFundingType.NGO_OWN_FUNDING) {
+            updates.budgetItems = [];
+            updates.totalBudgetPaise = 0;
+        } else if (dto.budgetItems !== undefined) {
             if (!Array.isArray(dto.budgetItems) || dto.budgetItems.length === 0) {
                 throw new ApiError(HttpStatusCode.BAD_REQUEST, "At least one budget item is required");
             }

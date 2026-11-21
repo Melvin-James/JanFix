@@ -6,6 +6,8 @@ import { CategoryRepository } from "../../infrastructure/repositories/CategoryRe
 
 import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
 
+import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.js";
+
 import { CreateIssueUseCase } from "../../application/use-cases/issue/CreateIssueUseCase.js";
 
 import { GetIssueByIdUseCase } from "../../application/use-cases/issue/GetIssueByIdUseCase.js";
@@ -56,6 +58,8 @@ const categoryRepository = new CategoryRepository();
 
 const userRepository = new UserRepository();
 
+const proposalRepository = new ProposalRepository();
+
 const storageService = new S3StorageService();
 
 const createIssueUseCase = new CreateIssueUseCase(
@@ -65,7 +69,12 @@ const createIssueUseCase = new CreateIssueUseCase(
     storageService
 );
 
-const getIssueByIdUseCase = new GetIssueByIdUseCase(issueRepository, storageService);
+const getIssueByIdUseCase = new GetIssueByIdUseCase(
+    issueRepository,
+    storageService,
+    proposalRepository,
+    userRepository
+);
 
 const getUserIssuesUseCase = new GetUserIssuesUseCase(issueRepository, storageService);
 

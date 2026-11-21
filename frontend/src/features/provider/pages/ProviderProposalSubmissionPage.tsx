@@ -170,14 +170,18 @@ export const ProviderProposalSubmissionPage: React.FC = () => {
       setFeedbackError(null);
       const data = watch();
 
+      const isSelfFunded = isNgo && data.requiresFunding === false;
       const payload = {
+        fundingType: isSelfFunded ? ("NGO_OWN_FUNDING" as const) : ("COMMUNITY_FUNDING" as const),
         estimatedTeamSize: Number(data.estimatedTeamSize),
         estimatedDurationHours: Number(data.estimatedDurationHours),
-        budgetItems: data.budgetItems.map((item) => ({
-          heading: item.heading,
-          amountRupees: item.amountRupees,
-          amountPaise: Math.round(item.amountRupees * 100),
-        })),
+        budgetItems: isSelfFunded
+          ? []
+          : (data.budgetItems || []).map((item) => ({
+              heading: item.heading,
+              amountRupees: item.amountRupees,
+              amountPaise: Math.round(item.amountRupees * 100),
+            })),
         executionRoadmap: data.executionRoadmap.map((item, idx) => ({
           heading: item.heading,
           description: item.description,
@@ -465,6 +469,7 @@ export const ProviderProposalSubmissionPage: React.FC = () => {
                     onChange={field.onChange}
                     error={errors.budgetItems?.message}
                     isReadOnly={isWindowClosed}
+                    isDisabled={isNgo && watch("requiresFunding") === false}
                   />
                 )}
               />

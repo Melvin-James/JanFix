@@ -1,6 +1,7 @@
 import type { Document } from "mongoose";
 import type { Proposal } from "../../domain/entities/Proposal.js";
 import type { ProposalDocument } from "../models/ProposalModel.js";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
 
 export class ProposalMapper {
     static toEntity(doc: Document): Proposal {
@@ -11,6 +12,7 @@ export class ProposalMapper {
             providerId: document.providerId.toString(),
             providerType: document.providerType,
             status: document.status,
+            fundingType: document.fundingType || ProposalFundingType.COMMUNITY_FUNDING,
             issueSnapshot: {
                 title: document.issueSnapshot.title,
                 description: document.issueSnapshot.description,

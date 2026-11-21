@@ -29,7 +29,7 @@ export const ProposalSharedFieldsSection: React.FC<ProposalSharedFieldsSectionPr
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Expected Team Size */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -48,13 +48,13 @@ export const ProposalSharedFieldsSection: React.FC<ProposalSharedFieldsSectionPr
               {...register("estimatedTeamSize", { valueAsNumber: true })}
               className={`w-full rounded-lg border pl-10 pr-3.5 py-2.5 text-sm outline-none transition-all disabled:bg-slate-50 disabled:text-slate-500 ${
                 errors.estimatedTeamSize
-                  ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-red-50/20"
+                  ? "border-blue-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/20"
                   : "border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               }`}
             />
           </div>
           {errors.estimatedTeamSize && (
-            <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+            <p className="mt-1 text-xs text-blue-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
               <span>{errors.estimatedTeamSize.message}</span>
             </p>
@@ -82,13 +82,13 @@ export const ProposalSharedFieldsSection: React.FC<ProposalSharedFieldsSectionPr
               {...register("estimatedDurationHours", { valueAsNumber: true })}
               className={`w-full rounded-lg border pl-10 pr-3.5 py-2.5 text-sm outline-none transition-all disabled:bg-slate-50 disabled:text-slate-500 ${
                 errors.estimatedDurationHours
-                  ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-red-50/20"
+                  ? "border-blue-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-blue-50/20"
                   : "border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               }`}
             />
           </div>
           {errors.estimatedDurationHours && (
-            <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+            <p className="mt-1 text-xs text-blue-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
               <span>{errors.estimatedDurationHours.message}</span>
             </p>
