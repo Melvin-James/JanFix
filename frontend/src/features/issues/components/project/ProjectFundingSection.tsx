@@ -1,14 +1,35 @@
-import React from "react";
-import { IndianRupee, HeartHandshake, ShieldCheck, Sparkles } from "lucide-react";
+import React, { useState } from "react";
+import {
+  IndianRupee,
+  HeartHandshake,
+  ShieldCheck,
+  Sparkles,
+  Heart,
+  CheckCircle2,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { useAuthStore } from "../../../../store/authStore";
 import type { IssueFundingSnapshot } from "../../types/issue";
+import { DonateModal } from "../../../donations/components/DonateModal";
 
 interface ProjectFundingSectionProps {
   snapshot?: IssueFundingSnapshot;
+  issueId?: string;
+  issueTitle?: string;
+  issueStatus?: string;
+  onDonationSuccess?: () => void;
 }
 
 export const ProjectFundingSection: React.FC<ProjectFundingSectionProps> = ({
   snapshot,
+  issueId,
+  issueTitle = "Community Issue",
+  issueStatus,
+  onDonationSuccess,
 }) => {
+  const [isDonateOpen, setIsDonateOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
+
   if (!snapshot) return null;
 
   const formatINR = (val: number) => {
@@ -35,7 +56,21 @@ export const ProjectFundingSection: React.FC<ProjectFundingSectionProps> = ({
 
   const fundingTarget = snapshot.fundingTargetRupees || 0;
   const amountRaised = snapshot.amountRaisedRupees || 0;
-  const progressPercent = fundingTarget > 0 ? Math.min(100, Math.round((amountRaised / fundingTarget) * 100)) : 0;
+  const progressPercent =
+    fundingTarget > 0
+      ? Math.min(100, Math.round((amountRaised / fundingTarget) * 100))
+      : 0;
+
+  const isGoalReached = fundingTarget > 0 && amountRaised >= fundingTarget;
+  const isFundraisingActive = issueStatus === "FUNDRAISING";
+
+  const handleOpenDonate = () => {
+    if (!user) {
+      toast.error("Please sign in to make a community contribution.");
+      return;
+    }
+    setIsDonateOpen(true);
+  };
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-6">
@@ -53,7 +88,7 @@ export const ProjectFundingSection: React.FC<ProjectFundingSectionProps> = ({
 
         <div className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-800">
           <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-          <span>Fundraising Active</span>
+          <span>{isGoalReached ? "Goal Achieved" : isFundraisingActive ? "Fundraising Active" : "Funding Overview"}</span>
         </div>
       </div>
 
@@ -106,13 +141,54 @@ export const ProjectFundingSection: React.FC<ProjectFundingSectionProps> = ({
         </div>
       </div>
 
-      {/* Online Stripe Payment Disclaimer */}
-      <div className="rounded-lg border border-blue-100 bg-blue-50/60 p-3.5 text-xs text-blue-800 leading-relaxed">
-        <p>
-          <strong className="font-semibold">Note:</strong> Online card contributions via Stripe will be available in the upcoming release. Community pledges and donations for this project are currently being organized at scheduled civic ward meetups.
-        </p>
-      </div>
+      {/* Community Donation Actions */}
+      {isGoalReached ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 text-center space-y-1">
+          <div className="flex items-center justify-center gap-2 text-emerald-900 font-bold text-sm sm:text-base">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+            <span>100% Funding Goal Achieved!</span>
+          </div>
+          <p className="text-xs text-emerald-800">
+            Thank you to all community contributors! The required budget for this civic project has been fully funded.
+          </p>
+        </div>
+      ) : isFundraisingActive ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-1">
+            <h4 className="text-sm font-semibold text-emerald-950 flex items-center gap-1.5">
+              <Heart className="h-4 w-4 text-emerald-600 fill-emerald-100" />
+              <span>Contribute to this Civic Resolution</span>
+            </h4>
+            <p className="text-xs text-emerald-800 max-w-md leading-relaxed">
+              Every donation goes directly towards funding the selected provider&apos;s verified proposal. Powered by Stripe Test Mode.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleOpenDonate}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-emerald-700 transition-colors shrink-0 cursor-pointer"
+          >
+            <Heart className="h-4 w-4 fill-white" />
+            <span>Contribute Now</span>
+          </button>
+        </div>
+      ) : null}
+
+      {/* Donate Modal */}
+      {issueId && (
+        <DonateModal
+          issueId={issueId}
+          issueTitle={issueTitle}
+          fundingTargetRupees={fundingTarget}
+          amountRaisedRupees={amountRaised}
+          isOpen={isDonateOpen}
+          onClose={() => setIsDonateOpen(false)}
+          onSuccess={() => {
+            onDonationSuccess?.();
+          }}
+        />
+      )}
     </div>
   );
 };
-

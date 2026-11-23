@@ -91,6 +91,7 @@ async function runTests() {
         findProviderIssues: async () => { throw new Error("Not implemented"); },
         update: async () => { throw new Error("Not implemented"); },
         updateStatusIfEligible: async () => { throw new Error("Not implemented"); },
+        incrementRaisedAmount: async () => { throw new Error("Not implemented"); },
     };
 
     // -------------------------------------------------------------
