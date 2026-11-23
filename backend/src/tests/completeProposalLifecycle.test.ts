@@ -14,6 +14,10 @@ import { ProposalFundingType } from "../domain/enums/ProposalFundingType.js";
 import { ProposalWindowStatus } from "../domain/enums/ProposalWindowStatus.js";
 import { NotificationType } from "../domain/enums/NotificationType.js";
 import { Role } from "../domain/enums/Role.js";
+import { AuthProvider } from "../domain/enums/AuthProvider.js";
+import { AccountStatus } from "../domain/enums/AccountStatus.js";
+import { ApplicationStatus } from "../domain/enums/ApplicationStatus.js";
+import { ProviderStatus } from "../domain/enums/ProviderStatus.js";
 import { IssueModel } from "../infrastructure/models/IssueModel.js";
 import { CategoryModel } from "../infrastructure/models/CategoryModel.js";
 import { ProposalModel } from "../infrastructure/models/ProposalModel.js";
@@ -104,8 +108,8 @@ async function runTests() {
         roles: [Role.USER],
         activeMode: "USER",
         isVerified: true,
-        authProvider: "LOCAL",
-        accountStatus: "ACTIVE",
+        authProvider: AuthProvider.LOCAL,
+        accountStatus: AccountStatus.ACTIVE,
     });
 
     // Create mock active NGO user
@@ -117,8 +121,8 @@ async function runTests() {
         roles: [Role.SERVICE_PROVIDER],
         activeMode: "SERVICE_PROVIDER",
         isVerified: true,
-        authProvider: "LOCAL",
-        accountStatus: "ACTIVE",
+        authProvider: AuthProvider.LOCAL,
+        accountStatus: AccountStatus.ACTIVE,
         providerProfile: {
             identity: {
                 providerType: ProviderType.NGO,
@@ -132,8 +136,8 @@ async function runTests() {
                 memberCount: 25,
             },
             status: {
-                applicationStatus: "APPROVED",
-                providerStatus: "ACTIVE",
+                applicationStatus: ApplicationStatus.APPROVED,
+                providerStatus: ProviderStatus.ACTIVE,
                 submittedAt: new Date(),
             },
         },
@@ -148,8 +152,8 @@ async function runTests() {
         roles: [Role.SERVICE_PROVIDER],
         activeMode: "SERVICE_PROVIDER",
         isVerified: true,
-        authProvider: "LOCAL",
-        accountStatus: "ACTIVE",
+        authProvider: AuthProvider.LOCAL,
+        accountStatus: AccountStatus.ACTIVE,
         providerProfile: {
             identity: {
                 providerType: ProviderType.INDIVIDUAL,
@@ -158,8 +162,8 @@ async function runTests() {
             documents: {},
             workPreferences: {},
             status: {
-                applicationStatus: "APPROVED",
-                providerStatus: "ACTIVE",
+                applicationStatus: ApplicationStatus.APPROVED,
+                providerStatus: ProviderStatus.ACTIVE,
                 submittedAt: new Date(),
             },
         },
@@ -330,7 +334,7 @@ async function runTests() {
         assert(publicIssueDetails.timelineEvents, "Timeline events must be populated");
 
         // Privacy assertion: Ensure no sensitive identity docs or private contact fields are exposed
-        const providerDTO = publicIssueDetails.selectedProvider as Record<string, unknown>;
+        const providerDTO = publicIssueDetails.selectedProvider as unknown as Record<string, unknown>;
         assert.equal(providerDTO.identityProof, undefined, "identityProof must not be exposed");
         assert.equal(providerDTO.phone, undefined, "phone must not be exposed");
         assert.equal(providerDTO.address, undefined, "address must not be exposed");

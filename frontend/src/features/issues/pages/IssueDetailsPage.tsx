@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -97,37 +97,31 @@ export const IssueDetailsPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchIssue = async () => {
-      if (!issueId) {
-        setError("Invalid issue identifier.");
-        setLoading(false);
-        return;
-      }
+  const fetchIssue = useCallback(async () => {
+    if (!issueId) {
+      setError("Invalid issue identifier.");
+      setLoading(false);
+      return;
+    }
 
-      setLoading(true);
-      setError("");
-      try {
-        const response = await getIssueById(issueId);
-        if (!isMounted) return;
-        setIssue(response.issue);
-      } catch (err: unknown) {
-        if (!isMounted) return;
-        const msg =
-          (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-          "Failed to load issue details. You may not be authorized to view this issue.";
-        setError(msg);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    fetchIssue();
-    return () => {
-      isMounted = false;
-    };
+    setLoading(true);
+    setError("");
+    try {
+      const response = await getIssueById(issueId);
+      setIssue(response.issue);
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to load issue details. You may not be authorized to view this issue.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   }, [issueId]);
+
+  useEffect(() => {
+    fetchIssue();
+  }, [fetchIssue]);
 
   // Auto-clear decision feedback
   useEffect(() => {
@@ -327,6 +321,7 @@ export const IssueDetailsPage: React.FC = () => {
             {/* Shared Presentation Content */}
             <IssueDetailsContent
               issue={issue}
+              onRefreshIssue={fetchIssue}
               actions={
                 <>
                   <div className="flex items-center gap-3">

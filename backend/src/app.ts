@@ -12,6 +12,8 @@ import issueRoutes from "./presentation/routes/issueRoutes.js";
 
 import notificationRoutes from "./presentation/routes/notificationRoutes.js";
 
+import donationRoutes, { donationController } from "./presentation/routes/donationRoutes.js";
+
 import errorMiddleware from "./presentation/middlewares/errorMiddleware.js";
 
 import { ApiEndpoints } from "./shared/constants/apiEndpoints.js";
@@ -21,6 +23,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 const app = express();
+
+// Stripe Webhook: Must be mounted BEFORE express.json() to preserve raw Buffer body for signature verification
+app.post(
+  `${ApiEndpoints.DONATIONS.BASE}${ApiEndpoints.DONATIONS.WEBHOOK}`,
+  express.raw({ type: "application/json" }),
+  donationController.handleWebhook
+);
 
 app.use(express.json());
 
@@ -39,6 +48,8 @@ app.use(ApiEndpoints.ADMIN.BASE, adminRoutes);
 app.use(ApiEndpoints.ISSUES.BASE, issueRoutes);
 
 app.use(ApiEndpoints.NOTIFICATIONS.BASE, notificationRoutes);
+
+app.use(ApiEndpoints.DONATIONS.BASE, donationRoutes);
 
 app.use(errorMiddleware);
 

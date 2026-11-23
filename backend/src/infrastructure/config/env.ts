@@ -33,6 +33,10 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().min(1),
 
   GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
+
+  STRIPE_SECRET_KEY: z.string().min(1),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1),
+  STRIPE_CURRENCY: z.string().default("inr"),
 });
 
 const result = envSchema.safeParse(process.env);

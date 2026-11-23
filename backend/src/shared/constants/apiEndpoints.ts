@@ -79,4 +79,12 @@ export const ApiEndpoints = {
     READ_SINGLE: "/:id/read",
     READ_ALL: "/read-all",
   },
+  DONATIONS: {
+    BASE: "/api/v1/donations",
+    CREATE_INTENT: "/create-intent",
+    WEBHOOK: "/webhook",
+    STATUS: "/:id/status",
+    RETRY: "/:id/retry",
+    ISSUE_DONATIONS: "/issues/:issueId",
+  },
 } as const;

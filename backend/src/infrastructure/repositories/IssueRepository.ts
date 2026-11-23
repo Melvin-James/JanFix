@@ -1,4 +1,4 @@
-import { Types, type QueryFilter } from "mongoose";
+import { Types, type QueryFilter, type ClientSession } from "mongoose";
 import type { IIssueRepository, IssueFilters, AdminIssueFilters, ReviewEligibleIssueItem } from "../../domain/interface/IIssueRepository.js";
 import type { Issue } from "../../domain/entities/Issue.js";
 import { IssueModel, type IssueDocument } from "../models/IssueModel.js";
@@ -474,5 +474,28 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
         ).populate("category");
 
         return updated ? IssueMapper.toEntity(updated) : null;
+    }
+
+    async incrementRaisedAmount(
+        issueId: string,
+        amountPaise: number,
+        session?: ClientSession
+    ): Promise<Issue | null> {
+        if (!Types.ObjectId.isValid(issueId)) return null;
+
+        const options: Record<string, unknown> = { returnDocument: "after" };
+        if (session) {
+            options.session = session;
+        }
+
+        const updated = await IssueModel.findByIdAndUpdate(
+            issueId,
+            {
+                $inc: { "fundingSnapshot.amountRaisedPaise": amountPaise },
+            },
+            options as any
+        ).populate("category");
+
+        return updated ? IssueMapper.toEntity(updated as any) : null;
     }
 }

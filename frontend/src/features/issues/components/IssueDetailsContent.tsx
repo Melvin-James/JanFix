@@ -15,18 +15,22 @@ import { formatRelativeTime } from "../../../utils/date";
 import { IssueLocationPreviewMap } from "../../admin/components/IssueLocationPreviewMap";
 import { ProjectTimelineSection } from "./project/ProjectTimelineSection";
 import { ProjectFundingSection } from "./project/ProjectFundingSection";
+import { CommunityContributorsSection } from "./project/CommunityContributorsSection";
 import { ProjectSelectedProviderCard } from "./project/ProjectSelectedProviderCard";
 import { ProjectProposalDetailsSection } from "./project/ProjectProposalDetailsSection";
 
 export interface IssueDetailsContentProps {
   issue: Issue;
   actions?: React.ReactNode;
+  onRefreshIssue?: () => void;
 }
 
 export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
   issue,
   actions,
+  onRefreshIssue,
 }) => {
+  const [donationRefreshKey, setDonationRefreshKey] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(
     issue.images && issue.images.length > 0 ? issue.images[0]?.url || null : null
   );
@@ -148,7 +152,24 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
 
           {/* 2. Funding Information & 5% Platform Fee Transparency */}
           {issue.fundingSnapshot && (
-            <ProjectFundingSection snapshot={issue.fundingSnapshot} />
+            <ProjectFundingSection
+              snapshot={issue.fundingSnapshot}
+              issueId={issue.id}
+              issueTitle={issue.title}
+              issueStatus={issue.status}
+              onDonationSuccess={() => {
+                setDonationRefreshKey((prev) => prev + 1);
+                onRefreshIssue?.();
+              }}
+            />
+          )}
+
+          {/* Community Contributors List (for Community Funded projects) */}
+          {issue.fundingSnapshot?.fundingType === "COMMUNITY_FUNDING" && (
+            <CommunityContributorsSection
+              issueId={issue.id}
+              refreshTrigger={donationRefreshKey}
+            />
           )}
 
           {/* 3. Selected Service Provider Profile */}
