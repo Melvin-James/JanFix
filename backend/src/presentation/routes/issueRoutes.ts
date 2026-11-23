@@ -19,6 +19,7 @@ import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCa
 import { GetFeedIssuesUseCase } from "../../application/use-cases/issue/GetFeedIssuesUseCase.js";
 
 import { IssueController } from "../controllers/issue/IssueController.js";
+import { donationController } from "./donationRoutes.js";
 
 import { IssueVoteRepository } from "../../infrastructure/repositories/IssueVoteRepository.js";
 
@@ -134,5 +135,8 @@ router.get(ApiEndpoints.ISSUES.COMMENTS, authenticate, issueController.getCommen
 
 // Get issue details by id (enforces visibility & authorization; guests can view public verified)
 router.get(ApiEndpoints.ISSUES.BY_ID, authenticate, issueController.getIssueById);
+
+// Public route: Get donations for an issue
+router.get("/:issueId/donations", donationController.getIssueDonations);
 
 export default router;

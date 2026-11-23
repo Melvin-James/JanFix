@@ -1,3 +1,4 @@
+import type { ClientSession } from "mongoose";
 import type { Issue } from "../entities/Issue.js";
 import type { PaginatedResult } from "../../shared/types/Pagination.js";
 import type { IssueStatus } from "../enums/IssueStatus.js";
@@ -71,5 +72,10 @@ export interface IIssueRepository {
         allowedCurrentStatuses: IssueStatus[],
         rejectionReason?: string,
         serverNow?: Date
+    ): Promise<Issue | null>;
+    incrementRaisedAmount(
+        issueId: string,
+        amountPaise: number,
+        session?: ClientSession
     ): Promise<Issue | null>;
 }
