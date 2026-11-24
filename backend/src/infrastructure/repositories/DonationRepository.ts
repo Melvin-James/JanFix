@@ -1,4 +1,4 @@
-import { Types, type ClientSession } from "mongoose";
+import { Types, type ClientSession, type QueryOptions } from "mongoose";
 import type {
   IDonationRepository,
   PaginatedDonations,
@@ -31,18 +31,18 @@ export class DonationRepository implements IDonationRepository {
 
     const doc = new DonationModel(docData);
     const saved = session ? await doc.save({ session }) : await doc.save();
-    return DonationMapper.toEntity(saved as any);
+    return DonationMapper.toEntity(saved);
   }
 
   async findById(id: string): Promise<Donation | null> {
     if (!Types.ObjectId.isValid(id)) return null;
     const doc = await DonationModel.findById(id);
-    return doc ? DonationMapper.toEntity(doc as any) : null;
+    return doc ? DonationMapper.toEntity(doc) : null;
   }
 
   async findByPaymentIntentId(paymentIntentId: string): Promise<Donation | null> {
     const doc = await DonationModel.findOne({ stripePaymentIntentId: paymentIntentId });
-    return doc ? DonationMapper.toEntity(doc as any) : null;
+    return doc ? DonationMapper.toEntity(doc) : null;
   }
 
   async updateStatus(
@@ -62,7 +62,7 @@ export class DonationRepository implements IDonationRepository {
     if (extra?.failureReason !== undefined) updateFields.failureReason = extra.failureReason;
     if (extra?.stripePaymentIntentId !== undefined) updateFields.stripePaymentIntentId = extra.stripePaymentIntentId;
 
-    const options: Record<string, unknown> = { returnDocument: "after" };
+    const options: QueryOptions = { returnDocument: "after" };
     if (session) {
       options.session = session;
     }
@@ -70,10 +70,10 @@ export class DonationRepository implements IDonationRepository {
     const updated = await DonationModel.findByIdAndUpdate(
       id,
       { $set: updateFields },
-      options as any
+      options
     );
 
-    return updated ? DonationMapper.toEntity(updated as any) : null;
+    return updated ? DonationMapper.toEntity(updated) : null;
   }
 
   async markSucceededIfNotSucceeded(
@@ -84,7 +84,7 @@ export class DonationRepository implements IDonationRepository {
   ): Promise<Donation | null> {
     if (!Types.ObjectId.isValid(id)) return null;
 
-    const options: Record<string, unknown> = { returnDocument: "after" };
+    const options: QueryOptions = { returnDocument: "after" };
     if (session) {
       options.session = session;
     }
@@ -101,10 +101,10 @@ export class DonationRepository implements IDonationRepository {
           paidAt,
         },
       },
-      options as any
+      options
     );
 
-    return updated ? DonationMapper.toEntity(updated as any) : null;
+    return updated ? DonationMapper.toEntity(updated) : null;
   }
 
   async updateStatusIfNotSucceeded(
@@ -121,7 +121,7 @@ export class DonationRepository implements IDonationRepository {
     const updateFields: Record<string, unknown> = { status };
     if (extra?.failureReason !== undefined) updateFields.failureReason = extra.failureReason;
 
-    const options: Record<string, unknown> = { returnDocument: "after" };
+    const options: QueryOptions = { returnDocument: "after" };
     if (session) {
       options.session = session;
     }
@@ -135,10 +135,10 @@ export class DonationRepository implements IDonationRepository {
       {
         $set: updateFields,
       },
-      options as any
+      options
     );
 
-    return updated ? DonationMapper.toEntity(updated as any) : null;
+    return updated ? DonationMapper.toEntity(updated) : null;
   }
 
   async updatePaymentIntentId(
@@ -160,7 +160,7 @@ export class DonationRepository implements IDonationRepository {
       query.stripePaymentIntentId = expectedCurrentPaymentIntentId;
     }
 
-    const options: Record<string, unknown> = { returnDocument: "after" };
+    const options: QueryOptions = { returnDocument: "after" };
     if (session) {
       options.session = session;
     }
@@ -172,10 +172,10 @@ export class DonationRepository implements IDonationRepository {
           stripePaymentIntentId: newPaymentIntentId,
         },
       },
-      options as any
+      options
     );
 
-    return updated ? DonationMapper.toEntity(updated as any) : null;
+    return updated ? DonationMapper.toEntity(updated) : null;
   }
 
   async findSuccessfulByIssueId(
@@ -211,7 +211,7 @@ export class DonationRepository implements IDonationRepository {
     ]);
 
     return {
-      donations: docs.map((doc) => DonationMapper.toEntity(doc as any)),
+      donations: docs.map((doc) => DonationMapper.toEntity(doc)),
       total,
       page: safePage,
       pageSize: safePageSize,

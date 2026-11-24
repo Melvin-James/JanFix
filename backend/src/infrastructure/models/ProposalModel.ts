@@ -188,8 +188,10 @@ const proposalSchema = new Schema<ProposalDocument>(
         budgetItems: {
             type: [budgetItemSchema],
             validate: {
-                validator: function (this: any, val: BudgetItemSubdocument[]) {
-                    const doc = typeof this?.ownerDocument === "function" ? this.ownerDocument() : this;
+                validator: function (this: unknown, val: BudgetItemSubdocument[]) {
+                    type DocLike = { fundingType?: ProposalFundingType; _doc?: { fundingType?: ProposalFundingType } };
+                    const self = this as (DocLike & { ownerDocument?: () => DocLike });
+                    const doc = typeof self?.ownerDocument === "function" ? self.ownerDocument() : self;
                     const fType = doc?.fundingType ?? doc?._doc?.fundingType;
                     if (fType === ProposalFundingType.NGO_OWN_FUNDING) {
                         return true;

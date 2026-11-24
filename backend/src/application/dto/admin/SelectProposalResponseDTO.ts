@@ -11,5 +11,6 @@ export interface SelectProposalResponseDTO {
     proposalSelectedAt: string;
     proposalWindowStatus: ProposalWindowStatus;
     fundingSnapshot?: IssueFundingSnapshotDTO | undefined;
+    isCommunityIssue?: boolean | undefined;
 }
 

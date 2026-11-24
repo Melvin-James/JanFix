@@ -60,7 +60,10 @@ function ServiceProvidersPage() {
 
     const [backgroundLoading, setBackgroundLoading] = useState(false);
 
-    const hasLoadedOnce = useRef(false);
+    const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+    const hasLoadedOnceRef = useRef(false);
+
+    const itemsPerPage = 10;
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -79,7 +82,7 @@ function ServiceProvidersPage() {
         let cancelled = false;
 
         const fetchProviders = async () => {
-            if (!hasLoadedOnce.current) {
+            if (!hasLoadedOnceRef.current) {
                 setLoading(true);
             } else {
                 setBackgroundLoading(true);
@@ -114,7 +117,8 @@ function ServiceProvidersPage() {
                 }
             } finally {
                 if (!cancelled) {
-                    hasLoadedOnce.current = true;
+                    hasLoadedOnceRef.current = true;
+                    setHasLoadedOnce(true);
                     setLoading(false);
                     setBackgroundLoading(false);
                 }
@@ -185,14 +189,11 @@ function ServiceProvidersPage() {
     }
 
 
-    const itemsPerPage = 10;
-
-
     if (loading) {
         return <AdminLoadingState message="Loading service providers..." />;
     }
 
-    if (error && !hasLoadedOnce.current) {
+    if (error && !hasLoadedOnce) {
         return <AdminErrorState message={error} />;
     }
 

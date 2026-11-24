@@ -35,6 +35,7 @@ export interface Issue {
     selectedProposalId?: string | undefined;
     proposalSelectedAt?: Date | undefined;
     fundingSnapshot?: IssueFundingSnapshot | undefined;
+    isCommunityIssue?: boolean | undefined;
     createdAt?: Date;
     updatedAt?: Date;
 }

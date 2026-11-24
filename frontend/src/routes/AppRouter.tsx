@@ -57,6 +57,7 @@ import AdminProposalDetailsPage from "../features/admin/pages/AdminProposalDetai
 
 import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
 import IssueDetailsPage from "../features/issues/pages/IssueDetailsPage";
+import CommunityActivitiesPage from "../features/issues/pages/CommunityActivitiesPage";
 
 import ProfileLayout from "../features/profile/components/ProfileLayout";
 import ProfilePage from "../features/profile/pages/ProfilePage";
@@ -159,6 +160,28 @@ function AppRouter() {
             <ProtectedRoute>
                 <UserModeRoute>
                     <IssueFeedPage />
+                </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/community-activities"
+          element={
+            <ProtectedRoute>
+                <UserModeRoute>
+                    <CommunityActivitiesPage />
+                </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/community"
+          element={
+            <ProtectedRoute>
+                <UserModeRoute>
+                    <CommunityActivitiesPage />
                 </UserModeRoute>
             </ProtectedRoute>
           }

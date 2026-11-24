@@ -35,6 +35,7 @@ export interface ProposalSelectionResult {
     proposalSelectedAt: Date;
     proposalWindowStatus: ProposalWindowStatus;
     fundingSnapshot?: IssueFundingSnapshot | undefined;
+    isCommunityIssue?: boolean | undefined;
 }
 
 export interface IProposalSelectionRepository {

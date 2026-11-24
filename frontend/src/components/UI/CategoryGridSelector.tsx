@@ -14,17 +14,26 @@ export interface CategoryItem {
   icon?: React.ComponentType<{ size?: number; className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
 }
 
-export interface CategoryGridSelectorProps {
+interface BaseCategoryGridSelectorProps {
   categories: (CategoryItem | string)[];
-  value: string | string[];
-  onChange: (value: any) => void;
-  mode?: "single" | "multiple";
   layout?: "compact" | "card";
   columnsClassName?: string;
   className?: string;
 }
 
-export function getCategoryIcon(name: string) {
+export type CategoryGridSelectorProps =
+  | (BaseCategoryGridSelectorProps & {
+      mode?: "single";
+      value: string;
+      onChange: (value: string) => void;
+    })
+  | (BaseCategoryGridSelectorProps & {
+      mode: "multiple";
+      value: string[];
+      onChange: (values: string[]) => void;
+    });
+
+function getCategoryIcon(name: string) {
   const normalized = name.toLowerCase();
   if (
     normalized.includes("water") ||
@@ -62,33 +71,32 @@ export function getCategoryIcon(name: string) {
   return Folder;
 }
 
-export function CategoryGridSelector({
-  categories,
-  value,
-  onChange,
-  mode = "single",
-  layout = "card",
-  columnsClassName = "grid-cols-2 gap-2.5 sm:grid-cols-3",
-  className = "",
-}: CategoryGridSelectorProps) {
+export function CategoryGridSelector(props: CategoryGridSelectorProps) {
+  const {
+    categories,
+    layout = "card",
+    columnsClassName = "grid-cols-2 gap-2.5 sm:grid-cols-3",
+    className = "",
+  } = props;
+
   const isSelected = (item: CategoryItem) => {
-    if (mode === "multiple" && Array.isArray(value)) {
-      return value.includes(item.id) || value.includes(item.name);
+    if (props.mode === "multiple") {
+      return props.value.includes(item.id) || props.value.includes(item.name);
     }
-    return value === item.id || value === item.name;
+    return props.value === item.id || props.value === item.name;
   };
 
   const handleSelect = (item: CategoryItem) => {
-    if (mode === "multiple") {
-      const arr = Array.isArray(value) ? value : [];
+    if (props.mode === "multiple") {
+      const arr = props.value;
       const hasItem = arr.includes(item.id) || arr.includes(item.name);
       if (hasItem) {
-        onChange(arr.filter((v) => v !== item.id && v !== item.name));
+        props.onChange(arr.filter((v) => v !== item.id && v !== item.name));
       } else {
-        onChange([...arr.filter((v) => v !== item.name), item.id]);
+        props.onChange([...arr.filter((v) => v !== item.name), item.id]);
       }
     } else {
-      onChange(item.id);
+      props.onChange(item.id);
     }
   };
 

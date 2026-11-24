@@ -117,6 +117,9 @@ router.get(ApiEndpoints.ISSUES.CATEGORIES, authenticate, issueController.getActi
 // Get community issues feed / recent issues (rate-limited search & filter)
 router.get(ApiEndpoints.ISSUES.ROOT, authenticate, requireActiveMode("USER"), searchRateLimit, issueController.getFeedIssues);
 
+// Get community activities feed (rate-limited search & filter, isCommunityIssue: true)
+router.get(ApiEndpoints.ISSUES.COMMUNITY_ACTIVITIES, authenticate, requireActiveMode("USER"), searchRateLimit, issueController.getCommunityActivities);
+
 // Authenticated user endpoints
 // Get authenticated user's reported issues
 router.get(ApiEndpoints.ISSUES.MY_ISSUES, authenticate, requireActiveMode("USER"), issueController.getUserIssues);
