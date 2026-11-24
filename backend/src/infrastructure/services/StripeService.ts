@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { env } from "../config/env.js";
+import { env } from "../config/env.ts";
 
 export interface CreatePaymentIntentParams {
   amountPaise: number;
@@ -9,10 +9,10 @@ export interface CreatePaymentIntentParams {
 }
 
 export class StripeService {
-  private stripe: Stripe;
+  private _stripe: Stripe;
 
   constructor() {
-    this.stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+    this._stripe = new Stripe(env.STRIPE_SECRET_KEY, {
       apiVersion: "2025-02-24.acacia" as unknown as Stripe.LatestApiVersion,
     });
   }
@@ -22,7 +22,7 @@ export class StripeService {
   ): Promise<Stripe.PaymentIntent> {
     const currency = (params.currency || env.STRIPE_CURRENCY || "inr").toLowerCase();
 
-    return await this.stripe.paymentIntents.create(
+    return await this._stripe.paymentIntents.create(
       {
         amount: params.amountPaise,
         currency,
@@ -41,7 +41,7 @@ export class StripeService {
     payload: Buffer | string,
     signature: string
   ): Stripe.Event {
-    return this.stripe.webhooks.constructEvent(
+    return this._stripe.webhooks.constructEvent(
       payload,
       signature,
       env.STRIPE_WEBHOOK_SECRET
@@ -51,6 +51,6 @@ export class StripeService {
   async retrievePaymentIntent(
     paymentIntentId: string
   ): Promise<Stripe.PaymentIntent> {
-    return await this.stripe.paymentIntents.retrieve(paymentIntentId);
+    return await this._stripe.paymentIntents.retrieve(paymentIntentId);
   }
 }

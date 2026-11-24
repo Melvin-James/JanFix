@@ -1,22 +1,22 @@
-import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IUpdateUserAccountStatusUseCase } from "../usecase interfaces/admin/IUpdateUserAccountStatusUseCase.js";
+import type { IUpdateUserAccountStatusUseCase } from "../usecase interfaces/admin/IUpdateUserAccountStatusUseCase.ts";
 
-import type { UpdateUserAccountStatusResponseDTO } from "../../dto/admin/UpdateUserAccountStatusResponseDTO.js";
+import type { UpdateUserAccountStatusResponseDTO } from "../../dto/admin/UpdateUserAccountStatusResponseDTO.ts";
 
-import { UpdateUserAccountStatusMapper } from "../../mappers/UpdateUserAccountStatusMapper.js";
+import { UpdateUserAccountStatusMapper } from "../../mappers/UpdateUserAccountStatusMapper.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
 export class UpdateUserAccountStatusUseCase implements IUpdateUserAccountStatusUseCase {
     constructor(
-        private readonly userRepository: IUserRepository
+        private readonly _userRepository: IUserRepository
     ) {}
 
     async execute(
@@ -24,7 +24,7 @@ export class UpdateUserAccountStatusUseCase implements IUpdateUserAccountStatusU
         status: AccountStatus
     ): Promise<UpdateUserAccountStatusResponseDTO> {
 
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.USER_NOT_FOUND);
@@ -32,7 +32,7 @@ export class UpdateUserAccountStatusUseCase implements IUpdateUserAccountStatusU
 
         user.accountStatus = status;
 
-        await this.userRepository.updateUser(user);
+        await this._userRepository.updateUser(user);
 
         return UpdateUserAccountStatusMapper.toResponse(user);
     }

@@ -1,7 +1,7 @@
 import type { Document } from "mongoose";
-import type { Proposal } from "../../domain/entities/Proposal.js";
-import type { ProposalDocument } from "../models/ProposalModel.js";
-import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
+import type { Proposal } from "../../domain/entities/Proposal.ts";
+import type { ProposalDocument } from "../models/ProposalModel.ts";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.ts";
 
 export class ProposalMapper {
     static toEntity(doc: Document): Proposal {

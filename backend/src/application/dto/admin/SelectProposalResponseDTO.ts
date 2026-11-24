@@ -1,7 +1,7 @@
-import type { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
-import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
-import type { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import type { IssueFundingSnapshotDTO } from "../issue/IssueResponseDTO.js";
+import type { ProposalStatus } from "../../../domain/enums/ProposalStatus.ts";
+import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
+import type { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import type { IssueFundingSnapshotDTO } from "../issue/IssueResponseDTO.ts";
 
 export interface SelectProposalResponseDTO {
     issueId: string;

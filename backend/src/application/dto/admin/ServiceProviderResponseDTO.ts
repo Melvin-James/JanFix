@@ -1,6 +1,6 @@
-import type { ProviderType } from "../../../domain/enums/ProviderType.js";
+import type { ProviderType } from "../../../domain/enums/ProviderType.ts";
 
-import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
 export interface ServiceProviderResponseDTO {
     

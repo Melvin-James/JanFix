@@ -1,14 +1,14 @@
 import type { QueryFilter } from "mongoose";
 
-import type { ICategoryRepository } from "../../domain/interface/ICategoryRepository.js";
+import type { ICategoryRepository } from "../../domain/interface/ICategoryRepository.ts";
 
-import type { Category } from "../../domain/entities/Category.js";
+import type { Category } from "../../domain/entities/Category.ts";
 
-import { CategoryModel, type CategoryDocument } from "../models/CategoryModel.js";
+import { CategoryModel, type CategoryDocument } from "../models/CategoryModel.ts";
 
-import { BaseRepository } from "./base/BaseRepository.js";
+import { BaseRepository } from "./base/BaseRepository.ts";
 
-import { CategoryMapper } from "../mappers/CategoryMapper.js";
+import { CategoryMapper } from "../mappers/CategoryMapper.ts";
 
 type CategoryFilter = QueryFilter<CategoryDocument>;
 

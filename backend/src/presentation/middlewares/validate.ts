@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
 import { ZodError, type ZodSchema } from "zod";
-import ApiError from "../../shared/utils/apiError.js";
+import ApiError from "../../shared/utils/apiError.ts";
 
 const validate =
     (schema: ZodSchema) =>

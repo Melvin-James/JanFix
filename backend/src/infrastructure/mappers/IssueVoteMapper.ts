@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
-import type { IssueVote } from "../../domain/entities/IssueVote.js";
-import type { IssueVoteDocument } from "../models/IssueVoteModel.js";
+import type { IssueVote } from "../../domain/entities/IssueVote.ts";
+import type { IssueVoteDocument } from "../models/IssueVoteModel.ts";
 
 export class IssueVoteMapper {
     static toEntity(doc: Document): IssueVote {

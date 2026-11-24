@@ -1,2 +1,2 @@
-export * from "./ApiResponse.js";
+export * from "./ApiResponse.ts";
 

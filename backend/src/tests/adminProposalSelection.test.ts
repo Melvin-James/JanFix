@@ -5,18 +5,18 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(process.cwd(), "backend/.env") });
 dotenv.config();
-import { IssueStatus } from "../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../domain/enums/IssueVisibility.js";
-import { ProviderType } from "../domain/enums/ProviderType.js";
-import { ProposalStatus } from "../domain/enums/ProposalStatus.js";
-import { ProposalWindowStatus } from "../domain/enums/ProposalWindowStatus.js";
-import { IssueModel } from "../infrastructure/models/IssueModel.js";
-import { CategoryModel } from "../infrastructure/models/CategoryModel.js";
-import { ProposalModel } from "../infrastructure/models/ProposalModel.js";
-import { ProposalSelectionRepository } from "../infrastructure/repositories/ProposalSelectionRepository.js";
-import { SelectProposalUseCase } from "../application/use-cases/admin/SelectProposalUseCase.js";
-import ApiError from "../shared/utils/apiError.js";
-import { HttpStatusCode } from "../shared/enums/HttpStatusCode.js";
+import { IssueStatus } from "../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../domain/enums/IssueVisibility.ts";
+import { ProviderType } from "../domain/enums/ProviderType.ts";
+import { ProposalStatus } from "../domain/enums/ProposalStatus.ts";
+import { ProposalWindowStatus } from "../domain/enums/ProposalWindowStatus.ts";
+import { IssueModel } from "../infrastructure/models/IssueModel.ts";
+import { CategoryModel } from "../infrastructure/models/CategoryModel.ts";
+import { ProposalModel } from "../infrastructure/models/ProposalModel.ts";
+import { ProposalSelectionRepository } from "../infrastructure/repositories/ProposalSelectionRepository.ts";
+import { SelectProposalUseCase } from "../application/use-cases/admin/SelectProposalUseCase.ts";
+import ApiError from "../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../shared/enums/HttpStatusCode.ts";
 
 async function runProposalSelectionTests() {
     console.log("=== Starting Admin Proposal Selection Tests ===");

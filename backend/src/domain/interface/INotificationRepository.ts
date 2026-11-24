@@ -1,5 +1,5 @@
-import type { Notification } from "../entities/Notification.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
+import type { Notification } from "../entities/Notification.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
 
 export interface INotificationRepository {
     create(data: Omit<Notification, "id" | "createdAt" | "updatedAt">): Promise<Notification>;

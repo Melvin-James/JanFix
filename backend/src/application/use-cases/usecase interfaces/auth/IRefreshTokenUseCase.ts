@@ -1,4 +1,4 @@
-import type { AuthUserDTO } from "../../../dto/auth/AuthUserDTO.js";
+import type { AuthUserDTO } from "../../../dto/auth/AuthUserDTO.ts";
 
 export interface IRefreshTokenUseCase {
     

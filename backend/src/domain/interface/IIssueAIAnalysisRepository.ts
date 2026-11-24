@@ -1,4 +1,4 @@
-import type { IssueAIAnalysis } from "../entities/IssueAIAnalysis.js";
+import type { IssueAIAnalysis } from "../entities/IssueAIAnalysis.ts";
 
 export interface IIssueAIAnalysisRepository {
     findByIssueId(issueId: string): Promise<IssueAIAnalysis | null>;

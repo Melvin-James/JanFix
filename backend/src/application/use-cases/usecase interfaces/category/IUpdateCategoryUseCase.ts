@@ -1,6 +1,6 @@
-import type { CategoryResponseDTO } from "../../../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../../../dto/category/CategoryResponseDTO.ts";
 
-import type { UpdateCategoryDTO } from "../../../dto/category/UpdateCategoryDTO.js";
+import type { UpdateCategoryDTO } from "../../../dto/category/UpdateCategoryDTO.ts";
 
 export interface IUpdateCategoryUseCase {
     execute(

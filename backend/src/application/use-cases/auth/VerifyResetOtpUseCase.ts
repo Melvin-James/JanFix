@@ -1,36 +1,36 @@
-import { compareData } from "../../../shared/utils/hashUtil.js";
+import { compareData } from "../../../shared/utils/hashUtil.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.ts";
 
-import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.ts";
 
-import type { VerifyResetOtpDTO } from "../../dto/auth/VerifyResetOtpDTO.js";
+import type { VerifyResetOtpDTO } from "../../dto/auth/VerifyResetOtpDTO.ts";
 
-import type { IVerifyResetOtpUseCase } from "../usecase interfaces/auth/IVerifyResetOtpUseCase.js";
+import type { IVerifyResetOtpUseCase } from "../usecase interfaces/auth/IVerifyResetOtpUseCase.ts";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
 
 export class VerifyResetOtpUseCase implements IVerifyResetOtpUseCase {
 
     constructor(
-        private userRepository: IUserRepository,
-        private otpRepository: IOtpRepository,
-        private jwtService: IJwtService
+        private _userRepository: IUserRepository,
+        private _otpRepository: IOtpRepository,
+        private _jwtService: IJwtService
     ) {}
 
     async execute(
         dto: VerifyResetOtpDTO
     ): Promise<string> {
 
-        const user = await this.userRepository.findByEmail(
+        const user = await this._userRepository.findByEmail(
             dto.email
         );
 
@@ -48,7 +48,7 @@ export class VerifyResetOtpUseCase implements IVerifyResetOtpUseCase {
             );
         }
 
-        const storedOtp = await this.otpRepository.getOtp(
+        const storedOtp = await this._otpRepository.getOtp(
             dto.email,
             OtpPurpose.RESET_PASSWORD
         );
@@ -75,16 +75,16 @@ export class VerifyResetOtpUseCase implements IVerifyResetOtpUseCase {
             )
         }
 
-        await this.otpRepository.deleteOtp(
+        await this._otpRepository.deleteOtp(
             dto.email,
             OtpPurpose.RESET_PASSWORD
         );
 
-        const resetToken = this.jwtService.generateResetToken(
+        const resetToken = this._jwtService.generateResetToken(
             user.id as string
         )
 
-        await this.otpRepository.deleteOtp(
+        await this._otpRepository.deleteOtp(
             dto.email,
             OtpPurpose.RESET_PASSWORD
         )

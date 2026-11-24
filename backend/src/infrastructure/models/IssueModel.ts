@@ -1,12 +1,12 @@
 import { Schema, model, type Document, Types } from "mongoose";
-import { uploadedFileSchema } from "../database/schemas/uploadedFileSchema.js";
-import { issueLocationSchema } from "../database/schemas/issueLocationSchema.js";
-import { IssueVisibility } from "../../domain/enums/IssueVisibility.js";
-import { IssueStatus } from "../../domain/enums/IssueStatus.js";
-import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
-import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
-import type { UploadedFile } from "../../domain/entities/UploadedFile.js";
-import type { IssueLocation } from "../../domain/entities/IssueLocation.js";
+import { uploadedFileSchema } from "../database/schemas/uploadedFileSchema.ts";
+import { issueLocationSchema } from "../database/schemas/issueLocationSchema.ts";
+import { IssueVisibility } from "../../domain/enums/IssueVisibility.ts";
+import { IssueStatus } from "../../domain/enums/IssueStatus.ts";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.ts";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.ts";
+import type { UploadedFile } from "../../domain/entities/UploadedFile.ts";
+import type { IssueLocation } from "../../domain/entities/IssueLocation.ts";
 
 export interface IssueFundingSnapshotSubdocument {
     fundingType: ProposalFundingType;

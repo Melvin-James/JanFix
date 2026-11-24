@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
 import type Stripe from "stripe";
-import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { StripeService } from "../../../infrastructure/services/StripeService.js";
-import { DonationStatus } from "../../../domain/enums/DonationStatus.js";
-import type { Donation } from "../../../domain/entities/Donation.js";
-import logger from "../../../shared/utils/logger.js";
+import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { StripeService } from "../../../infrastructure/services/StripeService.ts";
+import { DonationStatus } from "../../../domain/enums/DonationStatus.ts";
+import type { Donation } from "../../../domain/entities/Donation.ts";
+import logger from "../../../shared/utils/logger.ts";
 
 export class HandleStripeWebhookUseCase {
   constructor(
-    private donationRepository: IDonationRepository,
-    private issueRepository: IIssueRepository,
-    private stripeService: StripeService
+    private _donationRepository: IDonationRepository,
+    private _issueRepository: IIssueRepository,
+    private _stripeService: StripeService
   ) {}
 
   async execute(
@@ -22,26 +22,26 @@ export class HandleStripeWebhookUseCase {
       throw new Error("Missing stripe-signature header");
     }
 
-    const event = this.stripeService.constructWebhookEvent(rawBody, signature);
+    const event = this._stripeService.constructWebhookEvent(rawBody, signature);
 
     logger.info(`Received Stripe webhook event: ${event.type} [${event.id}]`);
 
     switch (event.type) {
       case "payment_intent.succeeded": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await this.handlePaymentIntentSucceeded(paymentIntent);
+        await this._handlePaymentIntentSucceeded(paymentIntent);
         break;
       }
 
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await this.handlePaymentIntentFailed(paymentIntent);
+        await this._handlePaymentIntentFailed(paymentIntent);
         break;
       }
 
       case "payment_intent.canceled": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await this.handlePaymentIntentCanceled(paymentIntent);
+        await this._handlePaymentIntentCanceled(paymentIntent);
         break;
       }
 
@@ -61,10 +61,10 @@ export class HandleStripeWebhookUseCase {
    * 3. Stale events from an old canceled PaymentIntent after a replacement PaymentIntent was issued.
    * 4. Creation race conditions where the initial PaymentIntentId wasn't yet persisted.
    */
-  private async findAndValidateDonation(
+  private async _findAndValidateDonation(
     paymentIntent: Stripe.PaymentIntent
   ): Promise<Donation | null> {
-    let donation = await this.donationRepository.findByPaymentIntentId(paymentIntent.id);
+    let donation = await this._donationRepository.findByPaymentIntentId(paymentIntent.id);
 
     // Handle creation race condition: initial intent ID may not be persisted yet
     if (!donation) {
@@ -76,7 +76,7 @@ export class HandleStripeWebhookUseCase {
         return null;
       }
 
-      const candidate = await this.donationRepository.findById(donationIdFromMeta);
+      const candidate = await this._donationRepository.findById(donationIdFromMeta);
       if (!candidate) {
         logger.warn(
           `Donation ID ${donationIdFromMeta} from PaymentIntent ${paymentIntent.id} metadata does not exist.`
@@ -97,7 +97,7 @@ export class HandleStripeWebhookUseCase {
 
       // Associate incoming PaymentIntent ID only if candidate currently has no associated ID
       if (!candidate.stripePaymentIntentId) {
-        const associated = await this.donationRepository.updatePaymentIntentId(
+        const associated = await this._donationRepository.updatePaymentIntentId(
           candidate.id,
           null,
           paymentIntent.id
@@ -159,10 +159,10 @@ export class HandleStripeWebhookUseCase {
     return donation;
   }
 
-  private async handlePaymentIntentSucceeded(
+  private async _handlePaymentIntentSucceeded(
     paymentIntent: Stripe.PaymentIntent
   ): Promise<void> {
-    const donation = await this.findAndValidateDonation(paymentIntent);
+    const donation = await this._findAndValidateDonation(paymentIntent);
     if (!donation) {
       return;
     }
@@ -185,7 +185,7 @@ export class HandleStripeWebhookUseCase {
       session.startTransaction();
 
       // Conditional atomic update: only succeeds if status != SUCCEEDED
-      const updated = await this.donationRepository.markSucceededIfNotSucceeded(
+      const updated = await this._donationRepository.markSucceededIfNotSucceeded(
         donation.id,
         paymentIntent.id,
         paidAt,
@@ -194,7 +194,7 @@ export class HandleStripeWebhookUseCase {
 
       if (updated) {
         // Only increment funding if this execution actually transitioned the record
-        await this.issueRepository.incrementRaisedAmount(
+        await this._issueRepository.incrementRaisedAmount(
           donation.issueId,
           donation.amountPaise,
           session
@@ -222,10 +222,10 @@ export class HandleStripeWebhookUseCase {
     }
   }
 
-  private async handlePaymentIntentFailed(
+  private async _handlePaymentIntentFailed(
     paymentIntent: Stripe.PaymentIntent
   ): Promise<void> {
-    const donation = await this.findAndValidateDonation(paymentIntent);
+    const donation = await this._findAndValidateDonation(paymentIntent);
     if (!donation) return;
 
     if (donation.status === DonationStatus.SUCCEEDED) {
@@ -238,7 +238,7 @@ export class HandleStripeWebhookUseCase {
     const failureReason =
       paymentIntent.last_payment_error?.message || "Payment processing failed";
 
-    await this.donationRepository.updateStatusIfNotSucceeded(
+    await this._donationRepository.updateStatusIfNotSucceeded(
       donation.id,
       paymentIntent.id,
       DonationStatus.FAILED,
@@ -248,10 +248,10 @@ export class HandleStripeWebhookUseCase {
     logger.warn(`Donation ${donation.id} marked as FAILED: ${failureReason}`);
   }
 
-  private async handlePaymentIntentCanceled(
+  private async _handlePaymentIntentCanceled(
     paymentIntent: Stripe.PaymentIntent
   ): Promise<void> {
-    const donation = await this.findAndValidateDonation(paymentIntent);
+    const donation = await this._findAndValidateDonation(paymentIntent);
     if (!donation) return;
 
     if (donation.status === DonationStatus.SUCCEEDED) {
@@ -261,7 +261,7 @@ export class HandleStripeWebhookUseCase {
       return;
     }
 
-    await this.donationRepository.updateStatusIfNotSucceeded(
+    await this._donationRepository.updateStatusIfNotSucceeded(
       donation.id,
       paymentIntent.id,
       DonationStatus.CANCELED,

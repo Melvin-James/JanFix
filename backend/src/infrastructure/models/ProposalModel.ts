@@ -1,8 +1,8 @@
 import { Schema, model, type Document, Types } from "mongoose";
-import { ProviderType } from "../../domain/enums/ProviderType.js";
-import { ProposalStatus } from "../../domain/enums/ProposalStatus.js";
-import { NgoParticipationMode } from "../../domain/enums/NgoParticipationMode.js";
-import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
+import { ProviderType } from "../../domain/enums/ProviderType.ts";
+import { ProposalStatus } from "../../domain/enums/ProposalStatus.ts";
+import { NgoParticipationMode } from "../../domain/enums/NgoParticipationMode.ts";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.ts";
 
 export interface BudgetItemSubdocument {
     _id: Types.ObjectId;

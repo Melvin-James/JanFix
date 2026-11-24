@@ -1,20 +1,20 @@
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.js";
-import type { IResubmitProviderApplicationUseCase } from "../usecase interfaces/provider/IResubmitProviderApplicationUseCase.js";
-import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
-import { ProviderType } from "../../../domain/enums/ProviderType.js";
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
-import type { User } from "../../../domain/entities/User.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.ts";
+import type { IResubmitProviderApplicationUseCase } from "../usecase interfaces/provider/IResubmitProviderApplicationUseCase.ts";
+import type { SubmitProviderApplicationDTO } from "../../dto/provider/SubmitProviderApplicationDTO.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import { ProviderType } from "../../../domain/enums/ProviderType.ts";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
+import type { User } from "../../../domain/entities/User.ts";
 
 export class ResubmitProviderApplicationUseCase
     implements IResubmitProviderApplicationUseCase {
 
     constructor(
-        private userRepository: IUserRepository,
-        private categoryRepository: ICategoryRepository
+        private _userRepository: IUserRepository,
+        private _categoryRepository: ICategoryRepository
     ) { }
 
 
@@ -28,7 +28,7 @@ export class ResubmitProviderApplicationUseCase
 
 
         const user =
-            await this.userRepository.findById(userId);
+            await this._userRepository.findById(userId);
 
 
         if (!user) {
@@ -80,10 +80,10 @@ export class ResubmitProviderApplicationUseCase
         for (const catIdOrName of dto.categoriesWillingToWork) {
             let category = null;
             if (/^[0-9a-fA-F]{24}$/.test(catIdOrName)) {
-                category = await this.categoryRepository.findById(catIdOrName);
+                category = await this._categoryRepository.findById(catIdOrName);
             }
             if (!category) {
-                category = await this.categoryRepository.findByName(catIdOrName);
+                category = await this._categoryRepository.findByName(catIdOrName);
             }
             if (!category) {
                 throw new ApiError(
@@ -259,7 +259,7 @@ export class ResubmitProviderApplicationUseCase
         };
 
 
-        await this.userRepository.updateUser(user);
+        await this._userRepository.updateUser(user);
 
         return user;
     }

@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
-import type { IIssueInterestRepository } from "../../domain/interface/IIssueInterestRepository.js";
-import type { IssueInterest } from "../../domain/entities/IssueInterest.js";
-import { IssueInterestModel } from "../models/IssueInterestModel.js";
+import type { IIssueInterestRepository } from "../../domain/interface/IIssueInterestRepository.ts";
+import type { IssueInterest } from "../../domain/entities/IssueInterest.ts";
+import { IssueInterestModel } from "../models/IssueInterestModel.ts";
 
 export class IssueInterestRepository implements IIssueInterestRepository {
     async create(issueId: string, providerId: string): Promise<IssueInterest> {

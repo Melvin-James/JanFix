@@ -1,6 +1,6 @@
-import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import type { ProviderType } from "../../../domain/enums/ProviderType.js";
+import type { ProviderType } from "../../../domain/enums/ProviderType.ts";
 
 export interface ProviderApplicationResponseDTO {
     id: string;

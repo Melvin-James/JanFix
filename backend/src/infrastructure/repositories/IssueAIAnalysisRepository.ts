@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
-import type { IIssueAIAnalysisRepository } from "../../domain/interface/IIssueAIAnalysisRepository.js";
-import type { IssueAIAnalysis } from "../../domain/entities/IssueAIAnalysis.js";
-import { IssueAIAnalysisModel } from "../models/IssueAIAnalysisModel.js";
-import { IssueAIAnalysisMapper } from "../mappers/IssueAIAnalysisMapper.js";
-import { AIAnalysisStatus } from "../../domain/enums/AIAnalysisStatus.js";
-import { AIOverallClassification } from "../../domain/enums/AIOverallClassification.js";
+import type { IIssueAIAnalysisRepository } from "../../domain/interface/IIssueAIAnalysisRepository.ts";
+import type { IssueAIAnalysis } from "../../domain/entities/IssueAIAnalysis.ts";
+import { IssueAIAnalysisModel } from "../models/IssueAIAnalysisModel.ts";
+import { IssueAIAnalysisMapper } from "../mappers/IssueAIAnalysisMapper.ts";
+import { AIAnalysisStatus } from "../../domain/enums/AIAnalysisStatus.ts";
+import { AIOverallClassification } from "../../domain/enums/AIOverallClassification.ts";
 
 export class IssueAIAnalysisRepository implements IIssueAIAnalysisRepository {
     async findByIssueId(issueId: string): Promise<IssueAIAnalysis | null> {

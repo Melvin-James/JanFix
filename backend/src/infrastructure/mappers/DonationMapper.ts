@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
-import type { Donation } from "../../domain/entities/Donation.js";
-import type { DonationDocument } from "../models/DonationModel.js";
+import type { Donation } from "../../domain/entities/Donation.ts";
+import type { DonationDocument } from "../models/DonationModel.ts";
 
 export class DonationMapper {
   public static toEntity(doc: Document | DonationDocument): Donation {

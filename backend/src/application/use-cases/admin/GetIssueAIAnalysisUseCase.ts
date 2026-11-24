@@ -1,21 +1,21 @@
 import { Types } from "mongoose";
-import type { IGetIssueAIAnalysisUseCase } from "../usecase interfaces/admin/IGetIssueAIAnalysisUseCase.js";
-import type { IAnalyzeIssueCommentsUseCase } from "../usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueAIAnalysisRepository } from "../../../domain/interface/IIssueAIAnalysisRepository.js";
-import type { IssueAIAnalysisResponseDTO } from "../../dto/admin/IssueAIAnalysisResponseDTO.js";
-import { IssueAIAnalysisAppMapper } from "../../mappers/IssueAIAnalysisAppMapper.js";
-import { isIssueEligibleForReview, getIssueInteractionDeadline } from "../../../shared/utils/issueEligibility.js";
-import { AIAnalysisStatus } from "../../../domain/enums/AIAnalysisStatus.js";
-import { AIOverallClassification } from "../../../domain/enums/AIOverallClassification.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { IGetIssueAIAnalysisUseCase } from "../usecase interfaces/admin/IGetIssueAIAnalysisUseCase.ts";
+import type { IAnalyzeIssueCommentsUseCase } from "../usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueAIAnalysisRepository } from "../../../domain/interface/IIssueAIAnalysisRepository.ts";
+import type { IssueAIAnalysisResponseDTO } from "../../dto/admin/IssueAIAnalysisResponseDTO.ts";
+import { IssueAIAnalysisAppMapper } from "../../mappers/IssueAIAnalysisAppMapper.ts";
+import { isIssueEligibleForReview, getIssueInteractionDeadline } from "../../../shared/utils/issueEligibility.ts";
+import { AIAnalysisStatus } from "../../../domain/enums/AIAnalysisStatus.ts";
+import { AIOverallClassification } from "../../../domain/enums/AIOverallClassification.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetIssueAIAnalysisUseCase implements IGetIssueAIAnalysisUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly aiAnalysisRepository: IIssueAIAnalysisRepository,
-        private readonly analyzeIssueCommentsUseCase: IAnalyzeIssueCommentsUseCase
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _aiAnalysisRepository: IIssueAIAnalysisRepository,
+        private readonly _analyzeIssueCommentsUseCase: IAnalyzeIssueCommentsUseCase
     ) {}
 
     async execute(issueId: string, serverNow: Date = new Date()): Promise<IssueAIAnalysisResponseDTO> {
@@ -23,7 +23,7 @@ export class GetIssueAIAnalysisUseCase implements IGetIssueAIAnalysisUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid issue ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -52,7 +52,7 @@ export class GetIssueAIAnalysisUseCase implements IGetIssueAIAnalysisUseCase {
         }
 
         // Scenario 2: Existing analysis already recorded
-        const existing = await this.aiAnalysisRepository.findByIssueId(issueId);
+        const existing = await this._aiAnalysisRepository.findByIssueId(issueId);
         if (existing) {
             return IssueAIAnalysisAppMapper.toResponse(existing, {
                 canTriggerAnalysis: existing.status === AIAnalysisStatus.FAILED,
@@ -61,7 +61,7 @@ export class GetIssueAIAnalysisUseCase implements IGetIssueAIAnalysisUseCase {
         }
 
         // Scenario 3: Eligible issue has not been analyzed yet -> trigger automatic first-time analysis
-        return await this.analyzeIssueCommentsUseCase.execute(issueId, serverNow);
+        return await this._analyzeIssueCommentsUseCase.execute(issueId, serverNow);
     }
 }
 export default GetIssueAIAnalysisUseCase;

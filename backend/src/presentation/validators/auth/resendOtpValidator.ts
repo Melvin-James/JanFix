@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.ts";
 
 export const resendOtpSchema = z.object({
     email: z

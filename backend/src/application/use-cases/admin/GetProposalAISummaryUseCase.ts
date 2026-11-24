@@ -1,21 +1,21 @@
 import { Types } from "mongoose";
-import type { IGetProposalAISummaryUseCase } from "../usecase interfaces/admin/IGetProposalAISummaryUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { IProposalAIAnalysisRepository } from "../../../infrastructure/repositories/ProposalAIAnalysisRepository.js";
-import type { IProposalAIService, ProposalAIComparisonItem, IssueAIContext } from "../../../domain/interface/IProposalAIService.js";
-import type { AdminProposalAISummaryResponseDTO } from "../../dto/admin/AdminProposalAISummaryResponseDTO.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { IGetProposalAISummaryUseCase } from "../usecase interfaces/admin/IGetProposalAISummaryUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { IProposalAIAnalysisRepository } from "../../../infrastructure/repositories/ProposalAIAnalysisRepository.ts";
+import type { IProposalAIService, ProposalAIComparisonItem, IssueAIContext } from "../../../domain/interface/IProposalAIService.ts";
+import type { AdminProposalAISummaryResponseDTO } from "../../dto/admin/AdminProposalAISummaryResponseDTO.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetProposalAISummaryUseCase implements IGetProposalAISummaryUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository,
-        private readonly userRepository: IUserRepository,
-        private readonly proposalAIAnalysisRepository: IProposalAIAnalysisRepository,
-        private readonly proposalAIService: IProposalAIService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _userRepository: IUserRepository,
+        private readonly _proposalAIAnalysisRepository: IProposalAIAnalysisRepository,
+        private readonly _proposalAIService: IProposalAIService
     ) {}
 
     async execute(issueId: string, proposalId: string, forceRefresh = false): Promise<AdminProposalAISummaryResponseDTO> {
@@ -27,8 +27,8 @@ export class GetProposalAISummaryUseCase implements IGetProposalAISummaryUseCase
         }
 
         const [issue, proposal] = await Promise.all([
-            this.issueRepository.findById(issueId),
-            this.proposalRepository.findByIdAndIssueId(proposalId, issueId),
+            this._issueRepository.findById(issueId),
+            this._proposalRepository.findByIdAndIssueId(proposalId, issueId),
         ]);
 
         if (!issue) {
@@ -42,7 +42,7 @@ export class GetProposalAISummaryUseCase implements IGetProposalAISummaryUseCase
 
         // Check cache unless forceRefresh requested
         if (!forceRefresh) {
-            const cached = await this.proposalAIAnalysisRepository.getIndividualSummary(proposalId);
+            const cached = await this._proposalAIAnalysisRepository.getIndividualSummary(proposalId);
             if (cached && cached.proposalUpdatedAt.getTime() >= proposalUpdatedAt.getTime()) {
                 return {
                     proposalId,
@@ -60,7 +60,7 @@ export class GetProposalAISummaryUseCase implements IGetProposalAISummaryUseCase
             }
         }
 
-        const providerUser = await this.userRepository.findById(proposal.providerId);
+        const providerUser = await this._userRepository.findById(proposal.providerId);
         const providerName =
             providerUser?.providerProfile?.identity?.providerName || providerUser?.fullName || "Service Provider";
         const memberCount =
@@ -104,13 +104,13 @@ export class GetProposalAISummaryUseCase implements IGetProposalAISummaryUseCase
             locationAddress: issue.location?.address,
         };
 
-        const aiResult = await this.proposalAIService.generateIndividualProposalSummary(
+        const aiResult = await this._proposalAIService.generateIndividualProposalSummary(
             issueContext,
             proposalItem
         );
 
         // Save to cache
-        await this.proposalAIAnalysisRepository.saveIndividualSummary({
+        await this._proposalAIAnalysisRepository.saveIndividualSummary({
             proposalId,
             issueId,
             proposalUpdatedAt,

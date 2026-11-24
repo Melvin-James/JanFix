@@ -1,9 +1,9 @@
 import type { Document } from "mongoose";
-import type { Issue } from "../../domain/entities/Issue.js";
-import type { IssueDocument } from "../models/IssueModel.js";
-import { IssueStatus } from "../../domain/enums/IssueStatus.js";
-import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
-import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../shared/constants/proposal.constants.js";
+import type { Issue } from "../../domain/entities/Issue.ts";
+import type { IssueDocument } from "../models/IssueModel.ts";
+import { IssueStatus } from "../../domain/enums/IssueStatus.ts";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.ts";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../shared/constants/proposal.constants.ts";
 
 export class IssueMapper {
     static toEntity(doc: Document): Issue {

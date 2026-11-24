@@ -1,4 +1,4 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
 
 export interface UploadFileResponseDTO {
     file: UploadedFile;

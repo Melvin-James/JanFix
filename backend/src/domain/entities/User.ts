@@ -1,12 +1,12 @@
-import { Role } from "../enums/Role.js";
+import { Role } from "../enums/Role.ts";
 
-import { AuthProvider } from "../enums/AuthProvider.js";
+import { AuthProvider } from "../enums/AuthProvider.ts";
 
-import type { ProviderProfile } from "./ProviderProfile.js";
+import type { ProviderProfile } from "./ProviderProfile.ts";
 
-import type { AccountStatus } from "../enums/AccountStatus.js";
+import type { AccountStatus } from "../enums/AccountStatus.ts";
 
-import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
 
 export interface User {
 

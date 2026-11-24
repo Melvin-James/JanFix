@@ -1,5 +1,5 @@
-import type { PaginatedResult } from "../../../../shared/types/Pagination.js";
-import type { ProviderIssueResponseDTO } from "../../../dto/provider/ProviderIssueResponseDTO.js";
+import type { PaginatedResult } from "../../../../shared/types/Pagination.ts";
+import type { ProviderIssueResponseDTO } from "../../../dto/provider/ProviderIssueResponseDTO.ts";
 
 export interface ProviderIssueFilters {
     category?: string | undefined;

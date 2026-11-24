@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
-import type { INotificationRepository } from "../../domain/interface/INotificationRepository.js";
-import type { Notification } from "../../domain/entities/Notification.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
-import { NotificationModel } from "../models/NotificationModel.js";
-import { NotificationMapper } from "../mappers/NotificationMapper.js";
+import type { INotificationRepository } from "../../domain/interface/INotificationRepository.ts";
+import type { Notification } from "../../domain/entities/Notification.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
+import { NotificationModel } from "../models/NotificationModel.ts";
+import { NotificationMapper } from "../mappers/NotificationMapper.ts";
 
 export class NotificationRepository implements INotificationRepository {
     async create(data: Omit<Notification, "id" | "createdAt" | "updatedAt">): Promise<Notification> {

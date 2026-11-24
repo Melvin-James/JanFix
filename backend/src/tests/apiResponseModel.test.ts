@@ -6,9 +6,9 @@ import {
     sendPaginated,
     sendError,
     type ApiResponse,
-} from "../shared/response/ApiResponse.js";
-import { HttpStatusCode } from "../shared/enums/HttpStatusCode.js";
-import type { PaginationMeta } from "../shared/types/Pagination.js";
+} from "../shared/response/ApiResponse.ts";
+import { HttpStatusCode } from "../shared/enums/HttpStatusCode.ts";
+import type { PaginationMeta } from "../shared/types/Pagination.ts";
 
 interface MockResponsePayload {
     statusCode: number;

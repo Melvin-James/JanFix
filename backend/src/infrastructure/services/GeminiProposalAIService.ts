@@ -1,13 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
-import { env } from "../config/env.js";
+import { env } from "../config/env.ts";
 import type {
     IProposalAIService,
     IssueAIContext,
     ProposalAIComparisonItem,
     IssueProposalRecommendationResult,
     IndividualProposalSummaryResult,
-} from "../../domain/interface/IProposalAIService.js";
-import logger from "../../shared/utils/logger.js";
+} from "../../domain/interface/IProposalAIService.ts";
+import logger from "../../shared/utils/logger.ts";
 
 interface RawRecommendationResponse {
     recommendedProposalId?: string | null;
@@ -29,14 +29,14 @@ interface RawSummaryResponse {
 }
 
 export class GeminiProposalAIService implements IProposalAIService {
-    private readonly ai: GoogleGenAI;
-    private readonly modelName: string;
+    private readonly _ai: GoogleGenAI;
+    private readonly _modelName: string;
 
     constructor() {
-        this.ai = new GoogleGenAI({
+        this._ai = new GoogleGenAI({
             apiKey: env.GEMINI_API_KEY,
         });
-        this.modelName = env.GEMINI_MODEL || "gemini-3.8-flash";
+        this._modelName = env.GEMINI_MODEL || "gemini-3.8-flash";
     }
 
     async generateIssueProposalRecommendation(
@@ -51,7 +51,7 @@ export class GeminiProposalAIService implements IProposalAIService {
                 keyStrengths: [],
                 keyConcerns: [],
                 tradeOffs: [],
-                modelUsed: this.modelName,
+                modelUsed: this._modelName,
             };
         }
 
@@ -101,8 +101,8 @@ Respond with a JSON object adhering to this schema:
         let responseText: string | undefined;
 
         try {
-            const response = await this.ai.models.generateContent({
-                model: this.modelName,
+            const response = await this._ai.models.generateContent({
+                model: this._modelName,
                 contents: promptText,
                 config: {
                     systemInstruction,
@@ -112,7 +112,7 @@ Respond with a JSON object adhering to this schema:
             responseText = response.text;
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : "Unknown Gemini API error";
-            logger.error({ model: this.modelName, error: errMsg }, "JanAI proposal recommendation generation failed");
+            logger.error({ model: this._modelName, error: errMsg }, "JanAI proposal recommendation generation failed");
             const err = new Error(`AI service unavailable: ${errMsg}`);
             (err as unknown as { cause: unknown }).cause = error;
             throw err;
@@ -163,7 +163,7 @@ Respond with a JSON object adhering to this schema:
             keyStrengths: sanitizeArray(parsed.keyStrengths),
             keyConcerns: sanitizeArray(parsed.keyConcerns),
             tradeOffs: sanitizeArray(parsed.tradeOffs),
-            modelUsed: this.modelName,
+            modelUsed: this._modelName,
         };
     }
 
@@ -210,8 +210,8 @@ Respond with a JSON object adhering to this schema:
         let responseText: string | undefined;
 
         try {
-            const response = await this.ai.models.generateContent({
-                model: this.modelName,
+            const response = await this._ai.models.generateContent({
+                model: this._modelName,
                 contents: promptText,
                 config: {
                     systemInstruction,
@@ -221,7 +221,7 @@ Respond with a JSON object adhering to this schema:
             responseText = response.text;
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : "Unknown Gemini API error";
-            logger.error({ model: this.modelName, error: errMsg }, "JanAI individual proposal summary generation failed");
+            logger.error({ model: this._modelName, error: errMsg }, "JanAI individual proposal summary generation failed");
             const err = new Error(`AI service unavailable: ${errMsg}`);
             (err as unknown as { cause: unknown }).cause = error;
             throw err;
@@ -266,7 +266,7 @@ Respond with a JSON object adhering to this schema:
             keyStrengths: sanitizeArray(parsed.keyStrengths),
             potentialConcerns: sanitizeArray(parsed.potentialConcerns),
             unclearOrMissingInformation: sanitizeArray(parsed.unclearOrMissingInformation),
-            modelUsed: this.modelName,
+            modelUsed: this._modelName,
         };
     }
 }

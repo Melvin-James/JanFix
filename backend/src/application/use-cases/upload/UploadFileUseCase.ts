@@ -1,22 +1,22 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
 
-import type { IStorageService } from "../../services/IStorageService.js";
+import type { IStorageService } from "../../services/IStorageService.ts";
 
-import type { IUploadFileUseCase } from "../usecase interfaces/provider/IUploadFileUseCase.js";
+import type { IUploadFileUseCase } from "../usecase interfaces/provider/IUploadFileUseCase.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { UploadFolder } from "../../../domain/enums/UploadFolder.js";
+import type { UploadFolder } from "../../../domain/enums/UploadFolder.ts";
 
 export class UploadFileUseCase implements IUploadFileUseCase {
 
     constructor(
 
-        private storageService: IStorageService
+        private _storageService: IStorageService
 
     ) {}
 
@@ -39,7 +39,7 @@ export class UploadFileUseCase implements IUploadFileUseCase {
             );
         }
 
-        return await this.storageService.upload(file, folder);
+        return await this._storageService.upload(file, folder);
 
     }
 

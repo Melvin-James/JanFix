@@ -1,22 +1,22 @@
 import { Types } from "mongoose";
-import type { ISubmitProposalUseCase } from "../usecase interfaces/provider/ISubmitProposalUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { SubmitProposalDTO } from "../../dto/proposal/SubmitProposalDTO.js";
-import type { ProposalResponseDTO } from "../../dto/proposal/ProposalResponseDTO.js";
-import type { BudgetItem, ExecutionRoadmapItem, ProposalNgoDetails } from "../../../domain/entities/Proposal.js";
-import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
-import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { ProviderType } from "../../../domain/enums/ProviderType.js";
-import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
-import { Role } from "../../../domain/enums/Role.js";
-import { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
-import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.js";
+import type { ISubmitProposalUseCase } from "../usecase interfaces/provider/ISubmitProposalUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { SubmitProposalDTO } from "../../dto/proposal/SubmitProposalDTO.ts";
+import type { ProposalResponseDTO } from "../../dto/proposal/ProposalResponseDTO.ts";
+import type { BudgetItem, ExecutionRoadmapItem, ProposalNgoDetails } from "../../../domain/entities/Proposal.ts";
+import { ProposalStatus } from "../../../domain/enums/ProposalStatus.ts";
+import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { ProviderType } from "../../../domain/enums/ProviderType.ts";
+import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
+import { Role } from "../../../domain/enums/Role.ts";
+import { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.ts";
+import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.ts";
 
 function parseTimeToMinutes(timeStr: string): number {
     const parts = timeStr.split(":").map(Number);
@@ -27,9 +27,9 @@ function parseTimeToMinutes(timeStr: string): number {
 
 export class SubmitProposalUseCase implements ISubmitProposalUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository,
-        private readonly userRepository: IUserRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _userRepository: IUserRepository
     ) {}
 
     async execute(
@@ -46,7 +46,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
         }
 
         // 1. Verify Issue existence and eligibility
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -76,7 +76,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
         }
 
         // 3. Verify Provider profile & derive authoritative providerType
-        const user = await this.userRepository.findById(providerId);
+        const user = await this._userRepository.findById(providerId);
         if (!user) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Provider account not found");
         }
@@ -282,7 +282,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
         }
 
         // 9. Check for Existing Proposal (Submission vs Resubmission/Duplicate)
-        const existingProposal = await this.proposalRepository.findByIssueAndProvider(issueId, providerId);
+        const existingProposal = await this._proposalRepository.findByIssueAndProvider(issueId, providerId);
 
         if (existingProposal) {
             if (existingProposal.status === ProposalStatus.SUBMITTED) {
@@ -303,7 +303,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
             }
 
             // Resubmit previously withdrawn proposal
-            const updated = await this.proposalRepository.update(existingProposal.id!, {
+            const updated = await this._proposalRepository.update(existingProposal.id!, {
                 status: ProposalStatus.SUBMITTED,
                 fundingType,
                 issueSnapshot: {
@@ -328,7 +328,7 @@ export class SubmitProposalUseCase implements ISubmitProposalUseCase {
         }
 
         // 10. Create New Proposal
-        const created = await this.proposalRepository.create({
+        const created = await this._proposalRepository.create({
             issueId,
             providerId,
             providerType,

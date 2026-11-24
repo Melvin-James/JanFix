@@ -1,37 +1,37 @@
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
 
-import { Role } from "../../../domain/enums/Role.js";
+import { Role } from "../../../domain/enums/Role.ts";
 
-import { UserMapper } from "../../mappers/LoginMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
 
-import type { IGoogleAuthUseCase } from "../usecase interfaces/auth/IGoogleAuthUseCase.js";
+import type { IGoogleAuthUseCase } from "../usecase interfaces/auth/IGoogleAuthUseCase.ts";
 
-import type { GoogleUser } from "../../../domain/interface/IGoogleAuthService.js";
+import type { GoogleUser } from "../../../domain/interface/IGoogleAuthService.ts";
 
-import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.ts";
 
-import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
+import { AuthProvider } from "../../../domain/enums/AuthProvider.ts";
 
-import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.ts";
 
-import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.ts";
 
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
 export class GoogleAuthUseCase implements IGoogleAuthUseCase{
     constructor(
-        private userRepository: IUserRepository,
-        private jwtService: IJwtService
+        private _userRepository: IUserRepository,
+        private _jwtService: IJwtService
     ){}
 
     async execute(googleUser: GoogleUser): Promise<{
@@ -47,13 +47,13 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
             )
         }
 
-        let user = await this.userRepository.findByEmail(
+        let user = await this._userRepository.findByEmail(
             googleUser.email
         )
 
         if(!user) {
 
-            user = await this.userRepository.create({
+            user = await this._userRepository.create({
 
                 fullName: googleUser.fullName,
 
@@ -107,16 +107,16 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase{
 
         if(user.activeMode !== activeModeToResume) {
             user.activeMode = activeModeToResume;
-            await this.userRepository.updateUser(user);
+            await this._userRepository.updateUser(user);
         }
 
-        const accessToken = this.jwtService.generateAccessToken(
+        const accessToken = this._jwtService.generateAccessToken(
             user.id as string,
             user.roles,
             activeModeToResume
         );
 
-        const refreshToken = this.jwtService.generateRefreshToken(
+        const refreshToken = this._jwtService.generateRefreshToken(
             user.id as string
         );
 

@@ -1,5 +1,5 @@
-import type { DonationStatus } from "../enums/DonationStatus.js";
-import type { PaymentProvider } from "../enums/PaymentProvider.js";
+import type { DonationStatus } from "../enums/DonationStatus.ts";
+import type { PaymentProvider } from "../enums/PaymentProvider.ts";
 
 export interface Donation {
   id: string;

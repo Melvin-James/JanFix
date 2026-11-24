@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { NotificationRepository } from "../../infrastructure/repositories/NotificationRepository.js";
-import { GetNotificationsUseCase } from "../../application/use-cases/notification/GetNotificationsUseCase.js";
-import { MarkNotificationAsReadUseCase } from "../../application/use-cases/notification/MarkNotificationAsReadUseCase.js";
-import { NotificationController } from "../controllers/notification/NotificationController.js";
-import { authenticate } from "../middlewares/authMiddleware.js";
-import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+import { NotificationRepository } from "../../infrastructure/repositories/NotificationRepository.ts";
+import { GetNotificationsUseCase } from "../../application/use-cases/notification/GetNotificationsUseCase.ts";
+import { MarkNotificationAsReadUseCase } from "../../application/use-cases/notification/MarkNotificationAsReadUseCase.ts";
+import { NotificationController } from "../controllers/notification/NotificationController.ts";
+import { authenticate } from "../middlewares/authMiddleware.ts";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.ts";
 
 const router = Router();
 

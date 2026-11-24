@@ -1,9 +1,9 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
-import type { IssueLocation } from "../../../domain/entities/IssueLocation.js";
-import type { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import type { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
-import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
+import type { IssueLocation } from "../../../domain/entities/IssueLocation.ts";
+import type { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import type { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
+import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
 
 export interface IssueFundingSnapshotDTO {
     fundingType: ProposalFundingType;

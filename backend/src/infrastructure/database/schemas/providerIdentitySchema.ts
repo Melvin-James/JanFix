@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { ProviderType } from "../../../domain/enums/ProviderType.js";
+import { ProviderType } from "../../../domain/enums/ProviderType.ts";
 
 export const providerIdentitySchema = new Schema(
     {

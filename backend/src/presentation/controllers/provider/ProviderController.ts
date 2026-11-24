@@ -1,22 +1,22 @@
 import type { Response } from "express";
-import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
-import asyncHandler from "../../../shared/utils/asyncHandler.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProviderApplicationUseCase.js";
-import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/IResubmitProviderApplicationUseCase.js";
-import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProfileUseCase.js";
-import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
-import type { IActivateProviderUseCase } from "../../../application/use-cases/usecase interfaces/provider/IActivateProviderUseCase.js";
-import type { IGetProviderIssuesUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderIssuesUseCase.js";
-import type { IExpressIssueInterestUseCase } from "../../../application/use-cases/usecase interfaces/provider/IExpressIssueInterestUseCase.js";
-import type { IGetProviderIssueDetailsUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderIssueDetailsUseCase.js";
-import type { ISubmitProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProposalUseCase.js";
-import type { IGetProviderProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProposalUseCase.js";
-import type { IUpdateProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IUpdateProposalUseCase.js";
-import type { IWithdrawProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IWithdrawProposalUseCase.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
-import { sendSuccess, sendPaginated } from "../../../shared/response/index.js";
+import type { AuthRequest } from "../../../shared/types/AuthRequest.ts";
+import asyncHandler from "../../../shared/utils/asyncHandler.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import type { ISubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProviderApplicationUseCase.ts";
+import type { IResubmitProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/provider/IResubmitProviderApplicationUseCase.ts";
+import type { IGetProviderProfileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProfileUseCase.ts";
+import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.ts";
+import type { IActivateProviderUseCase } from "../../../application/use-cases/usecase interfaces/provider/IActivateProviderUseCase.ts";
+import type { IGetProviderIssuesUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderIssuesUseCase.ts";
+import type { IExpressIssueInterestUseCase } from "../../../application/use-cases/usecase interfaces/provider/IExpressIssueInterestUseCase.ts";
+import type { IGetProviderIssueDetailsUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderIssueDetailsUseCase.ts";
+import type { ISubmitProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/ISubmitProposalUseCase.ts";
+import type { IGetProviderProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderProposalUseCase.ts";
+import type { IUpdateProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IUpdateProposalUseCase.ts";
+import type { IWithdrawProposalUseCase } from "../../../application/use-cases/usecase interfaces/provider/IWithdrawProposalUseCase.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import { sendSuccess, sendPaginated } from "../../../shared/response/index.ts";
 
 export class ProviderController {
   constructor(

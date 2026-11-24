@@ -1,6 +1,6 @@
-import type { ProviderStatus } from "../../../../domain/enums/ProviderStatus.js";
+import type { ProviderStatus } from "../../../../domain/enums/ProviderStatus.ts";
 
-import type { UpdateServiceProviderStatusResponseDTO } from "../../../dto/admin/UpdateServiceProviderStatusResponseDTO.js"; 
+import type { UpdateServiceProviderStatusResponseDTO } from "../../../dto/admin/UpdateServiceProviderStatusResponseDTO.ts"; 
 
 export interface IUpdateServiceProviderStatusUseCase {
 

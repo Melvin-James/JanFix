@@ -1,28 +1,29 @@
 import type { Response } from "express";
 
-import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
+import type { AuthRequest } from "../../../shared/types/AuthRequest.ts";
 
-import asyncHandler from "../../../shared/utils/asyncHandler.js";
+import asyncHandler from "../../../shared/utils/asyncHandler.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { sendSuccess, sendPaginated, sendError } from "../../../shared/response/index.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { sendSuccess, sendPaginated, sendError } from "../../../shared/response/index.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { ICreateIssueUseCase } from "../../../application/use-cases/usecase interfaces/issue/ICreateIssueUseCase.js";
+import type { ICreateIssueUseCase } from "../../../application/use-cases/usecase interfaces/issue/ICreateIssueUseCase.ts";
 
-import type { IGetIssueByIdUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetIssueByIdUseCase.js";
+import type { IGetIssueByIdUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetIssueByIdUseCase.ts";
 
-import type { IGetUserIssuesUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetUserIssuesUseCase.js";
+import type { IGetUserIssuesUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetUserIssuesUseCase.ts";
 
-import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
+import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.ts";
 
-import type { IGetFeedIssuesUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetFeedIssuesUseCase.js";
-import type { IAddIssueUpvoteUseCase } from "../../../application/use-cases/usecase interfaces/issue/IAddIssueUpvoteUseCase.js";
-import type { IRemoveIssueUpvoteUseCase } from "../../../application/use-cases/usecase interfaces/issue/IRemoveIssueUpvoteUseCase.js";
-import type { IGetIssueUpvoteStatusUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetIssueUpvoteStatusUseCase.js";
-import type { ICreateIssueCommentUseCase } from "../../../application/use-cases/usecase interfaces/issue/ICreateIssueCommentUseCase.js";
-import type { IGetIssueCommentsUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetIssueCommentsUseCase.js";
+import type { IGetFeedIssuesUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetFeedIssuesUseCase.ts";
+import type { IAddIssueUpvoteUseCase } from "../../../application/use-cases/usecase interfaces/issue/IAddIssueUpvoteUseCase.ts";
+import type { IRemoveIssueUpvoteUseCase } from "../../../application/use-cases/usecase interfaces/issue/IRemoveIssueUpvoteUseCase.ts";
+import type { IGetIssueUpvoteStatusUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetIssueUpvoteStatusUseCase.ts";
+import type { ICreateIssueCommentUseCase } from "../../../application/use-cases/usecase interfaces/issue/ICreateIssueCommentUseCase.ts";
+import type { IGetIssueCommentsUseCase } from "../../../application/use-cases/usecase interfaces/issue/IGetIssueCommentsUseCase.ts";
 
 export class IssueController {
 
@@ -53,7 +54,7 @@ export class IssueController {
     createIssue = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+            sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -128,7 +129,7 @@ export class IssueController {
     getUserIssues = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+            sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -159,7 +160,7 @@ export class IssueController {
     addUpvote = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+            sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -175,7 +176,7 @@ export class IssueController {
     removeUpvote = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+            sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -202,7 +203,7 @@ export class IssueController {
     createComment = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+            sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
             return;
         }
 
@@ -216,7 +217,7 @@ export class IssueController {
     getComments = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const userId = req.user?.userId;
         if (!userId) {
-            sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+            sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
             return;
         }
 

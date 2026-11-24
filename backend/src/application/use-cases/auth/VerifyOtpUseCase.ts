@@ -1,33 +1,33 @@
-import { compareData } from "../../../shared/utils/hashUtil.js";
+import { compareData } from "../../../shared/utils/hashUtil.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { VerifyOtpDTO } from "../../dto/auth/VerifyOtpDTO.js";
+import type { VerifyOtpDTO } from "../../dto/auth/VerifyOtpDTO.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.ts";
 
-import type { IVerifyOtpUseCase } from "../usecase interfaces/auth/IVerifyOtpUseCase.js";
+import type { IVerifyOtpUseCase } from "../usecase interfaces/auth/IVerifyOtpUseCase.ts";
 
-import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.ts";
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
     constructor(
-        private userRepository: IUserRepository,
-        private otpRepository: IOtpRepository
+        private _userRepository: IUserRepository,
+        private _otpRepository: IOtpRepository
     ) { }
 
     async execute(
         dto: VerifyOtpDTO
     ): Promise<void> {
 
-        const user = await this.userRepository.findByEmail(
+        const user = await this._userRepository.findByEmail(
             dto.email
         );
 
@@ -39,7 +39,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.USER_ALREADY_VERIFIED);
         }
 
-        const storedOtp = await this.otpRepository.getOtp(dto.email, OtpPurpose.VERIFY_ACCOUNT);
+        const storedOtp = await this._otpRepository.getOtp(dto.email, OtpPurpose.VERIFY_ACCOUNT);
 
         if (!storedOtp) {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.OTP_EXPIRED_OR_NOT_FOUND);
@@ -58,8 +58,8 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
         user.isVerified = true;
 
-        await this.otpRepository.deleteOtp(dto.email, OtpPurpose.VERIFY_ACCOUNT);
+        await this._otpRepository.deleteOtp(dto.email, OtpPurpose.VERIFY_ACCOUNT);
 
-        await this.userRepository.updateUser(user);
+        await this._userRepository.updateUser(user);
     }
 }

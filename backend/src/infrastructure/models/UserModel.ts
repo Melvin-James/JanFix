@@ -1,20 +1,20 @@
 import mongoose, { type Document, type Types } from "mongoose";
 
-import { Role } from "../../domain/enums/Role.js";
+import { Role } from "../../domain/enums/Role.ts";
 
-import { AuthProvider } from "../../domain/enums/AuthProvider.js";
+import { AuthProvider } from "../../domain/enums/AuthProvider.ts";
 
-import { providerProfileSchema } from "../database/schemas/providerProfileSchema.js";
+import { providerProfileSchema } from "../database/schemas/providerProfileSchema.ts";
 
-import { AccountStatus } from "../../domain/enums/AccountStatus.js";
+import { AccountStatus } from "../../domain/enums/AccountStatus.ts";
 
-import type { ProviderType } from "../../domain/enums/ProviderType.js";
+import type { ProviderType } from "../../domain/enums/ProviderType.ts";
 
-import type { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
+import type { ApplicationStatus } from "../../domain/enums/ApplicationStatus.ts";
 
-import type { ProviderStatus } from "../../domain/enums/ProviderStatus.js";
+import type { ProviderStatus } from "../../domain/enums/ProviderStatus.ts";
 
-import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
 
 // ─── Typed sub-document shapes ─────────────────────────────────────────────
 

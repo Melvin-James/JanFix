@@ -1,16 +1,16 @@
-import type { IUserRepository, ProviderApplicationFilters } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository, ProviderApplicationFilters } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IGetProviderApplicationsUseCase } from "../usecase interfaces/admin/IGetProviderApplicationsUseCase.js";
+import type { IGetProviderApplicationsUseCase } from "../usecase interfaces/admin/IGetProviderApplicationsUseCase.ts";
 
-import type { ProviderApplicationResponseDTO } from "../../dto/admin/ProviderApplicationResponseDTO.js";
+import type { ProviderApplicationResponseDTO } from "../../dto/admin/ProviderApplicationResponseDTO.ts";
 
-import { ProviderApplicationMapper } from "../../mappers/ProviderApplicationMapper.js";
+import { ProviderApplicationMapper } from "../../mappers/ProviderApplicationMapper.ts";
 
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
 
 export class GetProviderApplicationsUseCase implements IGetProviderApplicationsUseCase {
     constructor(
-        private userRepository: IUserRepository
+        private _userRepository: IUserRepository
     ) {}
 
     async execute(
@@ -19,7 +19,7 @@ export class GetProviderApplicationsUseCase implements IGetProviderApplicationsU
         filters?: ProviderApplicationFilters
     ): Promise<PaginatedResult<ProviderApplicationResponseDTO>> {
         
-        const paginatedResult = await this.userRepository.findPaginatedProviderApplications(
+        const paginatedResult = await this._userRepository.findPaginatedProviderApplications(
             page,
             pageSize,
             filters

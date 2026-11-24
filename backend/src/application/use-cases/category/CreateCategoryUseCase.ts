@@ -1,25 +1,25 @@
-import type { Category } from "../../../domain/entities/Category.js";
+import type { Category } from "../../../domain/entities/Category.ts";
 
-import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.js";
+import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.ts";
 
-import type { CreateCategoryDTO } from "../../dto/category/CreateCategoryDTO.js";
+import type { CreateCategoryDTO } from "../../dto/category/CreateCategoryDTO.ts";
 
-import { CategoryMapper } from "../../mappers/CategoryMapper.js";
+import { CategoryMapper } from "../../mappers/CategoryMapper.ts";
 
-import type { ICreateCategoryUseCase } from "../usecase interfaces/category/ICreateCategoryUseCase.js";
+import type { ICreateCategoryUseCase } from "../usecase interfaces/category/ICreateCategoryUseCase.ts";
 
 
 export class CreateCategoryUseCase implements ICreateCategoryUseCase {
     constructor(
-        private readonly categoryRepository: ICategoryRepository
+        private readonly _categoryRepository: ICategoryRepository
     ) {}
 
     async execute(data: CreateCategoryDTO): Promise<CategoryResponseDTO> {
@@ -28,7 +28,7 @@ export class CreateCategoryUseCase implements ICreateCategoryUseCase {
 
         const normalizedDescription = data.description.trim();
 
-        const existingCategory = await this.categoryRepository.findByName(
+        const existingCategory = await this._categoryRepository.findByName(
             normalizedName
         );
 
@@ -44,7 +44,7 @@ export class CreateCategoryUseCase implements ICreateCategoryUseCase {
             updatedAt: new Date(),
         };
 
-        const createdCategory = await this.categoryRepository.create(category);
+        const createdCategory = await this._categoryRepository.create(category);
 
         return CategoryMapper.toResponse(createdCategory);
 

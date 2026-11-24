@@ -1,5 +1,5 @@
-import type { IssueCommentResponseDTO } from "../../../dto/issue/IssueCommentResponseDTO.js";
-import type { PaginatedResult } from "../../../../shared/types/Pagination.js";
+import type { IssueCommentResponseDTO } from "../../../dto/issue/IssueCommentResponseDTO.ts";
+import type { PaginatedResult } from "../../../../shared/types/Pagination.ts";
 
 export interface IGetIssueCommentsUseCase {
     execute(

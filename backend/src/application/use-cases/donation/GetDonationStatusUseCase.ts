@@ -1,16 +1,16 @@
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.js";
-import type { DonationStatusResponseDTO } from "../../dto/donation/DonationResponseDTO.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.ts";
+import type { DonationStatusResponseDTO } from "../../dto/donation/DonationResponseDTO.ts";
 
 export class GetDonationStatusUseCase {
-  constructor(private donationRepository: IDonationRepository) {}
+  constructor(private _donationRepository: IDonationRepository) {}
 
   async execute(
     donationId: string,
     userId: string
   ): Promise<DonationStatusResponseDTO> {
-    const donation = await this.donationRepository.findById(donationId);
+    const donation = await this._donationRepository.findById(donationId);
     if (!donation) {
       throw new ApiError(HttpStatusCode.NOT_FOUND, "Donation not found.");
     }
@@ -31,6 +31,7 @@ export class GetDonationStatusUseCase {
       currency: donation.currency,
       paidAt: donation.paidAt ?? undefined,
       failureReason: donation.failureReason ?? undefined,
+      createdAt: donation.createdAt,
     };
   }
 }

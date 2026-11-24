@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { env } from "../config/env.js"
-import logger from "../../shared/utils/logger.js";
+import { env } from "../config/env.ts"
+import logger from "../../shared/utils/logger.ts";
 const connectDB = async () => {
     try {
         await mongoose.connect(env.MONGO_URI as string);

@@ -1,81 +1,81 @@
 import { Router } from "express";
 
-import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository.ts";
 
-import { GetProviderApplicationsUseCase } from "../../application/use-cases/provider/GetProviderApplicationsUseCase.js";
+import { GetProviderApplicationsUseCase } from "../../application/use-cases/provider/GetProviderApplicationsUseCase.ts";
 
-import { AdminController } from "../controllers/admin/AdminController.js";
+import { AdminController } from "../controllers/admin/AdminController.ts";
 
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authenticate } from "../middlewares/authMiddleware.ts";
 
-import { authorizeRoles } from "../middlewares/roleMiddleware.js";
+import { authorizeRoles } from "../middlewares/roleMiddleware.ts";
 
-import { searchRateLimit } from "../middlewares/searchRateLimit.js";
+import { searchRateLimit } from "../middlewares/searchRateLimit.ts";
 
-import { Role } from "../../domain/enums/Role.js";
+import { Role } from "../../domain/enums/Role.ts";
 
-import { GetProviderApplicationDetailsUseCase } from "../../application/use-cases/provider/GetProviderApplicationDetailsUseCase.js";
+import { GetProviderApplicationDetailsUseCase } from "../../application/use-cases/provider/GetProviderApplicationDetailsUseCase.ts";
 
-import { ApproveProviderApplicationUseCase } from "../../application/use-cases/admin/ApproveProviderApplicationUseCase.js";
+import { ApproveProviderApplicationUseCase } from "../../application/use-cases/admin/ApproveProviderApplicationUseCase.ts";
 
-import { RejectProviderApplicationUseCase } from "../../application/use-cases/admin/RejectProviderApplicationUseCase.js";
+import { RejectProviderApplicationUseCase } from "../../application/use-cases/admin/RejectProviderApplicationUseCase.ts";
 
-import { GetServiceProvidersUseCase } from "../../application/use-cases/admin/GetServiceProvidersUseCase.js";
+import { GetServiceProvidersUseCase } from "../../application/use-cases/admin/GetServiceProvidersUseCase.ts";
 
-import { GetServiceProviderDetailsUseCase } from "../../application/use-cases/admin/GetServiceProviderDetailsUseCase.js";
+import { GetServiceProviderDetailsUseCase } from "../../application/use-cases/admin/GetServiceProviderDetailsUseCase.ts";
 
-import { UpdateServiceProviderStatusUseCase } from "../../application/use-cases/admin/UpdateServiceProviderStatusUseCase.js";
+import { UpdateServiceProviderStatusUseCase } from "../../application/use-cases/admin/UpdateServiceProviderStatusUseCase.ts";
 
-import validate from "../middlewares/validate.js";
+import validate from "../middlewares/validate.ts";
 
-import { rejectProviderApplicationSchema } from "../validators/admin/rejectProviderApplicationValidator.js";
+import { rejectProviderApplicationSchema } from "../validators/admin/rejectProviderApplicationValidator.ts";
 
-import { updateServiceProviderStatusSchema } from "../validators/admin/UpdateServiceProviderStatusValidator.js";
+import { updateServiceProviderStatusSchema } from "../validators/admin/UpdateServiceProviderStatusValidator.ts";
 
-import { updateUserAccountStatusSchema } from "../validators/admin/updateUserAccountStatusValidator.js";
+import { updateUserAccountStatusSchema } from "../validators/admin/updateUserAccountStatusValidator.ts";
 
-import { GetUsersForManagementUseCase } from "../../application/use-cases/admin/GetUsersForManagementUseCase.js";
+import { GetUsersForManagementUseCase } from "../../application/use-cases/admin/GetUsersForManagementUseCase.ts";
 
-import { UpdateUserAccountStatusUseCase } from "../../application/use-cases/admin/UpdateUserAccountStatusUseCase.js";
+import { UpdateUserAccountStatusUseCase } from "../../application/use-cases/admin/UpdateUserAccountStatusUseCase.ts";
 
-import { CreateCategoryUseCase } from "../../application/use-cases/category/CreateCategoryUseCase.js";
+import { CreateCategoryUseCase } from "../../application/use-cases/category/CreateCategoryUseCase.ts";
 
-import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.js";
+import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.ts";
 
 import {
   createCategorySchema,
   updateCategorySchema,
   updateCategoryStatusSchema,
-} from "../validators/category/categoryValidator.js";
+} from "../validators/category/categoryValidator.ts";
 
-import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.js";
+import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.ts";
 
-import { UpdateCategoryUseCase } from "../../application/use-cases/category/UpdateCategoryUseCase.js";
+import { UpdateCategoryUseCase } from "../../application/use-cases/category/UpdateCategoryUseCase.ts";
 
-import { UpdateCategoryStatusUseCase } from "../../application/use-cases/category/UpdateCategoryStatusUseCase.js";
+import { UpdateCategoryStatusUseCase } from "../../application/use-cases/category/UpdateCategoryStatusUseCase.ts";
 
-import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
-import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
-import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.js";
-import { IssueAIAnalysisRepository } from "../../infrastructure/repositories/IssueAIAnalysisRepository.js";
-import { GeminiIssueAIService } from "../../infrastructure/services/GeminiIssueAIService.js";
-import { GetReviewEligibleIssuesUseCase } from "../../application/use-cases/admin/GetReviewEligibleIssuesUseCase.js";
-import { ApproveIssueUseCase } from "../../application/use-cases/admin/ApproveIssueUseCase.js";
-import { RejectIssueUseCase } from "../../application/use-cases/admin/RejectIssueUseCase.js";
-import { GetIssueAIAnalysisUseCase } from "../../application/use-cases/admin/GetIssueAIAnalysisUseCase.js";
-import { AnalyzeIssueCommentsUseCase } from "../../application/use-cases/admin/AnalyzeIssueCommentsUseCase.js";
-import { rejectIssueSchema } from "../validators/admin/rejectIssueValidator.js";
-import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.js";
-import { ProposalAIAnalysisRepository } from "../../infrastructure/repositories/ProposalAIAnalysisRepository.js";
-import { GeminiProposalAIService } from "../../infrastructure/services/GeminiProposalAIService.js";
-import { GetIssuesWithProposalsUseCase } from "../../application/use-cases/admin/GetIssuesWithProposalsUseCase.js";
-import { GetProposalsForIssueUseCase } from "../../application/use-cases/admin/GetProposalsForIssueUseCase.js";
-import { GetAdminProposalDetailsUseCase } from "../../application/use-cases/admin/GetAdminProposalDetailsUseCase.js";
-import { GetIssueProposalsRecommendationUseCase } from "../../application/use-cases/admin/GetIssueProposalsRecommendationUseCase.js";
-import { GetProposalAISummaryUseCase } from "../../application/use-cases/admin/GetProposalAISummaryUseCase.js";
-import { ProposalSelectionRepository } from "../../infrastructure/repositories/ProposalSelectionRepository.js";
-import { NotificationRepository } from "../../infrastructure/repositories/NotificationRepository.js";
-import { SelectProposalUseCase } from "../../application/use-cases/admin/SelectProposalUseCase.js";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.ts";
+import { S3StorageService } from "../../infrastructure/storage/S3StorageService.ts";
+import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.ts";
+import { IssueAIAnalysisRepository } from "../../infrastructure/repositories/IssueAIAnalysisRepository.ts";
+import { GeminiIssueAIService } from "../../infrastructure/services/GeminiIssueAIService.ts";
+import { GetReviewEligibleIssuesUseCase } from "../../application/use-cases/admin/GetReviewEligibleIssuesUseCase.ts";
+import { ApproveIssueUseCase } from "../../application/use-cases/admin/ApproveIssueUseCase.ts";
+import { RejectIssueUseCase } from "../../application/use-cases/admin/RejectIssueUseCase.ts";
+import { GetIssueAIAnalysisUseCase } from "../../application/use-cases/admin/GetIssueAIAnalysisUseCase.ts";
+import { AnalyzeIssueCommentsUseCase } from "../../application/use-cases/admin/AnalyzeIssueCommentsUseCase.ts";
+import { rejectIssueSchema } from "../validators/admin/rejectIssueValidator.ts";
+import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.ts";
+import { ProposalAIAnalysisRepository } from "../../infrastructure/repositories/ProposalAIAnalysisRepository.ts";
+import { GeminiProposalAIService } from "../../infrastructure/services/GeminiProposalAIService.ts";
+import { GetIssuesWithProposalsUseCase } from "../../application/use-cases/admin/GetIssuesWithProposalsUseCase.ts";
+import { GetProposalsForIssueUseCase } from "../../application/use-cases/admin/GetProposalsForIssueUseCase.ts";
+import { GetAdminProposalDetailsUseCase } from "../../application/use-cases/admin/GetAdminProposalDetailsUseCase.ts";
+import { GetIssueProposalsRecommendationUseCase } from "../../application/use-cases/admin/GetIssueProposalsRecommendationUseCase.ts";
+import { GetProposalAISummaryUseCase } from "../../application/use-cases/admin/GetProposalAISummaryUseCase.ts";
+import { ProposalSelectionRepository } from "../../infrastructure/repositories/ProposalSelectionRepository.ts";
+import { NotificationRepository } from "../../infrastructure/repositories/NotificationRepository.ts";
+import { SelectProposalUseCase } from "../../application/use-cases/admin/SelectProposalUseCase.ts";
 
 const router = Router();
 

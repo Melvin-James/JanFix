@@ -2,32 +2,32 @@ import assert from "node:assert/strict";
 import mongoose, { Types } from "mongoose";
 import dotenv from "dotenv";
 import type { Response } from "express";
-import { IssueStatus } from "../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../domain/enums/IssueVisibility.js";
-import { Role } from "../domain/enums/Role.js";
-import { AuthProvider } from "../domain/enums/AuthProvider.js";
-import { AccountStatus } from "../domain/enums/AccountStatus.js";
-import { IssueModel } from "../infrastructure/models/IssueModel.js";
-import { IssueVoteModel } from "../infrastructure/models/IssueVoteModel.js";
-import { IssueCommentModel } from "../infrastructure/models/IssueCommentModel.js";
-import { CategoryModel } from "../infrastructure/models/CategoryModel.js";
-import UserModel from "../infrastructure/models/UserModel.js";
-import { IssueRepository } from "../infrastructure/repositories/IssueRepository.js";
-import { IssueVoteRepository } from "../infrastructure/repositories/IssueVoteRepository.js";
-import { IssueCommentRepository } from "../infrastructure/repositories/IssueCommentRepository.js";
-import { GetReviewEligibleIssuesUseCase } from "../application/use-cases/admin/GetReviewEligibleIssuesUseCase.js";
-import { AddIssueUpvoteUseCase } from "../application/use-cases/issue/AddIssueUpvoteUseCase.js";
-import { CreateIssueCommentUseCase } from "../application/use-cases/issue/CreateIssueCommentUseCase.js";
-import { AdminController } from "../presentation/controllers/admin/AdminController.js";
-import type { IStorageService } from "../application/services/IStorageService.js";
-import ApiError from "../shared/utils/apiError.js";
-import { HttpStatusCode } from "../shared/enums/HttpStatusCode.js";
-import type { AuthRequest } from "../shared/types/AuthRequest.js";
+import { IssueStatus } from "../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../domain/enums/IssueVisibility.ts";
+import { Role } from "../domain/enums/Role.ts";
+import { AuthProvider } from "../domain/enums/AuthProvider.ts";
+import { AccountStatus } from "../domain/enums/AccountStatus.ts";
+import { IssueModel } from "../infrastructure/models/IssueModel.ts";
+import { IssueVoteModel } from "../infrastructure/models/IssueVoteModel.ts";
+import { IssueCommentModel } from "../infrastructure/models/IssueCommentModel.ts";
+import { CategoryModel } from "../infrastructure/models/CategoryModel.ts";
+import UserModel from "../infrastructure/models/UserModel.ts";
+import { IssueRepository } from "../infrastructure/repositories/IssueRepository.ts";
+import { IssueVoteRepository } from "../infrastructure/repositories/IssueVoteRepository.ts";
+import { IssueCommentRepository } from "../infrastructure/repositories/IssueCommentRepository.ts";
+import { GetReviewEligibleIssuesUseCase } from "../application/use-cases/admin/GetReviewEligibleIssuesUseCase.ts";
+import { AddIssueUpvoteUseCase } from "../application/use-cases/issue/AddIssueUpvoteUseCase.ts";
+import { CreateIssueCommentUseCase } from "../application/use-cases/issue/CreateIssueCommentUseCase.ts";
+import { AdminController } from "../presentation/controllers/admin/AdminController.ts";
+import type { IStorageService } from "../application/services/IStorageService.ts";
+import ApiError from "../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../shared/enums/HttpStatusCode.ts";
+import type { AuthRequest } from "../shared/types/AuthRequest.ts";
 import {
     isIssueInteractionOpen,
     isIssueEligibleForReview,
     ISSUE_INTERACTION_WINDOW_MS,
-} from "../shared/utils/issueEligibility.js";
+} from "../shared/utils/issueEligibility.ts";
 
 dotenv.config();
 

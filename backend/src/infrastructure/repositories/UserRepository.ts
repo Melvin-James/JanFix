@@ -1,27 +1,27 @@
 
 import type { QueryFilter } from "mongoose";
 
-import type { IUserRepository } from "../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../domain/interface/IUserRepository.ts";
 
-import type { User } from "../../domain/entities/User.js";
+import type { User } from "../../domain/entities/User.ts";
 
-import UserModel, { type UserDocument } from "../models/UserModel.js";
+import UserModel, { type UserDocument } from "../models/UserModel.ts";
 
-import { BaseRepository } from "./base/BaseRepository.js";
+import { BaseRepository } from "./base/BaseRepository.ts";
 
-import { UserMapper } from "../mappers/UserMapper.js";
+import { UserMapper } from "../mappers/UserMapper.ts";
 
-import ApiError from "../../shared/utils/apiError.js";
+import ApiError from "../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../shared/constants/messages.js";
+import { AppMessages } from "../../shared/constants/messages.ts";
 
-import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.ts";
 
-import { Role } from "../../domain/enums/Role.js";
+import { Role } from "../../domain/enums/Role.ts";
 
-import { AuthProvider } from "../../domain/enums/AuthProvider.js";
+import { AuthProvider } from "../../domain/enums/AuthProvider.ts";
 
 type UserFilter = QueryFilter<UserDocument>;
 

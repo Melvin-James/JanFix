@@ -1,25 +1,25 @@
-import { hashData } from "../../../shared/utils/hashUtil.js";
+import { hashData } from "../../../shared/utils/hashUtil.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
 
-import type { ResetPasswordDTO } from "../../dto/auth/ResetPasswordDTO.js";
+import type { ResetPasswordDTO } from "../../dto/auth/ResetPasswordDTO.ts";
 
-import type { IResetPasswordUseCase } from "../usecase interfaces/auth/IResetPasswordUseCase.js";
+import type { IResetPasswordUseCase } from "../usecase interfaces/auth/IResetPasswordUseCase.ts";
 
 export class ResetPasswordUseCase implements IResetPasswordUseCase {
 
     constructor(
 
-        private userRepository: IUserRepository,
-        private jwtService: IJwtService,
+        private _userRepository: IUserRepository,
+        private _jwtService: IJwtService,
 
     ) {}
 
@@ -29,7 +29,7 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
 
         try {
 
-            userId = this.jwtService.verifyResetToken(
+            userId = this._jwtService.verifyResetToken(
                 dto.resetToken
             );
 
@@ -42,7 +42,7 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
 
         }
 
-        const user = await this.userRepository.findById(
+        const user = await this._userRepository.findById(
             userId
         );
 
@@ -66,6 +66,6 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
 
         user.password = hashedPassword;
 
-        await this.userRepository.updateUser(user);
+        await this._userRepository.updateUser(user);
     }
 }

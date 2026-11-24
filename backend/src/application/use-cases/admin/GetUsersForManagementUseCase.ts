@@ -1,18 +1,18 @@
-import type { IUserRepository, UserManagementFilters } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository, UserManagementFilters } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IGetUsersForManagementUseCase } from "../usecase interfaces/admin/IGetUsersForManagementUseCase.js";
+import type { IGetUsersForManagementUseCase } from "../usecase interfaces/admin/IGetUsersForManagementUseCase.ts";
 
-import type { UserManagementResponseDTO } from "../../dto/admin/UserManagementResponseDTO.js";
+import type { UserManagementResponseDTO } from "../../dto/admin/UserManagementResponseDTO.ts";
 
-import { UserManagementMapper } from "../../mappers/UserManagementMapper.js";
+import { UserManagementMapper } from "../../mappers/UserManagementMapper.ts";
 
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
 
 export class GetUsersForManagementUseCase implements IGetUsersForManagementUseCase {
 
     constructor(
         
-        private readonly userRepository: IUserRepository
+        private readonly _userRepository: IUserRepository
     
     ) {}
 
@@ -26,7 +26,7 @@ export class GetUsersForManagementUseCase implements IGetUsersForManagementUseCa
     
     ): Promise<PaginatedResult<UserManagementResponseDTO>> {
         
-        const paginatedResult = await this.userRepository.findPaginatedUsersForManagement(
+        const paginatedResult = await this._userRepository.findPaginatedUsersForManagement(
             page,
             pageSize,
             filters

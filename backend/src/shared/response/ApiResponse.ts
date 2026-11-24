@@ -1,6 +1,6 @@
 import type { Response } from "express";
-import type { PaginationMeta } from "../types/Pagination.js";
-import { HttpStatusCode } from "../enums/HttpStatusCode.js";
+import type { PaginationMeta } from "../types/Pagination.ts";
+import { HttpStatusCode } from "../enums/HttpStatusCode.ts";
 
 /**
  * Standardized API response contract across JanFix backend.

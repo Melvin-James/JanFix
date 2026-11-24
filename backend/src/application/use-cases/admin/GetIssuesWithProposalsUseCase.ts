@@ -1,15 +1,15 @@
-import type { IGetIssuesWithProposalsUseCase } from "../usecase interfaces/admin/IGetIssuesWithProposalsUseCase.js";
-import type { IProposalRepository, IssueWithProposalsFilters } from "../../../domain/interface/IProposalRepository.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
-import type { AdminIssueProposalSummaryDTO, ProviderPreviewDTO } from "../../dto/admin/AdminIssueProposalSummaryDTO.js";
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
-import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
+import type { IGetIssuesWithProposalsUseCase } from "../usecase interfaces/admin/IGetIssuesWithProposalsUseCase.ts";
+import type { IProposalRepository, IssueWithProposalsFilters } from "../../../domain/interface/IProposalRepository.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
+import type { AdminIssueProposalSummaryDTO, ProviderPreviewDTO } from "../../dto/admin/AdminIssueProposalSummaryDTO.ts";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
+import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
 
 export class GetIssuesWithProposalsUseCase implements IGetIssuesWithProposalsUseCase {
     constructor(
-        private readonly proposalRepository: IProposalRepository,
-        private readonly storageService: IStorageService
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _storageService: IStorageService
     ) {}
 
     async execute(
@@ -17,14 +17,14 @@ export class GetIssuesWithProposalsUseCase implements IGetIssuesWithProposalsUse
         pageSize = 10,
         filters?: IssueWithProposalsFilters
     ): Promise<PaginatedResult<AdminIssueProposalSummaryDTO>> {
-        const result = await this.proposalRepository.findIssuesWithProposals(page, pageSize, filters);
+        const result = await this._proposalRepository.findIssuesWithProposals(page, pageSize, filters);
         const urlCache = new Map<string, string>();
 
         const items: AdminIssueProposalSummaryDTO[] = await Promise.all(
             result.items.map(async (group) => {
                 const refreshedImages = await refreshUploadedFileUrls(
                     group.issue.images || [],
-                    this.storageService,
+                    this._storageService,
                     urlCache
                 );
 
@@ -41,7 +41,7 @@ export class GetIssuesWithProposalsUseCase implements IGetIssuesWithProposalsUse
                                     avatarUrl = urlCache.get(targetImage.key);
                                 } else {
                                     try {
-                                        avatarUrl = await this.storageService.getPresignedUrl(targetImage.key);
+                                        avatarUrl = await this._storageService.getPresignedUrl(targetImage.key);
                                         urlCache.set(targetImage.key, avatarUrl);
                                     } catch {
                                         avatarUrl = targetImage.url;

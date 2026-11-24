@@ -1,28 +1,28 @@
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IUpdateServiceProviderStatusUseCase } from "../usecase interfaces/admin/IUpdateServiceProviderStatusUseCase.js";
+import type { IUpdateServiceProviderStatusUseCase } from "../usecase interfaces/admin/IUpdateServiceProviderStatusUseCase.ts";
 
-import type { UpdateServiceProviderStatusResponseDTO } from "../../dto/admin/UpdateServiceProviderStatusResponseDTO.js";
+import type { UpdateServiceProviderStatusResponseDTO } from "../../dto/admin/UpdateServiceProviderStatusResponseDTO.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import { UpdateServiceProviderStatusMapper } from "../../mappers/UpdateServiceProviderStatusMapper.js";
+import { UpdateServiceProviderStatusMapper } from "../../mappers/UpdateServiceProviderStatusMapper.ts";
 
 export class UpdateServiceProviderStatusUseCase implements IUpdateServiceProviderStatusUseCase {
-    constructor(private readonly userRepository: IUserRepository) {}
+    constructor(private readonly _userRepository: IUserRepository) {}
 
     async execute(
         userId: string,
         status: ProviderStatus
     ): Promise<UpdateServiceProviderStatusResponseDTO> {
 
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user) {
             throw new ApiError(
@@ -44,7 +44,7 @@ export class UpdateServiceProviderStatusUseCase implements IUpdateServiceProvide
 
         user.providerProfile.status.providerStatus = status;
 
-        await this.userRepository.updateUser(user);
+        await this._userRepository.updateUser(user);
 
         return UpdateServiceProviderStatusMapper.toResponse(user);
     }

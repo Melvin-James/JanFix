@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
-import type { IssueComment } from "../../domain/entities/IssueComment.js";
-import type { IssueCommentDocument } from "../models/IssueCommentModel.js";
+import type { IssueComment } from "../../domain/entities/IssueComment.ts";
+import type { IssueCommentDocument } from "../models/IssueCommentModel.ts";
 
 export class IssueCommentMapper {
     static toEntity(doc: Document): IssueComment {

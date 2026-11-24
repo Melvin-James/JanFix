@@ -1,14 +1,14 @@
 import type { Response, NextFunction } from "express";
 
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../shared/constants/messages.js";
+import { AppMessages } from "../../shared/constants/messages.ts";
 
-import ApiError from "../../shared/utils/apiError.js";
+import ApiError from "../../shared/utils/apiError.ts";
 
-import type { AuthRequest } from "../../shared/types/AuthRequest.js";
+import type { AuthRequest } from "../../shared/types/AuthRequest.ts";
 
-import type { Role } from "../../domain/enums/Role.js";
+import type { Role } from "../../domain/enums/Role.ts";
 
 export const authorizeRoles = (
 

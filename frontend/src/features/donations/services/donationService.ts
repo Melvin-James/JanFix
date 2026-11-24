@@ -1,4 +1,5 @@
 import axiosInstance from "../../../api/axios";
+import { ApiEndpoints } from "../../../shared/constants/apiEndpoints";
 import type {
   CreateDonationIntentRequest,
   CreateDonationIntentResponse,
@@ -11,7 +12,7 @@ export const createDonationIntent = async (
   data: CreateDonationIntentRequest
 ): Promise<CreateDonationIntentResponse> => {
   const response = await axiosInstance.post<{ data: CreateDonationIntentResponse }>(
-    "/donations/create-intent",
+    ApiEndpoints.DONATIONS.CREATE_INTENT,
     data
   );
   return response.data.data;
@@ -21,7 +22,7 @@ export const retryDonationPayment = async (
   donationId: string
 ): Promise<RetryDonationResponse> => {
   const response = await axiosInstance.post<{ data: RetryDonationResponse }>(
-    `/donations/${donationId}/retry`
+    ApiEndpoints.DONATIONS.RETRY(donationId)
   );
   return response.data.data;
 };
@@ -32,7 +33,7 @@ export const getIssueDonations = async (
   pageSize = 10
 ): Promise<IssueDonationsResponse> => {
   const response = await axiosInstance.get<{ data: IssueDonationsResponse }>(
-    `/donations/issues/${issueId}`,
+    ApiEndpoints.DONATIONS.ISSUE_DONATIONS(issueId),
     { params: { page, pageSize } }
   );
   return response.data.data;
@@ -42,7 +43,7 @@ export const getDonationStatus = async (
   donationId: string
 ): Promise<DonationStatusResponse> => {
   const response = await axiosInstance.get<{ data: DonationStatusResponse }>(
-    `/donations/${donationId}/status`
+    ApiEndpoints.DONATIONS.STATUS(donationId)
   );
   return response.data.data;
 };

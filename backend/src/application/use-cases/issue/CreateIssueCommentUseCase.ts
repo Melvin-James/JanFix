@@ -1,19 +1,19 @@
 import { Types } from "mongoose";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueCommentRepository } from "../../../domain/interface/IIssueCommentRepository.js";
-import type { IssueCommentResponseDTO } from "../../dto/issue/IssueCommentResponseDTO.js";
-import type { ICreateIssueCommentUseCase } from "../usecase interfaces/issue/ICreateIssueCommentUseCase.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { ISSUE_COMMENT_LIMITS } from "../../../shared/constants/issueComment.constants.js";
-import { isIssueInteractionOpen } from "../../../shared/utils/issueEligibility.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueCommentRepository } from "../../../domain/interface/IIssueCommentRepository.ts";
+import type { IssueCommentResponseDTO } from "../../dto/issue/IssueCommentResponseDTO.ts";
+import type { ICreateIssueCommentUseCase } from "../usecase interfaces/issue/ICreateIssueCommentUseCase.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { ISSUE_COMMENT_LIMITS } from "../../../shared/constants/issueComment.constants.ts";
+import { isIssueInteractionOpen } from "../../../shared/utils/issueEligibility.ts";
 
 export class CreateIssueCommentUseCase implements ICreateIssueCommentUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly issueCommentRepository: IIssueCommentRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _issueCommentRepository: IIssueCommentRepository
     ) {}
 
     async execute(issueId: string, userId: string, body: string): Promise<IssueCommentResponseDTO> {
@@ -25,7 +25,7 @@ export class CreateIssueCommentUseCase implements ICreateIssueCommentUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid user ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -61,7 +61,7 @@ export class CreateIssueCommentUseCase implements ICreateIssueCommentUseCase {
             );
         }
 
-        return await this.issueCommentRepository.createComment(issueId, userId, trimmedBody);
+        return await this._issueCommentRepository.createComment(issueId, userId, trimmedBody);
     }
 }
 export default CreateIssueCommentUseCase;

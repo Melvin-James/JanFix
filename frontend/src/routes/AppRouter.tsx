@@ -58,6 +58,9 @@ import AdminProposalDetailsPage from "../features/admin/pages/AdminProposalDetai
 import IssueFeedPage from "../features/issues/pages/IssueFeedPage";
 import IssueDetailsPage from "../features/issues/pages/IssueDetailsPage";
 import CommunityActivitiesPage from "../features/issues/pages/CommunityActivitiesPage";
+import DonationSuccessPage from "../features/donations/pages/DonationSuccessPage";
+import DonationFailurePage from "../features/donations/pages/DonationFailurePage";
+import DonationResultPage from "../features/donations/pages/DonationResultPage";
 
 import ProfileLayout from "../features/profile/components/ProfileLayout";
 import ProfilePage from "../features/profile/pages/ProfilePage";
@@ -194,6 +197,39 @@ function AppRouter() {
                 <UserModeRoute>
                     <IssueDetailsPage />
                 </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/donations/:donationId/result"
+          element={
+            <ProtectedRoute>
+              <UserModeRoute>
+                <DonationResultPage />
+              </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/donations/:donationId/success"
+          element={
+            <ProtectedRoute>
+              <UserModeRoute>
+                <DonationSuccessPage />
+              </UserModeRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/donations/:donationId/failure"
+          element={
+            <ProtectedRoute>
+              <UserModeRoute>
+                <DonationFailurePage />
+              </UserModeRoute>
             </ProtectedRoute>
           }
         />

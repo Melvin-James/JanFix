@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { uploadedFileSchema } from "../common/uploadedFileSchema.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
+import { uploadedFileSchema } from "../common/uploadedFileSchema.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
 
 const coordinatesSchema = z.object({
     latitude: z

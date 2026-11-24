@@ -1,45 +1,45 @@
 import express from "express";
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../shared/constants/messages.js";
-import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../shared/constants/messages.ts";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.ts";
 
 // Validation and Middleware
-import validate from "../middlewares/validate.js";
-import { registerSchema } from "../validators/auth/registerValidator.js";
-import { verifyOtpSchema } from "../validators/auth/verifyOtpValidator.js";
-import { loginSchema } from "../validators/auth/loginValidator.js";
-import { forgotPasswordSchema } from "../validators/auth/forgotPasswordValidator.js";
-import { resetPasswordSchema } from "../validators/auth/resetPasswordValidator.js";
-import { resendOtpSchema } from "../validators/auth/resendOtpValidator.js";
-import { verifyResetOtpSchema } from "../validators/auth/verifyResetOtpValidator.js";
-import { updateProfileSchema } from "../validators/auth/updateProfileValidator.js";
+import validate from "../middlewares/validate.ts";
+import { registerSchema } from "../validators/auth/registerValidator.ts";
+import { verifyOtpSchema } from "../validators/auth/verifyOtpValidator.ts";
+import { loginSchema } from "../validators/auth/loginValidator.ts";
+import { forgotPasswordSchema } from "../validators/auth/forgotPasswordValidator.ts";
+import { resetPasswordSchema } from "../validators/auth/resetPasswordValidator.ts";
+import { resendOtpSchema } from "../validators/auth/resendOtpValidator.ts";
+import { verifyResetOtpSchema } from "../validators/auth/verifyResetOtpValidator.ts";
+import { updateProfileSchema } from "../validators/auth/updateProfileValidator.ts";
 
-import { authenticate } from "../middlewares/authMiddleware.js";
-import { authorizeRoles } from "../middlewares/roleMiddleware.js";
-import { Role } from "../../domain/enums/Role.js";
+import { authenticate } from "../middlewares/authMiddleware.ts";
+import { authorizeRoles } from "../middlewares/roleMiddleware.ts";
+import { Role } from "../../domain/enums/Role.ts";
 
 // Controller, Repositories, Services, UseCases
-import { AuthController } from "../controllers/auth/AuthController.js";
-import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
-import { RedisOtpRepository } from "../../infrastructure/repositories/RedisOtpRepository.js";
-import EmailService from "../../infrastructure/services/EmailService.js";
-import JwtService from "../../infrastructure/services/JwtService.js";
-import { RegisterUserUseCase } from "../../application/use-cases/auth/RegisterUserUseCase.js";
-import { VerifyOtpUseCase } from "../../application/use-cases/auth/VerifyOtpUseCase.js";
-import { LoginUseCase } from "../../application/use-cases/auth/LoginUseCase.js";
-import { RefreshTokenUseCase } from "../../application/use-cases/auth/RefreshTokenUseCase.js";
-import { GoogleAuthUseCase } from "../../application/use-cases/auth/GoogleAuthUseCase.js";
-import GoogleAuthService from "../../infrastructure/services/GoogleAuthService.js";
-import { ForgotPasswordUseCase } from "../../application/use-cases/auth/ForgotPasswordUseCase.js";
-import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPasswordUseCase.js";
-import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.js";
-import { ResendOtpUseCase } from "../../application/use-cases/auth/ResendOtpUseCase.js";
-import { GetCurrentSessionUseCase } from "../../application/use-cases/auth/GetCurrentSessionUseCase.js";
-import { UpdateUserProfileUseCase } from "../../application/use-cases/auth/UpdateUserProfileUseCase.js";
+import { AuthController } from "../controllers/auth/AuthController.ts";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository.ts";
+import { RedisOtpRepository } from "../../infrastructure/repositories/RedisOtpRepository.ts";
+import EmailService from "../../infrastructure/services/EmailService.ts";
+import JwtService from "../../infrastructure/services/JwtService.ts";
+import { RegisterUserUseCase } from "../../application/use-cases/auth/RegisterUserUseCase.ts";
+import { VerifyOtpUseCase } from "../../application/use-cases/auth/VerifyOtpUseCase.ts";
+import { LoginUseCase } from "../../application/use-cases/auth/LoginUseCase.ts";
+import { RefreshTokenUseCase } from "../../application/use-cases/auth/RefreshTokenUseCase.ts";
+import { GoogleAuthUseCase } from "../../application/use-cases/auth/GoogleAuthUseCase.ts";
+import GoogleAuthService from "../../infrastructure/services/GoogleAuthService.ts";
+import { ForgotPasswordUseCase } from "../../application/use-cases/auth/ForgotPasswordUseCase.ts";
+import { ResetPasswordUseCase } from "../../application/use-cases/auth/ResetPasswordUseCase.ts";
+import { VerifyResetOtpUseCase } from "../../application/use-cases/auth/VerifyResetOtpUseCase.ts";
+import { ResendOtpUseCase } from "../../application/use-cases/auth/ResendOtpUseCase.ts";
+import { GetCurrentSessionUseCase } from "../../application/use-cases/auth/GetCurrentSessionUseCase.ts";
+import { UpdateUserProfileUseCase } from "../../application/use-cases/auth/UpdateUserProfileUseCase.ts";
 
 // Dependency Injection Setup
-import { switchModeSchema } from "../validators/auth/switchModeValidator.js";
-import { SwitchModeUseCase } from "../../application/use-cases/auth/SwitchModeUseCase.js";
+import { switchModeSchema } from "../validators/auth/switchModeValidator.ts";
+import { SwitchModeUseCase } from "../../application/use-cases/auth/SwitchModeUseCase.ts";
 
 // Dependency Injection Setup
 const userRepository = new UserRepository();

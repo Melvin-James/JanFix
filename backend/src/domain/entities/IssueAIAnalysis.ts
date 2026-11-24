@@ -1,6 +1,6 @@
-import type { AIAnalysisStatus } from "../enums/AIAnalysisStatus.js";
-import type { AIOverallClassification } from "../enums/AIOverallClassification.js";
-import type { CommentClassification } from "../enums/CommentClassification.js";
+import type { AIAnalysisStatus } from "../enums/AIAnalysisStatus.ts";
+import type { AIOverallClassification } from "../enums/AIOverallClassification.ts";
+import type { CommentClassification } from "../enums/CommentClassification.ts";
 
 export interface AICommentClassificationItem {
     commentId: string;

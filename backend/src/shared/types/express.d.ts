@@ -1,5 +1,5 @@
 import type { Role } from "../../domain/enums/Role.ts";
-import type { ApplicationMode } from "./AccessTokenPayload.js";
+import type { ApplicationMode } from "./AccessTokenPayload.ts";
 
 declare global {
     namespace Express {

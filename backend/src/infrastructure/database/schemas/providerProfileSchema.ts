@@ -1,18 +1,18 @@
 import { Schema } from "mongoose";
 
-import { providerIdentitySchema } from "./providerIdentitySchema.js";
+import { providerIdentitySchema } from "./providerIdentitySchema.ts";
 
-import { providerDocumentsSchema } from "./providerDocumentsSchema.js";
+import { providerDocumentsSchema } from "./providerDocumentsSchema.ts";
 
-import { providerWorkPreferencesSchema } from "./providerWorkPreferencesSchema.js";
+import { providerWorkPreferencesSchema } from "./providerWorkPreferencesSchema.ts";
 
-import { providerStatusSchema } from "./providerStatusSchema.js";
+import { providerStatusSchema } from "./providerStatusSchema.ts";
 
-import { volunteerGroupProfileSchema } from "./volunteerGroupProfileSchema.js";
+import { volunteerGroupProfileSchema } from "./volunteerGroupProfileSchema.ts";
 
-import { organizationProfileSchema } from "./organizationProfileSchema.js";
+import { organizationProfileSchema } from "./organizationProfileSchema.ts";
 
-import { providerPayoutDetailsSchema } from "./providerPayoutDetailsSchema.js";
+import { providerPayoutDetailsSchema } from "./providerPayoutDetailsSchema.ts";
 
 export const providerProfileSchema = new Schema(
     {

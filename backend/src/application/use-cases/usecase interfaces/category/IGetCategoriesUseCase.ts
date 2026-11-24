@@ -1,6 +1,6 @@
-import type { CategoryResponseDTO } from "../../../dto/category/CategoryResponseDTO.js";
-import type { PaginatedResult } from "../../../../shared/types/Pagination.js";
-import type { CategoryFilters } from "../../../../domain/interface/ICategoryRepository.js";
+import type { CategoryResponseDTO } from "../../../dto/category/CategoryResponseDTO.ts";
+import type { PaginatedResult } from "../../../../shared/types/Pagination.ts";
+import type { CategoryFilters } from "../../../../domain/interface/ICategoryRepository.ts";
 
 export interface IGetCategoriesUseCase {
 

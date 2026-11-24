@@ -1,6 +1,6 @@
-import type { Category } from "../../domain/entities/Category.js";
+import type { Category } from "../../domain/entities/Category.ts";
 
-import type { CategoryResponseDTO } from "../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../dto/category/CategoryResponseDTO.ts";
 
 export class CategoryMapper {
     static toResponse(category: Category): CategoryResponseDTO {

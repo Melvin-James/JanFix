@@ -1,41 +1,41 @@
 import type { Request, Response } from "express";
-import asyncHandler from "../../../shared/utils/asyncHandler.js";
+import asyncHandler from "../../../shared/utils/asyncHandler.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
-import { sendSuccess } from "../../../shared/response/index.js";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import { sendSuccess } from "../../../shared/response/index.ts";
 
-import type { RegisterUserDTO } from "../../../application/dto/auth/RegisterUserDTO.js";
-import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.js";
-import type { LoginDTO } from "../../../application/dto/auth/LoginDTO.js";
-import type { ForgotPasswordDTO } from "../../../application/dto/auth/ForgotPasswordDTO.js";
-import type { ResetPasswordDTO } from "../../../application/dto/auth/ResetPasswordDTO.js";
-import type { ResendOtpDTO } from "../../../application/dto/auth/ResendOtpDTO.js";
-
-
-import { setAuthCookies } from "../../../shared/utils/setAuthCookies.js";
-import { setAccessTokenCookie } from "../../../shared/utils/setAccessTokenCookie.js";
-import { clearAuthCookies } from "../../../shared/utils/clearAuthCookies.js";
+import type { RegisterUserDTO } from "../../../application/dto/auth/RegisterUserDTO.ts";
+import type { VerifyOtpDTO } from "../../../application/dto/auth/VerifyOtpDTO.ts";
+import type { LoginDTO } from "../../../application/dto/auth/LoginDTO.ts";
+import type { ForgotPasswordDTO } from "../../../application/dto/auth/ForgotPasswordDTO.ts";
+import type { ResetPasswordDTO } from "../../../application/dto/auth/ResetPasswordDTO.ts";
+import type { ResendOtpDTO } from "../../../application/dto/auth/ResendOtpDTO.ts";
 
 
-import type { IGoogleAuthService } from "../../../domain/interface/IGoogleAuthService.js";
+import { setAuthCookies } from "../../../shared/utils/setAuthCookies.ts";
+import { setAccessTokenCookie } from "../../../shared/utils/setAccessTokenCookie.ts";
+import { clearAuthCookies } from "../../../shared/utils/clearAuthCookies.ts";
+
+
+import type { IGoogleAuthService } from "../../../domain/interface/IGoogleAuthService.ts";
 
 // Use Cases
-import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/auth/IRegisterUserUseCase.js";
-import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyOtpUseCase.js";
-import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/auth/ILoginUseCase.js";
-import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/auth/IRefreshTokenUseCase.js";
-import type { IGoogleAuthUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGoogleAuthUseCase.js";
-import type { IForgotPasswordUseCase } from "../../../application/use-cases/usecase interfaces/auth/IForgotPasswordUseCase.js";
-import type { IResetPasswordUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResetPasswordUseCase.js";
-import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyResetOtpDTO.js";
-import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyResetOtpUseCase.js";
-import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResendOtpUseCase.js";
-import type { IGetCurrentSessionUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentSessionUseCase.js";
-import type { IUpdateUserProfileUseCase } from "../../../application/use-cases/usecase interfaces/auth/IUpdateUserProfileUseCase.js";
-import type { ISwitchModeUseCase } from "../../../application/use-cases/usecase interfaces/auth/ISwitchModeUseCase.js";
-import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
+import type { IRegisterUserUseCase } from "../../../application/use-cases/usecase interfaces/auth/IRegisterUserUseCase.ts";
+import type { IVerifyOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyOtpUseCase.ts";
+import type { ILoginUseCase } from "../../../application/use-cases/usecase interfaces/auth/ILoginUseCase.ts";
+import type { IRefreshTokenUseCase } from "../../../application/use-cases/usecase interfaces/auth/IRefreshTokenUseCase.ts";
+import type { IGoogleAuthUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGoogleAuthUseCase.ts";
+import type { IForgotPasswordUseCase } from "../../../application/use-cases/usecase interfaces/auth/IForgotPasswordUseCase.ts";
+import type { IResetPasswordUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResetPasswordUseCase.ts";
+import type { VerifyResetOtpDTO } from "../../../application/dto/auth/VerifyResetOtpDTO.ts";
+import type { IVerifyResetOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IVerifyResetOtpUseCase.ts";
+import type { IResendOtpUseCase } from "../../../application/use-cases/usecase interfaces/auth/IResendOtpUseCase.ts";
+import type { IGetCurrentSessionUseCase } from "../../../application/use-cases/usecase interfaces/auth/IGetCurrentSessionUseCase.ts";
+import type { IUpdateUserProfileUseCase } from "../../../application/use-cases/usecase interfaces/auth/IUpdateUserProfileUseCase.ts";
+import type { ISwitchModeUseCase } from "../../../application/use-cases/usecase interfaces/auth/ISwitchModeUseCase.ts";
+import type { AuthRequest } from "../../../shared/types/AuthRequest.ts";
 
 export class AuthController {
   constructor(

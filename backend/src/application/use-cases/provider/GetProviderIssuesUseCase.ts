@@ -1,21 +1,21 @@
 import { Types } from "mongoose";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
-import type { ProviderIssueResponseDTO } from "../../dto/provider/ProviderIssueResponseDTO.js";
-import type { IGetProviderIssuesUseCase, ProviderIssueFilters } from "../usecase interfaces/provider/IGetProviderIssuesUseCase.js";
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
-import { IssueInterestModel } from "../../../infrastructure/models/IssueInterestModel.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
+import type { ProviderIssueResponseDTO } from "../../dto/provider/ProviderIssueResponseDTO.ts";
+import type { IGetProviderIssuesUseCase, ProviderIssueFilters } from "../usecase interfaces/provider/IGetProviderIssuesUseCase.ts";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
+import { IssueInterestModel } from "../../../infrastructure/models/IssueInterestModel.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
 export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository,
-        private readonly storageService: IStorageService,
-        private readonly userRepository: IUserRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _storageService: IStorageService,
+        private readonly _userRepository: IUserRepository
     ) {}
 
     async execute(
@@ -25,7 +25,7 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
         filters?: ProviderIssueFilters
     ): Promise<PaginatedResult<ProviderIssueResponseDTO>> {
 
-        const provider = await this.userRepository.findById(providerId);
+        const provider = await this._userRepository.findById(providerId);
 
         if(!provider){
             throw new Error("Provider not found");
@@ -45,7 +45,7 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
             };
         }
 
-        const paginated = await this.issueRepository.findProviderIssues(
+        const paginated = await this._issueRepository.findProviderIssues(
             page,
             pageSize,
             providerCategoryIds,
@@ -57,8 +57,8 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
         // Fetch proposal counts, submitted state, and legacy expressed interest concurrently
         const validObjectIds = issueIds.filter((id) => Types.ObjectId.isValid(id)).map((id) => new Types.ObjectId(id));
         const [submittedIssueIds, proposalCountMap, legacyInterests] = await Promise.all([
-            this.proposalRepository.findSubmittedIssueIdsByProvider(providerId, issueIds),
-            this.proposalRepository.countSubmittedForIssues(issueIds),
+            this._proposalRepository.findSubmittedIssueIdsByProvider(providerId, issueIds),
+            this._proposalRepository.countSubmittedForIssues(issueIds),
             Types.ObjectId.isValid(providerId)
                 ? IssueInterestModel.find({
                       providerId: new Types.ObjectId(providerId),
@@ -76,7 +76,7 @@ export class GetProviderIssuesUseCase implements IGetProviderIssuesUseCase {
                 const response = IssueAppMapper.toResponse(issue);
                 const refreshedImages = await refreshUploadedFileUrls(
                     response.images,
-                    this.storageService,
+                    this._storageService,
                     urlCache
                 );
 
