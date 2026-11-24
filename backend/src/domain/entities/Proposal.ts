@@ -1,7 +1,7 @@
-import type { ProviderType } from "../enums/ProviderType.js";
-import type { ProposalStatus } from "../enums/ProposalStatus.js";
-import type { NgoParticipationMode } from "../enums/NgoParticipationMode.js";
-import type { ProposalFundingType } from "../enums/ProposalFundingType.js";
+import type { ProviderType } from "../enums/ProviderType.ts";
+import type { ProposalStatus } from "../enums/ProposalStatus.ts";
+import type { NgoParticipationMode } from "../enums/NgoParticipationMode.ts";
+import type { ProposalFundingType } from "../enums/ProposalFundingType.ts";
 
 export interface BudgetItem {
     id?: string | undefined;

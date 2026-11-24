@@ -1,24 +1,24 @@
 import jwt from "jsonwebtoken";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import { UserMapper } from "../../mappers/LoginMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
 
-import type { IGetCurrentSessionUseCase, SessionResult } from "../usecase interfaces/auth/IGetCurrentSessionUseCase.js";
+import type { IGetCurrentSessionUseCase, SessionResult } from "../usecase interfaces/auth/IGetCurrentSessionUseCase.ts";
 
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
-import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/AccessTokenPayload.ts";
 
 /**
  * Session-aware use case for GET /auth/me.
@@ -34,8 +34,8 @@ import type { AccessTokenPayload, ApplicationMode } from "../../../shared/types/
 export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
 
     constructor(
-        private jwtService: IJwtService,
-        private userRepository: IUserRepository
+        private _jwtService: IJwtService,
+        private _userRepository: IUserRepository
     ) {}
 
     async execute(
@@ -46,9 +46,9 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
         // --- Try access token ---
         if (accessToken) {
             try {
-                const decoded = this.jwtService.verifyAccessToken(accessToken) as AccessTokenPayload;
+                const decoded = this._jwtService.verifyAccessToken(accessToken) as AccessTokenPayload;
 
-                const user = await this.userRepository.findById(decoded.userId);
+                const user = await this._userRepository.findById(decoded.userId);
 
                 if (!user) {
                     throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
@@ -63,7 +63,7 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
                     if (!isApproved || isBlocked) {
                         // Ineligible — automatically downgrade to USER mode and rotate token
                         activeMode = "USER";
-                        newAccessToken = this.jwtService.generateAccessToken(
+                        newAccessToken = this._jwtService.generateAccessToken(
                             user.id as string,
                             user.roles,
                             activeMode
@@ -100,9 +100,9 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
         }
 
         try {
-            const decoded = this.jwtService.verifyRefreshToken(refreshToken);
+            const decoded = this._jwtService.verifyRefreshToken(refreshToken);
 
-            const user = await this.userRepository.findById(decoded.userId);
+            const user = await this._userRepository.findById(decoded.userId);
 
             if (!user) {
                 throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
@@ -125,7 +125,7 @@ export class GetCurrentSessionUseCase implements IGetCurrentSessionUseCase {
                 }
             }
 
-            const newAccessToken = this.jwtService.generateAccessToken(
+            const newAccessToken = this._jwtService.generateAccessToken(
                 user.id as string,
                 user.roles,
                 activeMode

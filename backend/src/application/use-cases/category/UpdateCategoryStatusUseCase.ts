@@ -1,27 +1,27 @@
-import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.js";
+import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.ts";
 
-import { CategoryMapper } from "../../mappers/CategoryMapper.js";
+import { CategoryMapper } from "../../mappers/CategoryMapper.ts";
 
-import type { IUpdateCategoryStatusUseCase } from "../usecase interfaces/category/IUpdateCategoryStatusUseCase.js";
+import type { IUpdateCategoryStatusUseCase } from "../usecase interfaces/category/IUpdateCategoryStatusUseCase.ts";
 
 export class UpdateCategoryStatusUseCase implements IUpdateCategoryStatusUseCase {
     constructor(
-        private readonly categoryRepository: ICategoryRepository
+        private readonly _categoryRepository: ICategoryRepository
     ) { }
 
     async execute(
         categoryId: string,
         isActive: boolean
     ): Promise<CategoryResponseDTO> {
-        const existingCategory = await this.categoryRepository.findById(
+        const existingCategory = await this._categoryRepository.findById(
             categoryId
         );
 
@@ -36,7 +36,7 @@ export class UpdateCategoryStatusUseCase implements IUpdateCategoryStatusUseCase
             return CategoryMapper.toResponse(existingCategory);
         }
 
-        const updatedCategory = await this.categoryRepository.update(
+        const updatedCategory = await this._categoryRepository.update(
             categoryId,
             {
                 isActive,

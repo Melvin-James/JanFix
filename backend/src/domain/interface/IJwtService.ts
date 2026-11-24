@@ -1,8 +1,8 @@
-import type { Role } from "../enums/Role.js";
+import type { Role } from "../enums/Role.ts";
 
-import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
 
-import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.js";
+import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.ts";
 
 export interface IJwtService {
 

@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
 export const updateServiceProviderStatusSchema = z.object({
 

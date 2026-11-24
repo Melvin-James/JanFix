@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
-import type { Notification } from "../../domain/entities/Notification.js";
-import type { NotificationDocument } from "../models/NotificationModel.js";
+import type { Notification } from "../../domain/entities/Notification.ts";
+import type { NotificationDocument } from "../models/NotificationModel.ts";
 
 export class NotificationMapper {
     static toEntity(doc: Document): Notification {

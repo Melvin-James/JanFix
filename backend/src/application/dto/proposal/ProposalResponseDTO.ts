@@ -1,7 +1,7 @@
-import type { ProviderType } from "../../../domain/enums/ProviderType.js";
-import type { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
-import type { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
-import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
+import type { ProviderType } from "../../../domain/enums/ProviderType.ts";
+import type { ProposalStatus } from "../../../domain/enums/ProposalStatus.ts";
+import type { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.ts";
+import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
 
 export interface BudgetItemDTO {
     id?: string | undefined;

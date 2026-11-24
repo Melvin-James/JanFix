@@ -1,6 +1,6 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
 
-import type { ProviderType } from "../../../domain/enums/ProviderType.js";
+import type { ProviderType } from "../../../domain/enums/ProviderType.ts";
 
 
 export interface SubmitProviderApplicationDTO {

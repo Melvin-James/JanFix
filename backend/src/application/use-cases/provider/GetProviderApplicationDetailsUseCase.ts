@@ -1,23 +1,23 @@
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import type { IGetProviderApplicationDetailsUseCase } from "../usecase interfaces/provider/IGetProviderApplicationDetailsUseCase.js";
-import type { ProviderApplicationDetailsResponseDTO } from "../../dto/admin/ProviderApplicationDetailsResponseDTO.js";
-import { ProviderApplicationDetailsMapper } from "../../mappers/ProviderApplicationDetailsMapper.js";
-import { refreshProviderDocuments } from "../../services/refreshUploadedFileUrls.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import type { IGetProviderApplicationDetailsUseCase } from "../usecase interfaces/provider/IGetProviderApplicationDetailsUseCase.ts";
+import type { ProviderApplicationDetailsResponseDTO } from "../../dto/admin/ProviderApplicationDetailsResponseDTO.ts";
+import { ProviderApplicationDetailsMapper } from "../../mappers/ProviderApplicationDetailsMapper.ts";
+import { refreshProviderDocuments } from "../../services/refreshUploadedFileUrls.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
 export class GetProviderApplicationDetailsUseCase implements IGetProviderApplicationDetailsUseCase {
     constructor(
-        private readonly userRepository: IUserRepository,
-        private readonly storageService: IStorageService
+        private readonly _userRepository: IUserRepository,
+        private readonly _storageService: IStorageService
     ) {}
 
     async execute(
         userId: string
     ): Promise<ProviderApplicationDetailsResponseDTO> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if (!user) {
             throw new ApiError(
@@ -35,7 +35,7 @@ export class GetProviderApplicationDetailsUseCase implements IGetProviderApplica
 
         const refreshedDocuments = await refreshProviderDocuments(
             user.providerProfile.documents,
-            this.storageService,
+            this._storageService,
             undefined,
             { includeSensitive: true }
         );

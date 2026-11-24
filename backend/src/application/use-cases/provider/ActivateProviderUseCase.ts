@@ -1,18 +1,18 @@
-import type { IActivateProviderUseCase } from "../usecase interfaces/provider/IActivateProviderUseCase.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import { UserMapper } from "../../mappers/LoginMapper.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
-import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
-import type { ActivateProviderDTO } from "../../dto/provider/ActivateProviderDTO.js";
+import type { IActivateProviderUseCase } from "../usecase interfaces/provider/IActivateProviderUseCase.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.ts";
+import type { ActivateProviderDTO } from "../../dto/provider/ActivateProviderDTO.ts";
 
 export class ActivateProviderUseCase implements IActivateProviderUseCase {
-    constructor(private readonly userRepository: IUserRepository) {}
+    constructor(private readonly _userRepository: IUserRepository) {}
 
     async execute(userId: string, payoutData: ActivateProviderDTO): Promise<AuthUserDTO> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if (!user) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, "User not found");
@@ -75,7 +75,7 @@ export class ActivateProviderUseCase implements IActivateProviderUseCase {
         };
 
         user.providerProfile.status.providerStatus = ProviderStatus.ACTIVE;
-        await this.userRepository.updateUser(user);
+        await this._userRepository.updateUser(user);
 
         return UserMapper.toAuthResponse(user, "SERVICE_PROVIDER");
     }

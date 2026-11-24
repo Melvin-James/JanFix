@@ -1,24 +1,24 @@
 import type { Request, Response, NextFunction } from "express";
 
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../shared/constants/messages.js";
+import { AppMessages } from "../../shared/constants/messages.ts";
 
-import JwtService from "../../infrastructure/services/JwtService.js";
+import JwtService from "../../infrastructure/services/JwtService.ts";
 
-import ApiError from "../../shared/utils/apiError.js";
+import ApiError from "../../shared/utils/apiError.ts";
 
-import asyncHandler from "../../shared/utils/asyncHandler.js";
+import asyncHandler from "../../shared/utils/asyncHandler.ts";
 
-import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
 
-import { AccountStatus } from "../../domain/enums/AccountStatus.js";
+import { AccountStatus } from "../../domain/enums/AccountStatus.ts";
 
-import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.ts";
 
-import { ProviderStatus } from "../../domain/enums/ProviderStatus.js";
+import { ProviderStatus } from "../../domain/enums/ProviderStatus.ts";
 
-import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository.ts";
 
 const jwtService = new JwtService();
 

@@ -1,6 +1,6 @@
 import type { ClientSession } from "mongoose";
-import type { Donation } from "../entities/Donation.js";
-import type { DonationStatus } from "../enums/DonationStatus.js";
+import type { Donation } from "../entities/Donation.ts";
+import type { DonationStatus } from "../enums/DonationStatus.ts";
 
 export interface PaginatedDonations {
   donations: Donation[];

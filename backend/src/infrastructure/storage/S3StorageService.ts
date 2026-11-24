@@ -2,14 +2,14 @@ import {PutObjectCommand, GetObjectCommand, DeleteObjectCommand} from "@aws-sdk/
 
 import { v4 as uuid } from "uuid";
 
-import { s3Client } from "../config/s3.js";
-import { env } from "../config/env.js";
+import { s3Client } from "../config/s3.ts";
+import { env } from "../config/env.ts";
 
-import type { IStorageService } from "../../application/services/IStorageService.js";
+import type { IStorageService } from "../../application/services/IStorageService.ts";
 
-import type { UploadedFile } from "../../domain/entities/UploadedFile.js";
+import type { UploadedFile } from "../../domain/entities/UploadedFile.ts";
 
-import type { UploadFolder } from "../../domain/enums/UploadFolder.js";
+import type { UploadFolder } from "../../domain/enums/UploadFolder.ts";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 

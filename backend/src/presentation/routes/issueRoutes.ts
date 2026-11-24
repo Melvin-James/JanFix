@@ -1,55 +1,55 @@
 import { Router } from "express";
 
-import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.js";
+import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.ts";
 
-import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.js";
+import { CategoryRepository } from "../../infrastructure/repositories/CategoryRepository.ts";
 
-import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository.ts";
 
-import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.js";
+import { ProposalRepository } from "../../infrastructure/repositories/ProposalRepository.ts";
 
-import { CreateIssueUseCase } from "../../application/use-cases/issue/CreateIssueUseCase.js";
+import { CreateIssueUseCase } from "../../application/use-cases/issue/CreateIssueUseCase.ts";
 
-import { GetIssueByIdUseCase } from "../../application/use-cases/issue/GetIssueByIdUseCase.js";
+import { GetIssueByIdUseCase } from "../../application/use-cases/issue/GetIssueByIdUseCase.ts";
 
-import { GetUserIssuesUseCase } from "../../application/use-cases/issue/GetUserIssuesUseCase.js";
+import { GetUserIssuesUseCase } from "../../application/use-cases/issue/GetUserIssuesUseCase.ts";
 
-import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.js";
+import { GetCategoriesUseCase } from "../../application/use-cases/category/GetCategoriesUseCase.ts";
 
-import { GetFeedIssuesUseCase } from "../../application/use-cases/issue/GetFeedIssuesUseCase.js";
+import { GetFeedIssuesUseCase } from "../../application/use-cases/issue/GetFeedIssuesUseCase.ts";
 
-import { IssueController } from "../controllers/issue/IssueController.js";
-import { donationController } from "./donationRoutes.js";
+import { IssueController } from "../controllers/issue/IssueController.ts";
+import { donationController } from "./donationRoutes.ts";
 
-import { IssueVoteRepository } from "../../infrastructure/repositories/IssueVoteRepository.js";
+import { IssueVoteRepository } from "../../infrastructure/repositories/IssueVoteRepository.ts";
 
-import { AddIssueUpvoteUseCase } from "../../application/use-cases/issue/AddIssueUpvoteUseCase.js";
+import { AddIssueUpvoteUseCase } from "../../application/use-cases/issue/AddIssueUpvoteUseCase.ts";
 
-import { RemoveIssueUpvoteUseCase } from "../../application/use-cases/issue/RemoveIssueUpvoteUseCase.js";
+import { RemoveIssueUpvoteUseCase } from "../../application/use-cases/issue/RemoveIssueUpvoteUseCase.ts";
 
-import { GetIssueUpvoteStatusUseCase } from "../../application/use-cases/issue/GetIssueUpvoteStatusUseCase.js";
+import { GetIssueUpvoteStatusUseCase } from "../../application/use-cases/issue/GetIssueUpvoteStatusUseCase.ts";
 
-import { IssueCommentRepository } from "../../infrastructure/repositories/IssueCommentRepository.js";
+import { IssueCommentRepository } from "../../infrastructure/repositories/IssueCommentRepository.ts";
 
-import { CreateIssueCommentUseCase } from "../../application/use-cases/issue/CreateIssueCommentUseCase.js";
+import { CreateIssueCommentUseCase } from "../../application/use-cases/issue/CreateIssueCommentUseCase.ts";
 
-import { GetIssueCommentsUseCase } from "../../application/use-cases/issue/GetIssueCommentsUseCase.js";
+import { GetIssueCommentsUseCase } from "../../application/use-cases/issue/GetIssueCommentsUseCase.ts";
 
-import { createCommentValidator } from "../validators/issue/createCommentValidator.js";
+import { createCommentValidator } from "../validators/issue/createCommentValidator.ts";
 
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authenticate } from "../middlewares/authMiddleware.ts";
 
-import { requireActiveMode } from "../middlewares/activeModeMiddleware.js";
+import { requireActiveMode } from "../middlewares/activeModeMiddleware.ts";
 
-import { searchRateLimit } from "../middlewares/searchRateLimit.js";
+import { searchRateLimit } from "../middlewares/searchRateLimit.ts";
 
-import validate from "../middlewares/validate.js";
+import validate from "../middlewares/validate.ts";
 
-import { createIssueValidator } from "../validators/issue/createIssueValidator.js";
+import { createIssueValidator } from "../validators/issue/createIssueValidator.ts";
 
-import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.ts";
 
-import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
+import { S3StorageService } from "../../infrastructure/storage/S3StorageService.ts";
 
 const router = Router();
 
@@ -140,6 +140,6 @@ router.get(ApiEndpoints.ISSUES.COMMENTS, authenticate, issueController.getCommen
 router.get(ApiEndpoints.ISSUES.BY_ID, authenticate, issueController.getIssueById);
 
 // Public route: Get donations for an issue
-router.get("/:issueId/donations", donationController.getIssueDonations);
+router.get(ApiEndpoints.ISSUES.DONATIONS, donationController.getIssueDonations);
 
 export default router;

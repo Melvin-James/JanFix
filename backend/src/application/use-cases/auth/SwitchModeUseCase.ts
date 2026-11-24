@@ -1,22 +1,22 @@
-import type { ISwitchModeUseCase, SwitchModeResult } from "../usecase interfaces/auth/ISwitchModeUseCase.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
-import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
-import { UserMapper } from "../../mappers/LoginMapper.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
+import type { ISwitchModeUseCase, SwitchModeResult } from "../usecase interfaces/auth/ISwitchModeUseCase.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.ts";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
 export class SwitchModeUseCase implements ISwitchModeUseCase {
     constructor(
-        private readonly userRepository: IUserRepository,
-        private readonly jwtService: IJwtService
+        private readonly _userRepository: IUserRepository,
+        private readonly _jwtService: IJwtService
     ) {}
 
     async execute(userId: string, requestedMode: ApplicationMode): Promise<SwitchModeResult> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if (!user) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
@@ -47,9 +47,9 @@ export class SwitchModeUseCase implements ISwitchModeUseCase {
             const isActivated = user.providerProfile.status.providerStatus === ProviderStatus.ACTIVE && hasPayoutDetails;
 
             user.activeMode = "SERVICE_PROVIDER";
-            const updatedUser = await this.userRepository.updateUser(user);
+            const updatedUser = await this._userRepository.updateUser(user);
 
-            const accessToken = this.jwtService.generateAccessToken(
+            const accessToken = this._jwtService.generateAccessToken(
                 updatedUser.id as string,
                 updatedUser.roles,
                 "SERVICE_PROVIDER"
@@ -64,9 +64,9 @@ export class SwitchModeUseCase implements ISwitchModeUseCase {
         } else {
 
             user.activeMode = "USER";
-            const updatedUser = await this.userRepository.updateUser(user);
+            const updatedUser = await this._userRepository.updateUser(user);
             // Returning to USER mode is always permitted for authenticated users
-            const accessToken = this.jwtService.generateAccessToken(
+            const accessToken = this._jwtService.generateAccessToken(
                 updatedUser.id as string,
                 updatedUser.roles,
                 "USER"

@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import mongoose, { Types } from "mongoose";
 import dotenv from "dotenv";
-import { IssueVoteModel } from "../infrastructure/models/IssueVoteModel.js";
-import { IssueCommentModel, MAX_COMMENT_LENGTH } from "../infrastructure/models/IssueCommentModel.js";
+import { IssueVoteModel } from "../infrastructure/models/IssueVoteModel.ts";
+import { IssueCommentModel, MAX_COMMENT_LENGTH } from "../infrastructure/models/IssueCommentModel.ts";
 
 dotenv.config();
 

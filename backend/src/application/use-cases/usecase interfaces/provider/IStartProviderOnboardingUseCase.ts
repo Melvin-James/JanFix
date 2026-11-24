@@ -1,6 +1,6 @@
-import type { User } from "../../../../domain/entities/User.js";
+import type { User } from "../../../../domain/entities/User.ts";
 
-import type { ProviderType } from "../../../../domain/enums/ProviderType.js";
+import type { ProviderType } from "../../../../domain/enums/ProviderType.ts";
 
 export interface IStartProviderOnboardingUseCase {
 

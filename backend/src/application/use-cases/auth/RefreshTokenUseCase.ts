@@ -1,33 +1,33 @@
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import { UserMapper } from "../../mappers/LoginMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
 
-import type { IRefreshTokenUseCase } from "../usecase interfaces/auth/IRefreshTokenUseCase.js";
+import type { IRefreshTokenUseCase } from "../usecase interfaces/auth/IRefreshTokenUseCase.ts";
 
-import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.ts";
 
-import type { RefreshTokenPayload } from "../../../shared/types/RefreshTokenPayload.js";
+import type { RefreshTokenPayload } from "../../../shared/types/RefreshTokenPayload.ts";
 
-import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.ts";
 
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     constructor(
 
-        private jwtService: IJwtService,
+        private _jwtService: IJwtService,
 
-        private userRepository: IUserRepository
+        private _userRepository: IUserRepository
 
     ) { }
     async execute(
@@ -41,7 +41,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         try {
 
             decoded =
-                this.jwtService.verifyRefreshToken(
+                this._jwtService.verifyRefreshToken(
                     refreshToken
                 ) as RefreshTokenPayload;
     
@@ -54,7 +54,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
             );
         }
 
-        const user = await this.userRepository.findById(decoded.userId);
+        const user = await this._userRepository.findById(decoded.userId);
 
         if (!user) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
@@ -69,10 +69,10 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
         if(user.activeMode !== activeModeToRestore) {
             user.activeMode = activeModeToRestore;
-            await this.userRepository.updateUser(user);
+            await this._userRepository.updateUser(user);
         }
 
-        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles, activeModeToRestore);
+        const accessToken = this._jwtService.generateAccessToken(user.id as string, user.roles, activeModeToRestore);
 
         return { accessToken, user: UserMapper.toAuthResponse(user, activeModeToRestore) };
     }

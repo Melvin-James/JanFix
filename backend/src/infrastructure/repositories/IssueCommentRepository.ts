@@ -1,11 +1,11 @@
 import { Types } from "mongoose";
-import type { IIssueCommentRepository } from "../../domain/interface/IIssueCommentRepository.js";
-import type { IssueComment } from "../../domain/entities/IssueComment.js";
-import type { IssueCommentResponseDTO } from "../../application/dto/issue/IssueCommentResponseDTO.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
-import { IssueCommentModel } from "../models/IssueCommentModel.js";
-import { IssueCommentMapper } from "../mappers/IssueCommentMapper.js";
-import { BaseRepository } from "./base/BaseRepository.js";
+import type { IIssueCommentRepository } from "../../domain/interface/IIssueCommentRepository.ts";
+import type { IssueComment } from "../../domain/entities/IssueComment.ts";
+import type { IssueCommentResponseDTO } from "../../application/dto/issue/IssueCommentResponseDTO.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
+import { IssueCommentModel } from "../models/IssueCommentModel.ts";
+import { IssueCommentMapper } from "../mappers/IssueCommentMapper.ts";
+import { BaseRepository } from "./base/BaseRepository.ts";
 
 export class IssueCommentRepository extends BaseRepository<IssueComment> implements IIssueCommentRepository {
     constructor() {

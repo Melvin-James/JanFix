@@ -56,4 +56,5 @@ export interface DonationStatusResponse {
   currency: string;
   paidAt?: string;
   failureReason?: string;
+  createdAt: string;
 }

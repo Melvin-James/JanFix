@@ -1,21 +1,21 @@
 import assert from "node:assert/strict";
 import mongoose, { Types } from "mongoose";
 import dotenv from "dotenv";
-import { IssueStatus } from "../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../domain/enums/IssueVisibility.js";
-import { Role } from "../domain/enums/Role.js";
-import { AccountStatus } from "../domain/enums/AccountStatus.js";
-import { IssueModel } from "../infrastructure/models/IssueModel.js";
-import { UserModel } from "../infrastructure/models/UserModel.js";
-import { CategoryModel } from "../infrastructure/models/CategoryModel.js";
-import { IssueRepository } from "../infrastructure/repositories/IssueRepository.js";
-import { UserRepository } from "../infrastructure/repositories/UserRepository.js";
-import { UpdateUserProfileUseCase } from "../application/use-cases/auth/UpdateUserProfileUseCase.js";
-import { GetFeedIssuesUseCase } from "../application/use-cases/issue/GetFeedIssuesUseCase.js";
-import { GetIssueByIdUseCase } from "../application/use-cases/issue/GetIssueByIdUseCase.js";
-import { GetUserIssuesUseCase } from "../application/use-cases/issue/GetUserIssuesUseCase.js";
-import ApiError from "../shared/utils/apiError.js";
-import { HttpStatusCode } from "../shared/enums/HttpStatusCode.js";
+import { IssueStatus } from "../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../domain/enums/IssueVisibility.ts";
+import { Role } from "../domain/enums/Role.ts";
+import { AccountStatus } from "../domain/enums/AccountStatus.ts";
+import { IssueModel } from "../infrastructure/models/IssueModel.ts";
+import { UserModel } from "../infrastructure/models/UserModel.ts";
+import { CategoryModel } from "../infrastructure/models/CategoryModel.ts";
+import { IssueRepository } from "../infrastructure/repositories/IssueRepository.ts";
+import { UserRepository } from "../infrastructure/repositories/UserRepository.ts";
+import { UpdateUserProfileUseCase } from "../application/use-cases/auth/UpdateUserProfileUseCase.ts";
+import { GetFeedIssuesUseCase } from "../application/use-cases/issue/GetFeedIssuesUseCase.ts";
+import { GetIssueByIdUseCase } from "../application/use-cases/issue/GetIssueByIdUseCase.ts";
+import { GetUserIssuesUseCase } from "../application/use-cases/issue/GetUserIssuesUseCase.ts";
+import ApiError from "../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../shared/enums/HttpStatusCode.ts";
 
 dotenv.config();
 

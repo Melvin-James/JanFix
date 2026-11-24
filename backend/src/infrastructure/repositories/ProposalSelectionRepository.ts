@@ -2,15 +2,15 @@ import mongoose, { Types } from "mongoose";
 import type {
     IProposalSelectionRepository,
     ProposalSelectionResult,
-} from "../../domain/interface/IProposalSelectionRepository.js";
-import { ProposalSelectionError } from "../../domain/interface/IProposalSelectionRepository.js";
-import { ProposalModel } from "../models/ProposalModel.js";
-import { IssueModel } from "../models/IssueModel.js";
-import { ProposalStatus } from "../../domain/enums/ProposalStatus.js";
-import { IssueStatus } from "../../domain/enums/IssueStatus.js";
-import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
-import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
-import { NgoParticipationMode } from "../../domain/enums/NgoParticipationMode.js";
+} from "../../domain/interface/IProposalSelectionRepository.ts";
+import { ProposalSelectionError } from "../../domain/interface/IProposalSelectionRepository.ts";
+import { ProposalModel } from "../models/ProposalModel.ts";
+import { IssueModel } from "../models/IssueModel.ts";
+import { ProposalStatus } from "../../domain/enums/ProposalStatus.ts";
+import { IssueStatus } from "../../domain/enums/IssueStatus.ts";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.ts";
+import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.ts";
+import { NgoParticipationMode } from "../../domain/enums/NgoParticipationMode.ts";
 
 export class ProposalSelectionRepository implements IProposalSelectionRepository {
     async selectProposalAtomic(

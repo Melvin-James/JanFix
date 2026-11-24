@@ -2,11 +2,11 @@ import { Types, type ClientSession, type QueryOptions } from "mongoose";
 import type {
   IDonationRepository,
   PaginatedDonations,
-} from "../../domain/interface/IDonationRepository.js";
-import type { Donation } from "../../domain/entities/Donation.js";
-import { DonationStatus } from "../../domain/enums/DonationStatus.js";
-import { DonationModel } from "../models/DonationModel.js";
-import { DonationMapper } from "../mappers/DonationMapper.js";
+} from "../../domain/interface/IDonationRepository.ts";
+import type { Donation } from "../../domain/entities/Donation.ts";
+import { DonationStatus } from "../../domain/enums/DonationStatus.ts";
+import { DonationModel } from "../models/DonationModel.ts";
+import { DonationMapper } from "../mappers/DonationMapper.ts";
 
 export class DonationRepository implements IDonationRepository {
   async create(

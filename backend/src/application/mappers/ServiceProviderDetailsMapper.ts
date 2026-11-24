@@ -1,5 +1,5 @@
-import type { User } from "../../domain/entities/User.js";
-import type { ServiceProviderDetailsResponseDTO } from "../dto/admin/ServiceProviderDetailsResponseDTO.js";
+import type { User } from "../../domain/entities/User.ts";
+import type { ServiceProviderDetailsResponseDTO } from "../dto/admin/ServiceProviderDetailsResponseDTO.ts";
 
 export class ServiceProviderDetailsMapper {
     static toResponse(

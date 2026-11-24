@@ -1,26 +1,26 @@
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import { UserMapper } from "../../mappers/LoginMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
 
-import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.ts";
 
-import type { IGetCurrentUserUseCase } from "../usecase interfaces/auth/IGetCurrentUserUseCase.js";
+import type { IGetCurrentUserUseCase } from "../usecase interfaces/auth/IGetCurrentUserUseCase.ts";
 
 export class GetCurrentUserUseCase implements IGetCurrentUserUseCase {
 
     constructor(
-        private userRepository: IUserRepository
+        private _userRepository: IUserRepository
     ) { }
 
     async execute(userId: string): Promise<AuthUserDTO> {
 
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if (!user) {
 

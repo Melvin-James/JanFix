@@ -1,4 +1,4 @@
-import type { Role } from "../../domain/enums/Role.js";
+import type { Role } from "../../domain/enums/Role.ts";
 
 export type ApplicationMode = "USER" | "SERVICE_PROVIDER";
 

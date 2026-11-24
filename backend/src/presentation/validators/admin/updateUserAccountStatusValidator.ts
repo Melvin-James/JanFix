@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.ts";
 
 export const updateUserAccountStatusSchema = z.object({
 

@@ -1,16 +1,16 @@
 import { Types } from "mongoose";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueCommentRepository } from "../../../domain/interface/IIssueCommentRepository.js";
-import type { IssueCommentResponseDTO } from "../../dto/issue/IssueCommentResponseDTO.js";
-import type { IGetIssueCommentsUseCase } from "../usecase interfaces/issue/IGetIssueCommentsUseCase.js";
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueCommentRepository } from "../../../domain/interface/IIssueCommentRepository.ts";
+import type { IssueCommentResponseDTO } from "../../dto/issue/IssueCommentResponseDTO.ts";
+import type { IGetIssueCommentsUseCase } from "../usecase interfaces/issue/IGetIssueCommentsUseCase.ts";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetIssueCommentsUseCase implements IGetIssueCommentsUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly issueCommentRepository: IIssueCommentRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _issueCommentRepository: IIssueCommentRepository
     ) {}
 
     async execute(
@@ -23,13 +23,13 @@ export class GetIssueCommentsUseCase implements IGetIssueCommentsUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid issue ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
 
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }        
 
-        return await this.issueCommentRepository.findCommentsByIssueId(issueId, page, pageSize);
+        return await this._issueCommentRepository.findCommentsByIssueId(issueId, page, pageSize);
     }
 }
 export default GetIssueCommentsUseCase;

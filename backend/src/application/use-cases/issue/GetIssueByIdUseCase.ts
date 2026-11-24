@@ -1,23 +1,23 @@
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 import type {
     IssueResponseDTO,
     PublicSelectedProposalDTO,
     PublicProviderProfileDTO,
     IssueTimelineEventDTO,
-} from "../../dto/issue/IssueResponseDTO.js";
-import type { Issue } from "../../../domain/entities/Issue.js";
-import type { IGetIssueByIdUseCase } from "../usecase interfaces/issue/IGetIssueByIdUseCase.js";
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
-import { Role } from "../../../domain/enums/Role.js";
+} from "../../dto/issue/IssueResponseDTO.ts";
+import type { Issue } from "../../../domain/entities/Issue.ts";
+import type { IGetIssueByIdUseCase } from "../usecase interfaces/issue/IGetIssueByIdUseCase.ts";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
+import { Role } from "../../../domain/enums/Role.ts";
 
 function buildTimelineEvents(issue: Issue): IssueTimelineEventDTO[] {
     const isNgoOwn = issue.fundingSnapshot?.fundingType === ProposalFundingType.NGO_OWN_FUNDING;
@@ -92,10 +92,10 @@ function buildTimelineEvents(issue: Issue): IssueTimelineEventDTO[] {
 
 export class GetIssueByIdUseCase implements IGetIssueByIdUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly storageService: IStorageService,
-        private readonly proposalRepository?: IProposalRepository,
-        private readonly userRepository?: IUserRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _storageService: IStorageService,
+        private readonly _proposalRepository?: IProposalRepository,
+        private readonly _userRepository?: IUserRepository
     ) {}
 
     async execute(
@@ -103,7 +103,7 @@ export class GetIssueByIdUseCase implements IGetIssueByIdUseCase {
         requestingUserId?: string,
         requestingUserRoles?: Role[]
     ): Promise<IssueResponseDTO> {
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -130,8 +130,8 @@ export class GetIssueByIdUseCase implements IGetIssueByIdUseCase {
         let selectedProposalDTO: PublicSelectedProposalDTO | undefined = undefined;
         let selectedProviderDTO: PublicProviderProfileDTO | undefined = undefined;
 
-        if (issue.selectedProposalId && this.proposalRepository) {
-            const proposal = await this.proposalRepository.findById(issue.selectedProposalId);
+        if (issue.selectedProposalId && this._proposalRepository) {
+            const proposal = await this._proposalRepository.findById(issue.selectedProposalId);
             if (proposal) {
                 selectedProposalDTO = {
                     id: proposal.id || "",
@@ -167,27 +167,27 @@ export class GetIssueByIdUseCase implements IGetIssueByIdUseCase {
                         : String(proposal.submittedAt),
                 };
 
-                if (this.userRepository) {
-                    const providerUser = await this.userRepository.findById(proposal.providerId);
+                if (this._userRepository) {
+                    const providerUser = await this._userRepository.findById(proposal.providerId);
                     if (providerUser) {
                         let profileImageUrl: string | undefined = undefined;
                         let logoUrl: string | undefined = undefined;
                         const communityPhotoUrls: string[] = [];
 
                         if (providerUser.providerProfile?.documents?.profileImage?.key) {
-                            profileImageUrl = await this.storageService.getPresignedUrl(
+                            profileImageUrl = await this._storageService.getPresignedUrl(
                                 providerUser.providerProfile.documents.profileImage.key
                             );
                         }
                         if (providerUser.providerProfile?.documents?.logo?.key) {
-                            logoUrl = await this.storageService.getPresignedUrl(
+                            logoUrl = await this._storageService.getPresignedUrl(
                                 providerUser.providerProfile.documents.logo.key
                             );
                         }
                         if (Array.isArray(providerUser.providerProfile?.documents?.previousCommunityPhotos)) {
                             for (const photo of providerUser.providerProfile.documents.previousCommunityPhotos) {
                                 if (photo?.key) {
-                                    communityPhotoUrls.push(await this.storageService.getPresignedUrl(photo.key));
+                                    communityPhotoUrls.push(await this._storageService.getPresignedUrl(photo.key));
                                 }
                             }
                         }
@@ -220,7 +220,7 @@ export class GetIssueByIdUseCase implements IGetIssueByIdUseCase {
 
         return {
             ...response,
-            images: await refreshUploadedFileUrls(response.images, this.storageService),
+            images: await refreshUploadedFileUrls(response.images, this._storageService),
             selectedProposal: selectedProposalDTO,
             selectedProvider: selectedProviderDTO,
             timelineEvents,

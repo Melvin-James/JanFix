@@ -1,25 +1,25 @@
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.js";
-import type { StripeService } from "../../../infrastructure/services/StripeService.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
-import { DonationStatus } from "../../../domain/enums/DonationStatus.js";
-import { PaymentProvider } from "../../../domain/enums/PaymentProvider.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.ts";
+import type { StripeService } from "../../../infrastructure/services/StripeService.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
+import { DonationStatus } from "../../../domain/enums/DonationStatus.ts";
+import { PaymentProvider } from "../../../domain/enums/PaymentProvider.ts";
 import type {
   CreateDonationIntentInput,
   CreateDonationIntentResult,
-} from "../../dto/donation/CreateDonationIntentDTO.js";
+} from "../../dto/donation/CreateDonationIntentDTO.ts";
 
 export class CreateDonationPaymentIntentUseCase {
   constructor(
-    private issueRepository: IIssueRepository,
-    private userRepository: IUserRepository,
-    private donationRepository: IDonationRepository,
-    private stripeService: StripeService
+    private _issueRepository: IIssueRepository,
+    private _userRepository: IUserRepository,
+    private _donationRepository: IDonationRepository,
+    private _stripeService: StripeService
   ) {}
 
   async execute(
@@ -35,7 +35,7 @@ export class CreateDonationPaymentIntentUseCase {
       );
     }
 
-    const issue = await this.issueRepository.findById(issueId);
+    const issue = await this._issueRepository.findById(issueId);
     if (!issue || !issue.id) {
       throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found.");
     }
@@ -74,7 +74,7 @@ export class CreateDonationPaymentIntentUseCase {
       );
     }
 
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
     if (!user || !user.id) {
       throw new ApiError(HttpStatusCode.NOT_FOUND, "User profile not found.");
     }
@@ -83,7 +83,7 @@ export class CreateDonationPaymentIntentUseCase {
     const donorEmail = user.email;
 
     // Create a pending donation in the database first
-    const pendingDonation = await this.donationRepository.create({
+    const pendingDonation = await this._donationRepository.create({
       issueId: issue.id,
       userId: user.id,
       donorName: authoritativeDonorName,
@@ -99,7 +99,7 @@ export class CreateDonationPaymentIntentUseCase {
     // Create Stripe PaymentIntent with metadata linking to donation & issue
     const idempotencyKey = `don_${pendingDonation.id}_${Date.now()}`;
 
-    const paymentIntent = await this.stripeService.createPaymentIntent({
+    const paymentIntent = await this._stripeService.createPaymentIntent({
       amountPaise,
       currency: "inr",
       metadata: {
@@ -119,7 +119,7 @@ export class CreateDonationPaymentIntentUseCase {
     }
 
     // Update donation with Stripe references
-    await this.donationRepository.updateStatus(
+    await this._donationRepository.updateStatus(
       pendingDonation.id,
       DonationStatus.PENDING,
       {

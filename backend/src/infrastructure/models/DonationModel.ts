@@ -1,6 +1,6 @@
 import { Schema, model, type Document, Types } from "mongoose";
-import { DonationStatus } from "../../domain/enums/DonationStatus.js";
-import { PaymentProvider } from "../../domain/enums/PaymentProvider.js";
+import { DonationStatus } from "../../domain/enums/DonationStatus.ts";
+import { PaymentProvider } from "../../domain/enums/PaymentProvider.ts";
 
 export interface DonationDocument extends Document<Types.ObjectId> {
   issueId: Types.ObjectId;

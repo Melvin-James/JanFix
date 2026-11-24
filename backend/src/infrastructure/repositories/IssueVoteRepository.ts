@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
-import type { IIssueVoteRepository } from "../../domain/interface/IIssueVoteRepository.js";
-import type { IssueVote } from "../../domain/entities/IssueVote.js";
-import { IssueVoteModel } from "../models/IssueVoteModel.js";
-import { IssueVoteMapper } from "../mappers/IssueVoteMapper.js";
-import { BaseRepository } from "./base/BaseRepository.js";
+import type { IIssueVoteRepository } from "../../domain/interface/IIssueVoteRepository.ts";
+import type { IssueVote } from "../../domain/entities/IssueVote.ts";
+import { IssueVoteModel } from "../models/IssueVoteModel.ts";
+import { IssueVoteMapper } from "../mappers/IssueVoteMapper.ts";
+import { BaseRepository } from "./base/BaseRepository.ts";
 
 export class IssueVoteRepository extends BaseRepository<IssueVote> implements IIssueVoteRepository {
     constructor() {

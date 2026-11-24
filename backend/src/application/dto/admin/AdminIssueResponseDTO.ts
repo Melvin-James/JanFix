@@ -1,7 +1,7 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
-import type { IssueLocation } from "../../../domain/entities/IssueLocation.js";
-import type { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import type { IssueStatus } from "../../../domain/enums/IssueStatus.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
+import type { IssueLocation } from "../../../domain/entities/IssueLocation.ts";
+import type { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import type { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
 
 export interface AdminIssueCategoryDTO {
     id: string;

@@ -1,11 +1,11 @@
-import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.js";
+import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.ts";
 import type {
   IssueDonationsResponseDTO,
   PublicDonorDTO,
-} from "../../dto/donation/DonationResponseDTO.js";
+} from "../../dto/donation/DonationResponseDTO.ts";
 
 export class GetIssueDonationsUseCase {
-  constructor(private donationRepository: IDonationRepository) {}
+  constructor(private _donationRepository: IDonationRepository) {}
 
   async execute(
     issueId: string,
@@ -13,8 +13,8 @@ export class GetIssueDonationsUseCase {
     pageSize: number = 10
   ): Promise<IssueDonationsResponseDTO> {
     const [paginated, summary] = await Promise.all([
-      this.donationRepository.findSuccessfulByIssueId(issueId, page, pageSize),
-      this.donationRepository.findSuccessfulDonorsSummary(issueId),
+      this._donationRepository.findSuccessfulByIssueId(issueId, page, pageSize),
+      this._donationRepository.findSuccessfulDonorsSummary(issueId),
     ]);
 
     const sanitizedDonations: PublicDonorDTO[] = paginated.donations.map((d) => ({

@@ -1,16 +1,18 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authMiddleware.js";
-import { DonationRepository } from "../../infrastructure/repositories/DonationRepository.js";
-import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.js";
-import { UserRepository } from "../../infrastructure/repositories/UserRepository.js";
-import { StripeService } from "../../infrastructure/services/StripeService.js";
-import { CreateDonationPaymentIntentUseCase } from "../../application/use-cases/donation/CreateDonationPaymentIntentUseCase.js";
-import { HandleStripeWebhookUseCase } from "../../application/use-cases/donation/HandleStripeWebhookUseCase.js";
-import { GetIssueDonationsUseCase } from "../../application/use-cases/donation/GetIssueDonationsUseCase.js";
-import { GetDonationStatusUseCase } from "../../application/use-cases/donation/GetDonationStatusUseCase.js";
-import { RetryDonationPaymentUseCase } from "../../application/use-cases/donation/RetryDonationPaymentUseCase.js";
-import { DonationController } from "../controllers/donation/DonationController.js";
-import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+import { authenticate } from "../middlewares/authMiddleware.ts";
+import validate from "../middlewares/validate.ts";
+import { createDonationIntentSchema } from "../../application/dto/donation/CreateDonationIntentDTO.ts";
+import { DonationRepository } from "../../infrastructure/repositories/DonationRepository.ts";
+import { IssueRepository } from "../../infrastructure/repositories/IssueRepository.ts";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository.ts";
+import { StripeService } from "../../infrastructure/services/StripeService.ts";
+import { CreateDonationPaymentIntentUseCase } from "../../application/use-cases/donation/CreateDonationPaymentIntentUseCase.ts";
+import { HandleStripeWebhookUseCase } from "../../application/use-cases/donation/HandleStripeWebhookUseCase.ts";
+import { GetIssueDonationsUseCase } from "../../application/use-cases/donation/GetIssueDonationsUseCase.ts";
+import { GetDonationStatusUseCase } from "../../application/use-cases/donation/GetDonationStatusUseCase.ts";
+import { RetryDonationPaymentUseCase } from "../../application/use-cases/donation/RetryDonationPaymentUseCase.ts";
+import { DonationController } from "../controllers/donation/DonationController.ts";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.ts";
 
 // Instantiations for DI
 const donationRepository = new DonationRepository();
@@ -52,7 +54,12 @@ export const donationController = new DonationController(
 const router = Router();
 
 // Authenticated route: Create Stripe PaymentIntent
-router.post(ApiEndpoints.DONATIONS.CREATE_INTENT, authenticate, donationController.createPaymentIntent);
+router.post(
+  ApiEndpoints.DONATIONS.CREATE_INTENT,
+  authenticate,
+  validate(createDonationIntentSchema),
+  donationController.createPaymentIntent
+);
 
 // Public route: Get donations for an issue
 router.get(ApiEndpoints.DONATIONS.ISSUE_DONATIONS, donationController.getIssueDonations);

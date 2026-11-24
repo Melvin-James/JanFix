@@ -1,6 +1,6 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
-import type { IssueLocation } from "../../../domain/entities/IssueLocation.js";
-import type { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
+import type { IssueLocation } from "../../../domain/entities/IssueLocation.ts";
+import type { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
 
 export interface CreateIssueDTO {
     createdBy: string;

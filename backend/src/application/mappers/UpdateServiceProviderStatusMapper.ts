@@ -1,6 +1,6 @@
-import type { User } from "../../domain/entities/User.js";
+import type { User } from "../../domain/entities/User.ts";
 
-import type { UpdateServiceProviderStatusResponseDTO } from "../dto/admin/UpdateServiceProviderStatusResponseDTO.js";
+import type { UpdateServiceProviderStatusResponseDTO } from "../dto/admin/UpdateServiceProviderStatusResponseDTO.ts";
 
 export class UpdateServiceProviderStatusMapper {
 

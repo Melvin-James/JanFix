@@ -1,6 +1,6 @@
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
-import type { IssueLocation } from "../../../domain/entities/IssueLocation.js";
-import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
+import type { IssueLocation } from "../../../domain/entities/IssueLocation.ts";
+import type { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
 
 export interface ProviderPreviewDTO {
     id: string;

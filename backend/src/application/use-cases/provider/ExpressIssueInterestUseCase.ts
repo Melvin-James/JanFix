@@ -1,19 +1,19 @@
-import type { IExpressIssueInterestUseCase, ExpressIssueInterestResult } from "../usecase interfaces/provider/IExpressIssueInterestUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueInterestRepository } from "../../../domain/interface/IIssueInterestRepository.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
+import type { IExpressIssueInterestUseCase, ExpressIssueInterestResult } from "../usecase interfaces/provider/IExpressIssueInterestUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueInterestRepository } from "../../../domain/interface/IIssueInterestRepository.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
 
 export class ExpressIssueInterestUseCase implements IExpressIssueInterestUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly issueInterestRepository: IIssueInterestRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _issueInterestRepository: IIssueInterestRepository
     ) {}
 
     async execute(issueId: string, providerId: string): Promise<ExpressIssueInterestResult> {
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
 
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
@@ -36,7 +36,7 @@ export class ExpressIssueInterestUseCase implements IExpressIssueInterestUseCase
         }
 
         // Prevent duplicate interest submissions
-        const alreadyInterested = await this.issueInterestRepository.exists(issueId, providerId);
+        const alreadyInterested = await this._issueInterestRepository.exists(issueId, providerId);
         if (alreadyInterested) {
             throw new ApiError(
                 HttpStatusCode.CONFLICT,
@@ -44,7 +44,7 @@ export class ExpressIssueInterestUseCase implements IExpressIssueInterestUseCase
             );
         }
 
-        await this.issueInterestRepository.create(issueId, providerId);
+        await this._issueInterestRepository.create(issueId, providerId);
 
         return {
             success: true,

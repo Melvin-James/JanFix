@@ -1,11 +1,11 @@
 import type { RequestHandler } from "express";
 
-import ApiError from "../../shared/utils/apiError.js";
+import ApiError from "../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
 
-import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
-import { AppMessages } from "../../shared/constants/messages.js";
+import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
+import { AppMessages } from "../../shared/constants/messages.ts";
 
 export const requireActiveMode = (
     requiredMode: ApplicationMode

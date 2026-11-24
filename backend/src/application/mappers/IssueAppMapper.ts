@@ -1,5 +1,5 @@
-import type { Issue } from "../../domain/entities/Issue.js";
-import type { IssueResponseDTO } from "../dto/issue/IssueResponseDTO.js";
+import type { Issue } from "../../domain/entities/Issue.ts";
+import type { IssueResponseDTO } from "../dto/issue/IssueResponseDTO.ts";
 
 export interface IssueAppMapperOptions {
     includeRejectionReason?: boolean;

@@ -1,24 +1,24 @@
-import type { IRejectProviderApplicationUseCase } from "../usecase interfaces/admin/IRejectProviderApplicationUseCase.js";
+import type { IRejectProviderApplicationUseCase } from "../usecase interfaces/admin/IRejectProviderApplicationUseCase.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
 
 export class RejectProviderApplicationUseCase implements IRejectProviderApplicationUseCase {
     constructor (
-        private readonly userRepository: IUserRepository
+        private readonly _userRepository: IUserRepository
     ) {}
 
     async execute(userId: string, rejectionReason: string){
         
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.USER_NOT_FOUND);
@@ -45,6 +45,6 @@ export class RejectProviderApplicationUseCase implements IRejectProviderApplicat
 
         user.providerProfile.status.reviewedAt = new Date();
 
-        return this.userRepository.updateUser(user)
+        return this._userRepository.updateUser(user)
     }
 }

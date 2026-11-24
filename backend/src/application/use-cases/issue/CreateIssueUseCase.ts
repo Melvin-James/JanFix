@@ -1,31 +1,31 @@
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { CreateIssueDTO } from "../../dto/issue/CreateIssueDTO.js";
-import type { IssueResponseDTO } from "../../dto/issue/IssueResponseDTO.js";
-import type { ICreateIssueUseCase } from "../usecase interfaces/issue/ICreateIssueUseCase.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
-import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { CreateIssueDTO } from "../../dto/issue/CreateIssueDTO.ts";
+import type { IssueResponseDTO } from "../../dto/issue/IssueResponseDTO.ts";
+import type { ICreateIssueUseCase } from "../usecase interfaces/issue/ICreateIssueUseCase.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.ts";
 
-import type { IStorageService } from "../../services/IStorageService.js";
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
 
 export class CreateIssueUseCase implements ICreateIssueUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly categoryRepository: ICategoryRepository,
-        private readonly userRepository: IUserRepository,
-        private readonly storageService: IStorageService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _categoryRepository: ICategoryRepository,
+        private readonly _userRepository: IUserRepository,
+        private readonly _storageService: IStorageService
     ) { }
 
     async execute(dto: CreateIssueDTO): Promise<IssueResponseDTO> {
         // 1. Verify User exists and is active
-        const user = await this.userRepository.findById(dto.createdBy);
+        const user = await this._userRepository.findById(dto.createdBy);
         if (!user) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.USER_NOT_FOUND);
         }
@@ -35,7 +35,7 @@ export class CreateIssueUseCase implements ICreateIssueUseCase {
         }
 
         // 2. Verify Category exists and is active
-        const category = await this.categoryRepository.findById(dto.categoryId);
+        const category = await this._categoryRepository.findById(dto.categoryId);
         if (!category) {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, AppMessages.ERROR.CATEGORY_NOT_FOUND);
         }
@@ -105,7 +105,7 @@ export class CreateIssueUseCase implements ICreateIssueUseCase {
         const visibility = dto.visibility;
 
         // 6. Build issue with server-controlled initial status REPORTED
-        const createdIssue = await this.issueRepository.create({
+        const createdIssue = await this._issueRepository.create({
             createdBy: dto.createdBy,
             title: dto.title.trim(),
             description: dto.description.trim(),
@@ -130,7 +130,7 @@ export class CreateIssueUseCase implements ICreateIssueUseCase {
 
         return {
             ...response,
-            images: await refreshUploadedFileUrls(response.images, this.storageService),
+            images: await refreshUploadedFileUrls(response.images, this._storageService),
         };
     }
 }

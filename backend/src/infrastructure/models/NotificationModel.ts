@@ -1,5 +1,5 @@
 import { Schema, model, type Document, Types } from "mongoose";
-import { NotificationType } from "../../domain/enums/NotificationType.js";
+import { NotificationType } from "../../domain/enums/NotificationType.ts";
 
 export interface NotificationDocument extends Document {
     recipientId: Types.ObjectId;

@@ -1,12 +1,12 @@
-import type { INotificationRepository } from "../../../domain/interface/INotificationRepository.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { INotificationRepository } from "../../../domain/interface/INotificationRepository.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class MarkNotificationAsReadUseCase {
-    constructor(private readonly notificationRepository: INotificationRepository) {}
+    constructor(private readonly _notificationRepository: INotificationRepository) {}
 
     async executeSingle(id: string, userId: string) {
-        const updated = await this.notificationRepository.markAsRead(id, userId);
+        const updated = await this._notificationRepository.markAsRead(id, userId);
         if (!updated) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Notification not found");
         }
@@ -18,7 +18,7 @@ export class MarkNotificationAsReadUseCase {
     }
 
     async executeAll(userId: string) {
-        const count = await this.notificationRepository.markAllAsRead(userId);
+        const count = await this._notificationRepository.markAllAsRead(userId);
         return { updatedCount: count };
     }
 }

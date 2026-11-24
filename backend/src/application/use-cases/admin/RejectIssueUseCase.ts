@@ -1,22 +1,22 @@
 import { Types } from "mongoose";
-import type { IRejectIssueUseCase } from "../usecase interfaces/admin/IRejectIssueUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import type { IssueResponseDTO } from "../../dto/issue/IssueResponseDTO.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
-import { isIssueEligibleForReview } from "../../../shared/utils/issueEligibility.js";
+import type { IRejectIssueUseCase } from "../usecase interfaces/admin/IRejectIssueUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import type { IssueResponseDTO } from "../../dto/issue/IssueResponseDTO.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import { isIssueEligibleForReview } from "../../../shared/utils/issueEligibility.ts";
 
 const PENDING_REVIEW_STATUSES = [IssueStatus.REPORTED];
 
 export class RejectIssueUseCase implements IRejectIssueUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly storageService: IStorageService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _storageService: IStorageService
     ) {}
 
     async execute(
@@ -40,7 +40,7 @@ export class RejectIssueUseCase implements IRejectIssueUseCase {
         }
 
         // 1. Initial lookup to distinguish missing from ineligible or already decided
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.ISSUE_NOT_FOUND);
         }
@@ -73,7 +73,7 @@ export class RejectIssueUseCase implements IRejectIssueUseCase {
         }
 
         // 4. Conditional atomic update prevents concurrent conflicting decisions
-        const updated = await this.issueRepository.updateStatusIfEligible(
+        const updated = await this._issueRepository.updateStatusIfEligible(
             issueId,
             IssueStatus.REJECTED,
             PENDING_REVIEW_STATUSES,
@@ -83,7 +83,7 @@ export class RejectIssueUseCase implements IRejectIssueUseCase {
 
         if (!updated) {
             // Concurrent request modified the issue state between lookup and atomic update
-            const latest = await this.issueRepository.findById(issueId);
+            const latest = await this._issueRepository.findById(issueId);
             if (!latest) {
                 throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.ISSUE_NOT_FOUND);
             }
@@ -106,7 +106,7 @@ export class RejectIssueUseCase implements IRejectIssueUseCase {
         const response = IssueAppMapper.toResponse(updated, { includeRejectionReason: true });
         return {
             ...response,
-            images: await refreshUploadedFileUrls(response.images, this.storageService),
+            images: await refreshUploadedFileUrls(response.images, this._storageService),
         };
     }
 }

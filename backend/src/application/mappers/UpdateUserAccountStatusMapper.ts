@@ -1,6 +1,6 @@
-import type { User } from "../../domain/entities/User.js";
+import type { User } from "../../domain/entities/User.ts";
 
-import type { UpdateUserAccountStatusResponseDTO } from "../dto/admin/UpdateUserAccountStatusResponseDTO.js";
+import type { UpdateUserAccountStatusResponseDTO } from "../dto/admin/UpdateUserAccountStatusResponseDTO.ts";
 
 export class UpdateUserAccountStatusMapper {
     static toResponse(

@@ -1,39 +1,39 @@
-import { compareData } from "../../../shared/utils/hashUtil.js";
+import { compareData } from "../../../shared/utils/hashUtil.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { LoginDTO } from "../../dto/auth/LoginDTO.js";
+import type { LoginDTO } from "../../dto/auth/LoginDTO.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IJwtService } from "../../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../../domain/interface/IJwtService.ts";
 
-import { UserMapper } from "../../mappers/LoginMapper.js";
+import { UserMapper } from "../../mappers/LoginMapper.ts";
 
-import type { ILoginUseCase } from "../usecase interfaces/auth/ILoginUseCase.js";
+import type { ILoginUseCase } from "../usecase interfaces/auth/ILoginUseCase.ts";
 
-import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.ts";
 
-import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.ts";
 
-import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.js";
+import type { ApplicationMode } from "../../../shared/types/AccessTokenPayload.ts";
 
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
+import { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
 
 export class LoginUseCase implements ILoginUseCase {
     constructor(
 
-        private userRepository: IUserRepository,
-        private jwtService: IJwtService
+        private _userRepository: IUserRepository,
+        private _jwtService: IJwtService
     ) { }
     async execute(dto: LoginDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserDTO; }> {
-        const user = await this.userRepository.findByEmail(dto.email);
+        const user = await this._userRepository.findByEmail(dto.email);
 
         if (!user) {
             throw new ApiError(HttpStatusCode.UNAUTHORIZED, AppMessages.ERROR.INVALID_CREDENTIALS);
@@ -72,12 +72,12 @@ export class LoginUseCase implements ILoginUseCase {
 
         if (user.activeMode !== activeModeToResume) {
             user.activeMode = activeModeToResume;
-            await this.userRepository.updateUser(user);
+            await this._userRepository.updateUser(user);
         }
 
-        const accessToken = this.jwtService.generateAccessToken(user.id as string, user.roles, activeModeToResume);
+        const accessToken = this._jwtService.generateAccessToken(user.id as string, user.roles, activeModeToResume);
 
-        const refreshToken = this.jwtService.generateRefreshToken(user.id as string);
+        const refreshToken = this._jwtService.generateRefreshToken(user.id as string);
 
         return {
             accessToken,

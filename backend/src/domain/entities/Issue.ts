@@ -1,9 +1,9 @@
-import type { UploadedFile } from "./UploadedFile.js";
-import type { IssueLocation } from "./IssueLocation.js";
-import type { IssueVisibility } from "../enums/IssueVisibility.js";
-import type { IssueStatus } from "../enums/IssueStatus.js";
-import type { ProposalWindowStatus } from "../enums/ProposalWindowStatus.js";
-import type { ProposalFundingType } from "../enums/ProposalFundingType.js";
+import type { UploadedFile } from "./UploadedFile.ts";
+import type { IssueLocation } from "./IssueLocation.ts";
+import type { IssueVisibility } from "../enums/IssueVisibility.ts";
+import type { IssueStatus } from "../enums/IssueStatus.ts";
+import type { ProposalWindowStatus } from "../enums/ProposalWindowStatus.ts";
+import type { ProposalFundingType } from "../enums/ProposalFundingType.ts";
 
 export interface IssueFundingSnapshot {
     fundingType: ProposalFundingType;

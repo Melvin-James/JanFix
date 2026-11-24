@@ -1,6 +1,6 @@
-import type { IssueResponseDTO } from "../../../dto/issue/IssueResponseDTO.js";
-import type { PaginatedResult } from "../../../../shared/types/Pagination.js";
-import type { IssueFilters } from "../../../../domain/interface/IIssueRepository.js";
+import type { IssueResponseDTO } from "../../../dto/issue/IssueResponseDTO.ts";
+import type { PaginatedResult } from "../../../../shared/types/Pagination.ts";
+import type { IssueFilters } from "../../../../domain/interface/IIssueRepository.ts";
 
 export interface IGetFeedIssuesUseCase {
     execute(

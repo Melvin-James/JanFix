@@ -1,4 +1,4 @@
-import type { NotificationType } from "../../../domain/enums/NotificationType.js";
+import type { NotificationType } from "../../../domain/enums/NotificationType.ts";
 
 export interface NotificationResponseDTO {
     id: string;

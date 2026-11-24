@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ISSUE_COMMENT_LIMITS } from "../../../shared/constants/issueComment.constants.js";
+import { ISSUE_COMMENT_LIMITS } from "../../../shared/constants/issueComment.constants.ts";
 
 export const createCommentValidator = z.object({
     body: z

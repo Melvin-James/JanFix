@@ -1,4 +1,4 @@
-import type { DonationStatus } from "../../../domain/enums/DonationStatus.js";
+import type { DonationStatus } from "../../../domain/enums/DonationStatus.ts";
 
 export interface PublicDonorDTO {
   id: string;
@@ -26,4 +26,5 @@ export interface DonationStatusResponseDTO {
   currency: string;
   paidAt?: Date | undefined;
   failureReason?: string | undefined;
+  createdAt: Date;
 }

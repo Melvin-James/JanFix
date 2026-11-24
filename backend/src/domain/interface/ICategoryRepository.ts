@@ -1,5 +1,5 @@
-import type { Category } from "../entities/Category.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
+import type { Category } from "../entities/Category.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
 
 export interface CategoryFilters {
     search?: string | undefined;

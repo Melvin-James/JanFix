@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
-import type { User } from "../../domain/entities/User.js";
-import type { UserDocument, UploadedFileDoc } from "../models/UserModel.js";
+import type { User } from "../../domain/entities/User.ts";
+import type { UserDocument, UploadedFileDoc } from "../models/UserModel.ts";
 
 const mapFile = (file: UploadedFileDoc) => ({
   key: file.key,

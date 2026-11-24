@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { uploadedFileSchema } from "./uploadedFileSchema.js";
+import { uploadedFileSchema } from "./uploadedFileSchema.ts";
 
 export const providerDocumentsSchema = new Schema(
     {

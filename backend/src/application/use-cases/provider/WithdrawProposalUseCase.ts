@@ -1,17 +1,17 @@
 import { Types } from "mongoose";
-import type { IWithdrawProposalUseCase } from "../usecase interfaces/provider/IWithdrawProposalUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
-import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.js";
+import type { IWithdrawProposalUseCase } from "../usecase interfaces/provider/IWithdrawProposalUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import { ProposalStatus } from "../../../domain/enums/ProposalStatus.ts";
+import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.ts";
 
 export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository
     ) {}
 
     async execute(
@@ -26,7 +26,7 @@ export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid provider identifier");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -47,7 +47,7 @@ export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
             );
         }
 
-        const proposal = await this.proposalRepository.findByIssueAndProvider(issueId, providerId);
+        const proposal = await this._proposalRepository.findByIssueAndProvider(issueId, providerId);
         if (!proposal) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "No proposal found for this issue");
         }
@@ -60,7 +60,7 @@ export class WithdrawProposalUseCase implements IWithdrawProposalUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Only submitted proposals can be withdrawn");
         }
 
-        const updated = await this.proposalRepository.update(proposal.id!, {
+        const updated = await this._proposalRepository.update(proposal.id!, {
             status: ProposalStatus.WITHDRAWN,
             withdrawnAt: serverNow,
         });

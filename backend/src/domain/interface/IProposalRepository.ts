@@ -1,7 +1,7 @@
-import type { Proposal } from "../entities/Proposal.js";
-import type { UploadedFile } from "../entities/UploadedFile.js";
-import type { IssueLocation } from "../entities/IssueLocation.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
+import type { Proposal } from "../entities/Proposal.ts";
+import type { UploadedFile } from "../entities/UploadedFile.ts";
+import type { IssueLocation } from "../entities/IssueLocation.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
 
 export interface IssueWithProposalsFilters {
     search?: string | undefined;

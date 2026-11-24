@@ -1,17 +1,17 @@
-import type { ICategoryRepository, CategoryFilters } from "../../../domain/interface/ICategoryRepository.js";
+import type { ICategoryRepository, CategoryFilters } from "../../../domain/interface/ICategoryRepository.ts";
 
-import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.ts";
 
-import { CategoryMapper } from "../../mappers/CategoryMapper.js";
+import { CategoryMapper } from "../../mappers/CategoryMapper.ts";
 
-import type { IGetCategoriesUseCase } from "../usecase interfaces/category/IGetCategoriesUseCase.js";
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
+import type { IGetCategoriesUseCase } from "../usecase interfaces/category/IGetCategoriesUseCase.ts";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
 
 export class GetCategoriesUseCase implements IGetCategoriesUseCase {
 
     constructor(
 
-        private readonly categoryRepository: ICategoryRepository
+        private readonly _categoryRepository: ICategoryRepository
 
     ) {}
 
@@ -21,7 +21,7 @@ export class GetCategoriesUseCase implements IGetCategoriesUseCase {
         filters?: CategoryFilters
     ): Promise<PaginatedResult<CategoryResponseDTO> | CategoryResponseDTO[]> {
         if (page !== undefined && pageSize !== undefined) {
-            const paginatedResult = await this.categoryRepository.findPaginated(
+            const paginatedResult = await this._categoryRepository.findPaginated(
                 page,
                 pageSize,
                 filters
@@ -33,7 +33,7 @@ export class GetCategoriesUseCase implements IGetCategoriesUseCase {
             };
         }
 
-        const categories = await this.categoryRepository.findAll();
+        const categories = await this._categoryRepository.findAll();
         return categories.map(CategoryMapper.toResponse);
     }
     

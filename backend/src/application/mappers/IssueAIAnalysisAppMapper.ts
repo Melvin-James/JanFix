@@ -1,5 +1,5 @@
-import type { IssueAIAnalysis } from "../../domain/entities/IssueAIAnalysis.js";
-import type { IssueAIAnalysisResponseDTO } from "../dto/admin/IssueAIAnalysisResponseDTO.js";
+import type { IssueAIAnalysis } from "../../domain/entities/IssueAIAnalysis.ts";
+import type { IssueAIAnalysisResponseDTO } from "../dto/admin/IssueAIAnalysisResponseDTO.ts";
 
 export class IssueAIAnalysisAppMapper {
     static toResponse(

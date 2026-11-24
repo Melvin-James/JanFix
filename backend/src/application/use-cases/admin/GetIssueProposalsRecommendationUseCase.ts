@@ -1,21 +1,21 @@
 import { Types } from "mongoose";
-import type { IGetIssueProposalsRecommendationUseCase } from "../usecase interfaces/admin/IGetIssueProposalsRecommendationUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { IProposalAIAnalysisRepository } from "../../../infrastructure/repositories/ProposalAIAnalysisRepository.js";
-import type { IProposalAIService, ProposalAIComparisonItem, IssueAIContext } from "../../../domain/interface/IProposalAIService.js";
-import type { AdminProposalAIRecommendationResponseDTO } from "../../dto/admin/AdminProposalAIRecommendationResponseDTO.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { IGetIssueProposalsRecommendationUseCase } from "../usecase interfaces/admin/IGetIssueProposalsRecommendationUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { IProposalAIAnalysisRepository } from "../../../infrastructure/repositories/ProposalAIAnalysisRepository.ts";
+import type { IProposalAIService, ProposalAIComparisonItem, IssueAIContext } from "../../../domain/interface/IProposalAIService.ts";
+import type { AdminProposalAIRecommendationResponseDTO } from "../../dto/admin/AdminProposalAIRecommendationResponseDTO.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetIssueProposalsRecommendationUseCase implements IGetIssueProposalsRecommendationUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository,
-        private readonly userRepository: IUserRepository,
-        private readonly proposalAIAnalysisRepository: IProposalAIAnalysisRepository,
-        private readonly proposalAIService: IProposalAIService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _userRepository: IUserRepository,
+        private readonly _proposalAIAnalysisRepository: IProposalAIAnalysisRepository,
+        private readonly _proposalAIService: IProposalAIService
     ) {}
 
     async execute(issueId: string, forceRefresh = false): Promise<AdminProposalAIRecommendationResponseDTO> {
@@ -23,12 +23,12 @@ export class GetIssueProposalsRecommendationUseCase implements IGetIssueProposal
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid issue ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
 
-        const proposals = await this.proposalRepository.findSubmittedByIssueId(issueId);
+        const proposals = await this._proposalRepository.findSubmittedByIssueId(issueId);
         if (proposals.length === 0) {
             return {
                 issueId,
@@ -52,7 +52,7 @@ export class GetIssueProposalsRecommendationUseCase implements IGetIssueProposal
 
         // Check cache unless forceRefresh requested
         if (!forceRefresh) {
-            const cached = await this.proposalAIAnalysisRepository.getIssueRecommendation(issueId);
+            const cached = await this._proposalAIAnalysisRepository.getIssueRecommendation(issueId);
             if (
                 cached &&
                 cached.proposalsAnalyzedCount === proposals.length &&
@@ -75,7 +75,7 @@ export class GetIssueProposalsRecommendationUseCase implements IGetIssueProposal
 
         // Prepare provider lookup
         const providerIds = [...new Set(proposals.map((p) => p.providerId))];
-        const providers = await Promise.all(providerIds.map((id) => this.userRepository.findById(id)));
+        const providers = await Promise.all(providerIds.map((id) => this._userRepository.findById(id)));
         const providerMap = new Map<string, (typeof providers)[0]>();
         for (const u of providers) {
             if (u && u.id) {
@@ -128,13 +128,13 @@ export class GetIssueProposalsRecommendationUseCase implements IGetIssueProposal
             locationAddress: issue.location?.address,
         };
 
-        const aiResult = await this.proposalAIService.generateIssueProposalRecommendation(
+        const aiResult = await this._proposalAIService.generateIssueProposalRecommendation(
             issueContext,
             comparisonItems
         );
 
         // Save to cache
-        await this.proposalAIAnalysisRepository.saveIssueRecommendation({
+        await this._proposalAIAnalysisRepository.saveIssueRecommendation({
             issueId,
             proposalsAnalyzedCount: proposals.length,
             lastProposalsUpdatedAt: latestProposalUpdatedAt,
