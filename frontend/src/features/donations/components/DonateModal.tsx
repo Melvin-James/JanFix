@@ -127,10 +127,11 @@ export const DonateModal: React.FC<DonateModalProps> = ({
       setActiveClientSecret(session.clientSecret);
       setActiveAmountPaise(session.amountPaise);
       setStep("CHECKOUT");
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       const msg =
-        err?.response?.data?.message ||
-        err?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
         "Failed to initialize payment session. Please try again.";
       setErrorMessage(msg);
     } finally {
@@ -182,7 +183,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
       pollingTimeoutRef.current = setTimeout(() => {
         pollBackendDonationStatus(donationId);
       }, 2000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn("Error polling donation status:", err);
       // Still retry a couple times in case of transient network glitch
       if (pollCountRef.current < 12) {
@@ -193,7 +194,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
     }
   };
 
-  const handleStripePaymentCompleted = (_paymentIntentId: string) => {
+  const handleStripePaymentCompleted = () => {
     if (!activeDonationId) return;
 
     setStep("PROCESSING");
@@ -204,7 +205,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
     pollBackendDonationStatus(activeDonationId);
   };
 
-  const handleStripePaymentProcessing = (_paymentIntentId: string) => {
+  const handleStripePaymentProcessing = () => {
     if (!activeDonationId) return;
 
     setStep("PROCESSING");
@@ -255,10 +256,11 @@ export const DonateModal: React.FC<DonateModalProps> = ({
           );
           break;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       const msg =
-        err?.response?.data?.message ||
-        err?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
         "Failed to retry payment. Please try again.";
       setErrorMessage(msg);
     } finally {

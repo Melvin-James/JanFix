@@ -59,11 +59,12 @@ export class DonationController {
 
       const result = await this._handleWebhookUseCase.execute(rawBody, signature);
       res.status(HttpStatusCode.OK).json(result);
-    } catch (error: any) {
-      logger.error(`Stripe webhook processing error: ${error?.message}`);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      logger.error(`Stripe webhook processing error: ${err?.message}`);
       res
         .status(HttpStatusCode.BAD_REQUEST)
-        .send(`Webhook Error: ${error?.message || "Unknown error"}`);
+        .send(`Webhook Error: ${err?.message || "Unknown error"}`);
     }
   };
 

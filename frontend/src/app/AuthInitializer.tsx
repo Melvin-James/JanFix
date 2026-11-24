@@ -23,7 +23,7 @@ function AuthInitializer() {
 
                 setUser(user);
 
-            } catch (error) {
+            } catch {
 
                 clearAuth();
 

@@ -35,6 +35,7 @@ export interface IssueDocument extends Document {
     selectedProposalId?: Types.ObjectId;
     proposalSelectedAt?: Date;
     fundingSnapshot?: IssueFundingSnapshotSubdocument;
+    isCommunityIssue: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -163,6 +164,11 @@ const issueSchema = new Schema<IssueDocument>(
         fundingSnapshot: {
             type: fundingSnapshotSchema,
         },
+        isCommunityIssue: {
+            type: Boolean,
+            default: false,
+            index: true,
+        },
     },
     {
         timestamps: true,
@@ -175,5 +181,6 @@ issueSchema.index({ createdBy: 1, createdAt: -1 });
 issueSchema.index({ status: 1, visibility: 1 });
 issueSchema.index({ status: 1, createdAt: 1 });
 issueSchema.index({ status: 1, proposalWindowStatus: 1, proposalDeadlineAt: 1 });
+issueSchema.index({ isCommunityIssue: 1, status: 1, visibility: 1 });
 
 export const IssueModel = model<IssueDocument>("Issue", issueSchema);

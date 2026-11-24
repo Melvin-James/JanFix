@@ -1,4 +1,6 @@
 import type { Proposal } from "../entities/Proposal.js";
+import type { UploadedFile } from "../entities/UploadedFile.js";
+import type { IssueLocation } from "../entities/IssueLocation.js";
 import type { PaginatedResult } from "../../shared/types/Pagination.js";
 
 export interface IssueWithProposalsFilters {
@@ -16,8 +18,8 @@ export interface IssueWithProposalsAggregateItem {
             _id: string;
             name: string;
         } | null;
-        location: any;
-        images: any[];
+        location: IssueLocation;
+        images: UploadedFile[];
         status: string;
         proposalWindowStatus?: string | undefined;
         proposalDeadlineAt?: Date | undefined;
@@ -36,8 +38,8 @@ export interface IssueWithProposalsAggregateItem {
                 providerType?: string | undefined;
             } | undefined;
             documents?: {
-                profileImage?: any | undefined;
-                logo?: any | undefined;
+                profileImage?: UploadedFile | undefined;
+                logo?: UploadedFile | undefined;
             } | undefined;
         } | undefined;
     }>;

@@ -62,6 +62,16 @@ export const getFeedIssues = async (
   return response.data;
 };
 
+export const getCommunityActivities = async (
+  params?: FeedIssuesParams
+): Promise<FeedIssuesResponse> => {
+  const response = await axiosInstance.get<FeedIssuesResponse>(
+    "/issues/community-activities",
+    { params }
+  );
+  return response.data;
+};
+
 export const addIssueUpvote = async (issueId: string): Promise<UpvoteStateResponse> => {
   const response = await axiosInstance.post<UpvoteStateResponse>(`/issues/${issueId}/upvote`);
   return response.data;

@@ -93,6 +93,7 @@ export interface IssueResponseDTO {
     selectedProposal?: PublicSelectedProposalDTO | undefined;
     selectedProvider?: PublicProviderProfileDTO | undefined;
     timelineEvents?: IssueTimelineEventDTO[] | undefined;
+    isCommunityIssue?: boolean | undefined;
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;
 }

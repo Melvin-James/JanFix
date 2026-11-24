@@ -31,6 +31,9 @@ function MainNavbar({ onToggleSidebar, sidebarOpen = false }: MainNavbarProps) {
   const isFeed =
     location.pathname.startsWith("/feed") ||
     location.pathname.startsWith("/issues");
+  const isCommunity =
+    location.pathname.startsWith("/community") ||
+    location.pathname.startsWith("/community-activities");
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const user = useAuthStore((state) => state.user);
@@ -195,8 +198,12 @@ function MainNavbar({ onToggleSidebar, sidebarOpen = false }: MainNavbarProps) {
           </li>
           <li>
             <Link
-              to="/community"
-              className="hover:text-slate-900 transition-colors"
+              to="/community-activities"
+              className={
+                isCommunity
+                  ? "text-blue-600 font-semibold"
+                  : "hover:text-slate-900 transition-colors"
+              }
             >
               Community Activities
             </Link>
@@ -239,9 +246,13 @@ function MainNavbar({ onToggleSidebar, sidebarOpen = false }: MainNavbarProps) {
               </Link>
 
               <Link
-                to="/community"
+                to="/community-activities"
                 onClick={() => setMobileNavOpen(false)}
-                className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                className={`rounded-lg px-4 py-3 text-sm font-medium ${
+                  isCommunity
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`}
               >
                 Community Activities
               </Link>

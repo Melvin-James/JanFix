@@ -67,6 +67,7 @@ export class IssueMapper {
                     selectedAt: document.fundingSnapshot.selectedAt,
                 }
                 : undefined,
+            isCommunityIssue: Boolean(document.isCommunityIssue),
             createdAt: document.createdAt,
             updatedAt: document.updatedAt,
         };

@@ -28,6 +28,7 @@ export function usePagination<T>({
     // Reset current page when filter/search dependencies change
     useEffect(() => {
         setCurrentPage(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, resetDependencies);
 
     const totalPages = Math.max(1, Math.ceil(items.length / itemsPerPage));

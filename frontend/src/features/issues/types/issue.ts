@@ -113,6 +113,7 @@ export interface Issue {
   selectedProposal?: PublicSelectedProposal;
   selectedProvider?: PublicProviderProfile;
   timelineEvents?: IssueTimelineEvent[];
+  isCommunityIssue?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -155,6 +156,7 @@ export interface FeedIssuesParams {
   category?: string;
   status?: string;
   visibility?: string;
+  isCommunityIssue?: boolean;
 }
 
 export interface FeedIssuesResponse {

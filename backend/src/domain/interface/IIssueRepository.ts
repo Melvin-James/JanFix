@@ -9,6 +9,7 @@ export interface IssueFilters {
     visibility?: IssueVisibility | string | undefined;
     category?: string | undefined;
     search?: string | undefined;
+    isCommunityIssue?: boolean | undefined;
 }
 
 export interface AdminIssueFilters {

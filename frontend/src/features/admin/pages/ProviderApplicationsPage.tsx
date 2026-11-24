@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { Eye } from "lucide-react";
 
@@ -49,7 +49,8 @@ function ProviderApplicationsPage() {
 
     const [backgroundLoading, setBackgroundLoading] = useState(false);
 
-    const hasLoadedOnce = useRef(false);
+    const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+    const hasLoadedOnceRef = useRef(false);
 
     const itemsPerPage = 10;
 
@@ -72,7 +73,7 @@ function ProviderApplicationsPage() {
 
         const fetchApplications = async () => {
 
-            if (!hasLoadedOnce.current) {
+            if (!hasLoadedOnceRef.current) {
                 setLoading(true);
             } else {
                 setBackgroundLoading(true);
@@ -108,7 +109,8 @@ function ProviderApplicationsPage() {
                 }
             } finally {
                 if (!cancelled) {
-                    hasLoadedOnce.current = true;
+                    hasLoadedOnceRef.current = true;
+                    setHasLoadedOnce(true);
                     setLoading(false);
                     setBackgroundLoading(false);
                 }
@@ -127,7 +129,7 @@ function ProviderApplicationsPage() {
         return <AdminLoadingState message="Loading provider applications..." />;
     }
 
-    if (error && !hasLoadedOnce.current) {
+    if (error && !hasLoadedOnce) {
         return <AdminErrorState message={error} />;
     }
 

@@ -1,4 +1,4 @@
-import { Types, type QueryFilter, type ClientSession } from "mongoose";
+import { Types, type QueryFilter, type ClientSession, type QueryOptions } from "mongoose";
 import type { IIssueRepository, IssueFilters, AdminIssueFilters, ReviewEligibleIssueItem } from "../../domain/interface/IIssueRepository.js";
 import type { Issue } from "../../domain/entities/Issue.js";
 import { IssueModel, type IssueDocument } from "../models/IssueModel.js";
@@ -53,6 +53,10 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
                 { title: { $regex: escaped, $options: "i" } },
                 { description: { $regex: escaped, $options: "i" } },
             ];
+        }
+
+        if (filters?.isCommunityIssue !== undefined) {
+            query.isCommunityIssue = filters.isCommunityIssue;
         }
 
         const skip = (safePage - 1) * safePageSize;
@@ -164,6 +168,11 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
                     { description: { $regex: escaped, $options: "i" } },
                 ],
             });
+        }
+
+        // 5. Community Issue Filter
+        if (filters?.isCommunityIssue !== undefined) {
+            andConditions.push({ isCommunityIssue: filters.isCommunityIssue });
         }
 
         const query: IssueFilter = andConditions.length > 0 ? { $and: andConditions } : {};
@@ -483,7 +492,7 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
     ): Promise<Issue | null> {
         if (!Types.ObjectId.isValid(issueId)) return null;
 
-        const options: Record<string, unknown> = { returnDocument: "after" };
+        const options: QueryOptions = { returnDocument: "after" };
         if (session) {
             options.session = session;
         }
@@ -493,9 +502,9 @@ export class IssueRepository extends BaseRepository<Issue> implements IIssueRepo
             {
                 $inc: { "fundingSnapshot.amountRaisedPaise": amountPaise },
             },
-            options as any
+            options
         ).populate("category");
 
-        return updated ? IssueMapper.toEntity(updated as any) : null;
+        return updated ? IssueMapper.toEntity(updated) : null;
     }
 }

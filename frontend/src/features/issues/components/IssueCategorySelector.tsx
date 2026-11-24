@@ -5,27 +5,34 @@ import { getActiveIssueCategories } from "../services/issueService";
 import { CategoryGridSelector } from "../../../components/UI/CategoryGridSelector";
 import FormError from "../../../components/UI/FormError";
 
-interface IssueCategorySelectorProps {
-  value: string | string[];
-  onChange: (categoryId: any) => void;
+interface BaseIssueCategorySelectorProps {
   categories?: (Category | string)[];
-  mode?: "single" | "multiple";
   error?: string;
   label?: string;
   showHeader?: boolean;
   columnsClassName?: string;
 }
 
-export function IssueCategorySelector({
-  value,
-  onChange,
-  categories: propCategories,
-  mode = "single",
-  error,
-  label = "Category",
-  showHeader = true,
-  columnsClassName = "grid-cols-2 gap-2.5 sm:grid-cols-3",
-}: IssueCategorySelectorProps) {
+export type IssueCategorySelectorProps =
+  | (BaseIssueCategorySelectorProps & {
+      mode?: "single";
+      value: string;
+      onChange: (categoryId: string) => void;
+    })
+  | (BaseIssueCategorySelectorProps & {
+      mode: "multiple";
+      value: string[];
+      onChange: (categoryIds: string[]) => void;
+    });
+
+export function IssueCategorySelector(props: IssueCategorySelectorProps) {
+  const {
+    categories: propCategories,
+    error,
+    label = "Category",
+    showHeader = true,
+    columnsClassName = "grid-cols-2 gap-2.5 sm:grid-cols-3",
+  } = props;
   const [categories, setCategories] = useState<(Category | string)[]>(
     propCategories ?? []
   );
@@ -91,12 +98,21 @@ export function IssueCategorySelector({
 
       {categories.length === 0 ? (
         <p className="text-xs text-slate-500">No active categories found.</p>
+      ) : props.mode === "multiple" ? (
+        <CategoryGridSelector
+          categories={categories}
+          value={props.value}
+          onChange={props.onChange}
+          mode="multiple"
+          layout="card"
+          columnsClassName={columnsClassName}
+        />
       ) : (
         <CategoryGridSelector
           categories={categories}
-          value={value}
-          onChange={onChange}
-          mode={mode}
+          value={props.value}
+          onChange={props.onChange}
+          mode="single"
           layout="card"
           columnsClassName={columnsClassName}
         />

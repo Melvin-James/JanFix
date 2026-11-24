@@ -10,6 +10,7 @@ import { ProposalStatus } from "../../domain/enums/ProposalStatus.js";
 import { IssueStatus } from "../../domain/enums/IssueStatus.js";
 import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
 import { ProposalFundingType } from "../../domain/enums/ProposalFundingType.js";
+import { NgoParticipationMode } from "../../domain/enums/NgoParticipationMode.js";
 
 export class ProposalSelectionRepository implements IProposalSelectionRepository {
     async selectProposalAtomic(
@@ -135,6 +136,8 @@ export class ProposalSelectionRepository implements IProposalSelectionRepository
                 selectedAt: serverNow,
             };
 
+            const isCommunityIssue = proposal.ngoDetails?.participationMode === NgoParticipationMode.OPEN_COMMUNITY;
+
             const claimedIssue = await IssueModel.findOneAndUpdate(
                 {
                     _id: issueObjectId,
@@ -153,6 +156,7 @@ export class ProposalSelectionRepository implements IProposalSelectionRepository
                         proposalSelectedAt: serverNow,
                         proposalWindowStatus: ProposalWindowStatus.CLOSED,
                         fundingSnapshot,
+                        isCommunityIssue,
                     },
                 },
                 { session, returnDocument: "after" }
@@ -220,6 +224,7 @@ export class ProposalSelectionRepository implements IProposalSelectionRepository
                 selectedProposalStatus: ProposalStatus.SELECTED,
                 proposalSelectedAt: serverNow,
                 proposalWindowStatus: ProposalWindowStatus.CLOSED,
+                isCommunityIssue,
                 fundingSnapshot: {
                     fundingType,
                     providerBudgetPaise,

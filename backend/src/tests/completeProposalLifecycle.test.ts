@@ -12,6 +12,7 @@ import { ProviderType } from "../domain/enums/ProviderType.js";
 import { ProposalStatus } from "../domain/enums/ProposalStatus.js";
 import { ProposalFundingType } from "../domain/enums/ProposalFundingType.js";
 import { ProposalWindowStatus } from "../domain/enums/ProposalWindowStatus.js";
+import { NgoParticipationMode } from "../domain/enums/NgoParticipationMode.js";
 import { NotificationType } from "../domain/enums/NotificationType.js";
 import { Role } from "../domain/enums/Role.js";
 import { AuthProvider } from "../domain/enums/AuthProvider.js";
@@ -170,7 +171,6 @@ async function runTests() {
     });
 
     const trackedIssues: Types.ObjectId[] = [];
-    const trackedProposals: Types.ObjectId[] = [];
     const trackedUsers = [reporterId, ngoProviderId, contractorProviderId];
 
     try {
@@ -223,7 +223,7 @@ async function runTests() {
                 ],
                 ngoDetails: {
                     requiresFunding: false,
-                    participationMode: "OPEN_COMMUNITY" as any,
+                    participationMode: NgoParticipationMode.OPEN_COMMUNITY,
                     expectedParticipants: 30,
                     requiresCommunityChat: true,
                 },
@@ -392,7 +392,7 @@ async function runTests() {
                 ],
                 ngoDetails: {
                     requiresFunding: false,
-                    participationMode: "OPEN_COMMUNITY" as any,
+                    participationMode: NgoParticipationMode.OPEN_COMMUNITY,
                     expectedParticipants: 50,
                     requiresCommunityChat: false,
                 },
@@ -437,8 +437,9 @@ async function runTests() {
         let forbiddenThrown = false;
         try {
             await getIssueByIdUseCase.execute(privateIssue._id.toString(), unauthorizedUserId, [Role.USER]);
-        } catch (err: any) {
-            if (err.statusCode === 403) {
+        } catch (err: unknown) {
+            const error = err as { statusCode?: number };
+            if (error.statusCode === 403) {
                 forbiddenThrown = true;
             }
         }

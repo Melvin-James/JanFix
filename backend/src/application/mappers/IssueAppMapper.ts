@@ -42,6 +42,7 @@ export class IssueAppMapper {
                         : String(issue.fundingSnapshot.selectedAt),
                 }
                 : undefined,
+            isCommunityIssue: Boolean(issue.isCommunityIssue),
             createdAt: issue.createdAt,
             updatedAt: issue.updatedAt,
             ...(options?.includeRejectionReason && issue.rejectionReason

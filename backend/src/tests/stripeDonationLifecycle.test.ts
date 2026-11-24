@@ -11,7 +11,6 @@ import { IssueStatus } from "../domain/enums/IssueStatus.js";
 import { IssueVisibility } from "../domain/enums/IssueVisibility.js";
 import { ProposalFundingType } from "../domain/enums/ProposalFundingType.js";
 import { DonationStatus } from "../domain/enums/DonationStatus.js";
-import { PaymentProvider } from "../domain/enums/PaymentProvider.js";
 import { Role } from "../domain/enums/Role.js";
 import { AuthProvider } from "../domain/enums/AuthProvider.js";
 import { AccountStatus } from "../domain/enums/AccountStatus.js";
@@ -29,7 +28,6 @@ import { StripeService, type CreatePaymentIntentParams } from "../infrastructure
 import { CreateDonationPaymentIntentUseCase } from "../application/use-cases/donation/CreateDonationPaymentIntentUseCase.js";
 import { HandleStripeWebhookUseCase } from "../application/use-cases/donation/HandleStripeWebhookUseCase.js";
 import { GetIssueDonationsUseCase } from "../application/use-cases/donation/GetIssueDonationsUseCase.js";
-import { GetDonationStatusUseCase } from "../application/use-cases/donation/GetDonationStatusUseCase.js";
 import { RetryDonationPaymentUseCase } from "../application/use-cases/donation/RetryDonationPaymentUseCase.js";
 
 class TestStripeService extends StripeService {
@@ -140,7 +138,6 @@ async function runStripeDonationTests() {
   );
 
   const getIssueDonationsUseCase = new GetIssueDonationsUseCase(donationRepository);
-  const getDonationStatusUseCase = new GetDonationStatusUseCase(donationRepository);
 
   const createdUserIds: Types.ObjectId[] = [];
   const createdIssueIds: Types.ObjectId[] = [];
@@ -253,7 +250,7 @@ async function runStripeDonationTests() {
     createdDonationIds.push(new Types.ObjectId(intentResult1.donationId));
 
     // Verify DB record does NOT have stripeClientSecret
-    const donationDoc1 = (await DonationModel.findById(intentResult1.donationId))?.toObject() as any;
+    const donationDoc1 = (await DonationModel.findById(intentResult1.donationId))?.toObject() as unknown as Record<string, unknown>;
     assert(donationDoc1, "Donation record must exist in MongoDB");
     assert.equal(donationDoc1.status, DonationStatus.PENDING);
     assert.equal(donationDoc1.stripePaymentIntentId, intentResult1.paymentIntentId);

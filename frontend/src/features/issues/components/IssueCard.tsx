@@ -112,11 +112,18 @@ export const IssueCard: React.FC<IssueCardProps> = ({
 
           {/* Top Badges */}
           <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-xs px-2.5 py-1 text-xs font-semibold text-blue-700 shadow-xs border border-blue-100/60 max-w-[65%] truncate">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-xs px-2.5 py-1 text-xs font-semibold text-blue-700 shadow-xs border border-blue-100/60 max-w-[60%] truncate">
               {issue.visibility === "PRIVATE" && <Lock className="h-3 w-3 shrink-0 text-amber-600" />}
               <span className="truncate">{categoryLabel}</span>
             </span>
-            <StatusBadge status={issue.status} className="shadow-xs backdrop-blur-xs" />
+            <div className="flex items-center gap-1.5 shrink-0">
+              {"isCommunityIssue" in issue && Boolean(issue.isCommunityIssue) && (
+                <span className="inline-flex items-center rounded-full bg-emerald-600 text-white px-2 py-0.5 text-[10px] font-bold shadow-xs">
+                  Activity
+                </span>
+              )}
+              <StatusBadge status={issue.status} className="shadow-xs backdrop-blur-xs" />
+            </div>
           </div>
         </div>
 

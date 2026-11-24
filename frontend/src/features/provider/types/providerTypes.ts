@@ -27,6 +27,7 @@ export interface ProviderIssue {
   proposalDeadlineAt?: string;
   proposalWindowStatus?: "OPEN" | "CLOSED" | "CANCELLED";
   hasExpressedInterest?: boolean;
+  isCommunityIssue?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

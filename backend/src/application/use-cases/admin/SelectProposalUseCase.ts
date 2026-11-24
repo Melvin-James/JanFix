@@ -114,6 +114,7 @@ export class SelectProposalUseCase implements ISelectProposalUseCase {
                 selectedProposalStatus: result.selectedProposalStatus,
                 proposalSelectedAt: result.proposalSelectedAt.toISOString(),
                 proposalWindowStatus: result.proposalWindowStatus,
+                isCommunityIssue: result.isCommunityIssue,
                 fundingSnapshot: result.fundingSnapshot
                     ? {
                         fundingType: result.fundingSnapshot.fundingType,
