@@ -86,11 +86,38 @@ export class IssueController {
         const page = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1;
         const pageSize = req.query.pageSize ? Number.parseInt(req.query.pageSize as string, 10) : 10;
 
+        const isCommunityQuery = req.query.isCommunityIssue;
+        const isCommunityIssue =
+            isCommunityQuery === "true"
+                ? true
+                : isCommunityQuery === "false"
+                ? false
+                : undefined;
+
         const filters = {
             status: typeof req.query.status === "string" ? req.query.status : undefined,
             visibility: typeof req.query.visibility === "string" ? req.query.visibility : undefined,
             category: typeof req.query.category === "string" ? req.query.category : undefined,
             search: typeof req.query.search === "string" ? req.query.search : undefined,
+            isCommunityIssue,
+        };
+
+        const result = await this._getFeedIssuesUseCase.execute(userId, page, pageSize, filters);
+
+        sendPaginated(res, result.items, result.pagination, "issues", HttpStatusCode.OK);
+    });
+
+    getCommunityActivities = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+        const userId = req.user?.userId;
+        const page = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1;
+        const pageSize = req.query.pageSize ? Number.parseInt(req.query.pageSize as string, 10) : 10;
+
+        const filters = {
+            status: typeof req.query.status === "string" ? req.query.status : undefined,
+            visibility: typeof req.query.visibility === "string" ? req.query.visibility : undefined,
+            category: typeof req.query.category === "string" ? req.query.category : undefined,
+            search: typeof req.query.search === "string" ? req.query.search : undefined,
+            isCommunityIssue: true,
         };
 
         const result = await this._getFeedIssuesUseCase.execute(userId, page, pageSize, filters);

@@ -13,7 +13,7 @@ export class StripeService {
 
   constructor() {
     this.stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-      apiVersion: "2025-02-24.acacia" as any,
+      apiVersion: "2025-02-24.acacia" as unknown as Stripe.LatestApiVersion,
     });
   }
 

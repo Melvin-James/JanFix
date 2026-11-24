@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types, type PipelineStage } from "mongoose";
 import type {
     IProposalRepository,
     IssueWithProposalsFilters,
@@ -289,7 +289,7 @@ export class ProposalRepository implements IProposalRepository {
         }
 
         // Build pipeline with facet
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             { $match: matchStage },
             groupStage,
             lookupIssueStage,

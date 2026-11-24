@@ -18,6 +18,7 @@ import { ProjectFundingSection } from "./project/ProjectFundingSection";
 import { CommunityContributorsSection } from "./project/CommunityContributorsSection";
 import { ProjectSelectedProviderCard } from "./project/ProjectSelectedProviderCard";
 import { ProjectProposalDetailsSection } from "./project/ProjectProposalDetailsSection";
+import { JoinActivitySection } from "./project/JoinActivitySection";
 
 export interface IssueDetailsContentProps {
   issue: Issue;
@@ -180,6 +181,11 @@ export const IssueDetailsContent: React.FC<IssueDetailsContentProps> = ({
           {/* 4. Execution Roadmap & Proposal Breakdown */}
           {issue.selectedProposal && (
             <ProjectProposalDetailsSection proposal={issue.selectedProposal} />
+          )}
+
+          {/* 5. Community Participation & Volunteering Section */}
+          {issue.isCommunityIssue && (
+            <JoinActivitySection issue={issue} />
           )}
         </div>
       )}

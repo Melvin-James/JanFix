@@ -66,6 +66,7 @@ export const ApiEndpoints = {
     ROOT: "/",
     FEED: "/feed",
     CATEGORIES: "/categories",
+    COMMUNITY_ACTIVITIES: "/community-activities",
     MY_ISSUES: "/my-reports",
     DETAILS: "/:issueId",
     BY_ID: "/:issueId",

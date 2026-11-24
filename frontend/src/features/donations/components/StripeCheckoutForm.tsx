@@ -92,9 +92,10 @@ export const StripeCheckoutForm: React.FC<StripeCheckoutFormProps> = ({
         setErrorMessage("Unexpected payment confirmation response. Please try again.");
         setIsLoading(false);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { message?: string };
       const exceptionMsg =
-        err?.message || "An unexpected error occurred. Please try again.";
+        error?.message || "An unexpected error occurred. Please try again.";
       setErrorMessage(exceptionMsg);
       onPaymentFailed?.(exceptionMsg);
       setIsLoading(false);
