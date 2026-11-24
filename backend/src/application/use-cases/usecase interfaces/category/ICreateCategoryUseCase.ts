@@ -1,6 +1,6 @@
-import type { CreateCategoryDTO } from "../../../dto/category/CreateCategoryDTO.js";
+import type { CreateCategoryDTO } from "../../../dto/category/CreateCategoryDTO.ts";
 
-import type { CategoryResponseDTO } from "../../../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../../../dto/category/CategoryResponseDTO.ts";
 
 export interface ICreateCategoryUseCase {
 

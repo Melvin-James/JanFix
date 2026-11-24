@@ -1,24 +1,24 @@
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { StripeService } from "../../../infrastructure/services/StripeService.js";
-import { DonationStatus } from "../../../domain/enums/DonationStatus.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import type { RetryDonationPaymentResult } from "../../dto/donation/RetryDonationPaymentDTO.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import type { IDonationRepository } from "../../../domain/interface/IDonationRepository.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { StripeService } from "../../../infrastructure/services/StripeService.ts";
+import { DonationStatus } from "../../../domain/enums/DonationStatus.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import type { RetryDonationPaymentResult } from "../../dto/donation/RetryDonationPaymentDTO.ts";
 
 export class RetryDonationPaymentUseCase {
   constructor(
-    private donationRepository: IDonationRepository,
-    private issueRepository: IIssueRepository,
-    private stripeService: StripeService
+    private _donationRepository: IDonationRepository,
+    private _issueRepository: IIssueRepository,
+    private _stripeService: StripeService
   ) {}
 
   async execute(
     donationId: string,
     userId: string
   ): Promise<RetryDonationPaymentResult> {
-    const donation = await this.donationRepository.findById(donationId);
+    const donation = await this._donationRepository.findById(donationId);
     if (!donation) {
       throw new ApiError(HttpStatusCode.NOT_FOUND, "Donation not found.");
     }
@@ -32,7 +32,7 @@ export class RetryDonationPaymentUseCase {
     }
 
     // Validate that the underlying issue is still accepting donations
-    const issue = await this.issueRepository.findById(donation.issueId);
+    const issue = await this._issueRepository.findById(donation.issueId);
     if (!issue || issue.status !== IssueStatus.FUNDRAISING) {
       throw new ApiError(
         HttpStatusCode.BAD_REQUEST,
@@ -66,7 +66,7 @@ export class RetryDonationPaymentUseCase {
     // If no PaymentIntent was previously associated (e.g. initial network failure)
     if (!donation.stripePaymentIntentId) {
       const idempotencyKey = `don_init_retry_${donation.id}`;
-      const newPi = await this.stripeService.createPaymentIntent({
+      const newPi = await this._stripeService.createPaymentIntent({
         amountPaise: donation.amountPaise,
         currency: donation.currency,
         metadata: {
@@ -78,7 +78,7 @@ export class RetryDonationPaymentUseCase {
         idempotencyKey,
       });
 
-      await this.donationRepository.updatePaymentIntentId(donation.id, null, newPi.id);
+      await this._donationRepository.updatePaymentIntentId(donation.id, null, newPi.id);
 
       return {
         status: "READY_FOR_PAYMENT",
@@ -91,7 +91,7 @@ export class RetryDonationPaymentUseCase {
     }
 
     // Retrieve current Stripe PaymentIntent
-    const pi = await this.stripeService.retrievePaymentIntent(donation.stripePaymentIntentId);
+    const pi = await this._stripeService.retrievePaymentIntent(donation.stripePaymentIntentId);
 
     switch (pi.status) {
       case "requires_payment_method":
@@ -99,7 +99,7 @@ export class RetryDonationPaymentUseCase {
       case "requires_confirmation": {
         // Reuse existing PaymentIntent and return its client secret
         if (donation.status === DonationStatus.FAILED) {
-          await this.donationRepository.updateStatus(donation.id, DonationStatus.PENDING);
+          await this._donationRepository.updateStatus(donation.id, DonationStatus.PENDING);
         }
 
         return {
@@ -115,7 +115,7 @@ export class RetryDonationPaymentUseCase {
       case "processing": {
         // Payment is currently processing at Stripe; do not create duplicate
         if (donation.status !== DonationStatus.PROCESSING) {
-          await this.donationRepository.updateStatus(donation.id, DonationStatus.PROCESSING);
+          await this._donationRepository.updateStatus(donation.id, DonationStatus.PROCESSING);
         }
 
         return {
@@ -143,7 +143,7 @@ export class RetryDonationPaymentUseCase {
       case "canceled": {
         // Create replacement PaymentIntent with stable idempotency key tied to previous PI
         const idempotencyKey = `don_rep_${donation.id}_${pi.id}`;
-        const newPi = await this.stripeService.createPaymentIntent({
+        const newPi = await this._stripeService.createPaymentIntent({
           amountPaise: donation.amountPaise,
           currency: donation.currency,
           metadata: {
@@ -155,8 +155,8 @@ export class RetryDonationPaymentUseCase {
           idempotencyKey,
         });
 
-        await this.donationRepository.updatePaymentIntentId(donation.id, pi.id, newPi.id);
-        await this.donationRepository.updateStatus(donation.id, DonationStatus.PENDING);
+        await this._donationRepository.updatePaymentIntentId(donation.id, pi.id, newPi.id);
+        await this._donationRepository.updateStatus(donation.id, DonationStatus.PENDING);
 
         return {
           status: "READY_FOR_PAYMENT",

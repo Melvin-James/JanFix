@@ -1,17 +1,17 @@
 import { Types, type QueryFilter, type ClientSession, type QueryOptions } from "mongoose";
-import type { IIssueRepository, IssueFilters, AdminIssueFilters, ReviewEligibleIssueItem } from "../../domain/interface/IIssueRepository.js";
-import type { Issue } from "../../domain/entities/Issue.js";
-import { IssueModel, type IssueDocument } from "../models/IssueModel.js";
-import { IssueVoteModel } from "../models/IssueVoteModel.js";
-import { IssueCommentModel } from "../models/IssueCommentModel.js";
-import { BaseRepository } from "./base/BaseRepository.js";
-import { IssueMapper } from "../mappers/IssueMapper.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
-import { IssueStatus } from "../../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../../domain/enums/IssueVisibility.js";
-import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.js";
-import { getReviewEligibilityThreshold } from "../../shared/utils/issueEligibility.js";
-import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../shared/constants/proposal.constants.js";
+import type { IIssueRepository, IssueFilters, AdminIssueFilters, ReviewEligibleIssueItem } from "../../domain/interface/IIssueRepository.ts";
+import type { Issue } from "../../domain/entities/Issue.ts";
+import { IssueModel, type IssueDocument } from "../models/IssueModel.ts";
+import { IssueVoteModel } from "../models/IssueVoteModel.ts";
+import { IssueCommentModel } from "../models/IssueCommentModel.ts";
+import { BaseRepository } from "./base/BaseRepository.ts";
+import { IssueMapper } from "../mappers/IssueMapper.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
+import { IssueStatus } from "../../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../../domain/enums/IssueVisibility.ts";
+import { ProposalWindowStatus } from "../../domain/enums/ProposalWindowStatus.ts";
+import { getReviewEligibilityThreshold } from "../../shared/utils/issueEligibility.ts";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../shared/constants/proposal.constants.ts";
 
 type IssueFilter = QueryFilter<IssueDocument>;
 

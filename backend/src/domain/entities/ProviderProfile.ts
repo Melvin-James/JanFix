@@ -1,10 +1,10 @@
-import type { ProviderType } from "../enums/ProviderType.js";
+import type { ProviderType } from "../enums/ProviderType.ts";
 
-import type { ApplicationStatus } from "../enums/ApplicationStatus.js";
+import type { ApplicationStatus } from "../enums/ApplicationStatus.ts";
 
-import type { UploadedFile } from "./UploadedFile.js";
+import type { UploadedFile } from "./UploadedFile.ts";
 
-import type { ProviderStatus as ProviderOperationalStatus } from "../enums/ProviderStatus.js";
+import type { ProviderStatus as ProviderOperationalStatus } from "../enums/ProviderStatus.ts";
 
 export interface ProviderIdentity {
 

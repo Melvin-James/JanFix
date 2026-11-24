@@ -7,6 +7,7 @@ import {
 import { Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 
 interface StripeCheckoutFormProps {
+  donationId: string;
   amountPaise: number;
   onPaymentCompleted: (paymentIntentId: string) => void;
   onPaymentProcessing: (paymentIntentId: string) => void;
@@ -15,6 +16,7 @@ interface StripeCheckoutFormProps {
 }
 
 export const StripeCheckoutForm: React.FC<StripeCheckoutFormProps> = ({
+  donationId,
   amountPaise,
   onPaymentCompleted,
   onPaymentProcessing,
@@ -49,7 +51,7 @@ export const StripeCheckoutForm: React.FC<StripeCheckoutFormProps> = ({
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: window.location.href,
+          return_url: `${window.location.origin}/donations/${donationId}/result`,
         },
         redirect: "if_required",
       });

@@ -1,6 +1,6 @@
-import type { User } from "../entities/User.js";
+import type { User } from "../entities/User.ts";
 
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
 
 export interface ProviderApplicationFilters {
     search?: string | undefined;

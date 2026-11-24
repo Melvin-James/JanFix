@@ -1,4 +1,4 @@
-import type { IssueInterest } from "../entities/IssueInterest.js";
+import type { IssueInterest } from "../entities/IssueInterest.ts";
 
 export interface IIssueInterestRepository {
     create(issueId: string, providerId: string): Promise<IssueInterest>;

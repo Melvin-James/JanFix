@@ -1,4 +1,4 @@
-import type { CommentClassification } from "../enums/CommentClassification.js";
+import type { CommentClassification } from "../enums/CommentClassification.ts";
 
 export interface AICommentInput {
     id: string;

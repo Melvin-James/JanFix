@@ -1,35 +1,35 @@
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import generateOtp from "../../../shared/utils/generateOtp.js";
+import generateOtp from "../../../shared/utils/generateOtp.ts";
 
-import { hashData } from "../../../shared/utils/hashUtil.js";
+import { hashData } from "../../../shared/utils/hashUtil.ts";
 
-import type{ IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type{ IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
+import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.ts";
 
-import type { IEmailService } from "../../../domain/interface/IEmailService.js";
+import type { IEmailService } from "../../../domain/interface/IEmailService.ts";
 
-import type { ForgotPasswordDTO } from "../../dto/auth/ForgotPasswordDTO.js";
+import type { ForgotPasswordDTO } from "../../dto/auth/ForgotPasswordDTO.ts";
 
-import type { IForgotPasswordUseCase } from "../usecase interfaces/auth/IForgotPasswordUseCase.js";
+import type { IForgotPasswordUseCase } from "../usecase interfaces/auth/IForgotPasswordUseCase.ts";
 
-import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.ts";
 
 export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
     
     constructor(
-        private userRepository: IUserRepository,
-        private otpRepository: IOtpRepository,
-        private emailService: IEmailService
+        private _userRepository: IUserRepository,
+        private _otpRepository: IOtpRepository,
+        private _emailService: IEmailService
     ) {}
 
     async execute(dto: ForgotPasswordDTO): Promise<void> {
-        const user = await this.userRepository.findByEmail(dto.email);
+        const user = await this._userRepository.findByEmail(dto.email);
 
         if(!user) {
             throw new ApiError(
@@ -49,13 +49,13 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
 
         const hashedOtp = await hashData(otp);
 
-        await this.otpRepository.saveOtp(
+        await this._otpRepository.saveOtp(
             user.email,
             hashedOtp,
             OtpPurpose.RESET_PASSWORD
         );
 
-        await this.emailService.sendOtpEmail(
+        await this._emailService.sendOtpEmail(
             user.email,
             otp
         )

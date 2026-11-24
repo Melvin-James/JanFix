@@ -1,7 +1,7 @@
-import type { ProposalStatus } from "../enums/ProposalStatus.js";
-import type { ProposalWindowStatus } from "../enums/ProposalWindowStatus.js";
-import type { IssueStatus } from "../enums/IssueStatus.js";
-import type { IssueFundingSnapshot } from "../entities/Issue.js";
+import type { ProposalStatus } from "../enums/ProposalStatus.ts";
+import type { ProposalWindowStatus } from "../enums/ProposalWindowStatus.ts";
+import type { IssueStatus } from "../enums/IssueStatus.ts";
+import type { IssueFundingSnapshot } from "../entities/Issue.ts";
 
 export type ProposalSelectionFailureReason =
     | "INVALID_ID"

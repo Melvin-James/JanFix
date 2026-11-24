@@ -1,5 +1,5 @@
-import type { User } from "../../domain/entities/User.js";
-import type { AuthUserDTO } from "../dto/auth/AuthUserDTO.js";
+import type { User } from "../../domain/entities/User.ts";
+import type { AuthUserDTO } from "../dto/auth/AuthUserDTO.ts";
 
 export class RegisterUserMapper {
     static toResponse(user: User): AuthUserDTO {

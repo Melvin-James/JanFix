@@ -1,6 +1,6 @@
-import type { UploadedFile } from "../../domain/entities/UploadedFile.js";
-import type { ProviderDocuments } from "../../domain/entities/ProviderProfile.js";
-import type { IStorageService } from "./IStorageService.js";
+import type { UploadedFile } from "../../domain/entities/UploadedFile.ts";
+import type { ProviderDocuments } from "../../domain/entities/ProviderProfile.ts";
+import type { IStorageService } from "./IStorageService.ts";
 
 /**
  * Extracts pure S3 object key even if an existing database record

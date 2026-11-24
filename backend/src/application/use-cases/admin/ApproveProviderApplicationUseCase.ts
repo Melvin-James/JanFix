@@ -1,24 +1,24 @@
-import type { IApproveProviderApplicationUseCase } from "../usecase interfaces/admin/IApproveProviderApplicationUseCase.js";
+import type { IApproveProviderApplicationUseCase } from "../usecase interfaces/admin/IApproveProviderApplicationUseCase.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
-import { Role } from "../../../domain/enums/Role.js";
+import { Role } from "../../../domain/enums/Role.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
 export class ApproveProviderApplicationUseCase implements IApproveProviderApplicationUseCase {
     constructor(
-        private readonly userRepository: IUserRepository
+        private readonly _userRepository: IUserRepository
     ) { }
 
     async execute(userId: string) {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if (!user) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.USER_NOT_FOUND);
@@ -47,6 +47,6 @@ export class ApproveProviderApplicationUseCase implements IApproveProviderApplic
             user.roles.push(Role.SERVICE_PROVIDER);
         }
 
-        return this.userRepository.updateUser(user);
+        return this._userRepository.updateUser(user);
     }
 }

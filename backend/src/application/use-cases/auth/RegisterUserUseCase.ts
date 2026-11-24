@@ -1,33 +1,33 @@
-import { hashData } from "../../../shared/utils/hashUtil.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { AppMessages } from "../../../shared/constants/messages.js";
-import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.js";
-import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.js";
-import { RegisterUserMapper } from "../../mappers/RegisterUserMapper.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import { Role } from "../../../domain/enums/Role.js";
-import type { User } from "../../../domain/entities/User.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import generateOtp from "../../../shared/utils/generateOtp.js";
-import type { IEmailService } from "../../../domain/interface/IEmailService.js";
-import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.js";
-import type { IRegisterUserUseCase } from "../usecase interfaces/auth/IRegisterUserUseCase.js";
+import { hashData } from "../../../shared/utils/hashUtil.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import type { RegisterUserDTO } from "../../dto/auth/RegisterUserDTO.ts";
+import type { AuthUserDTO } from "../../dto/auth/AuthUserDTO.ts";
+import { RegisterUserMapper } from "../../mappers/RegisterUserMapper.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import { Role } from "../../../domain/enums/Role.ts";
+import type { User } from "../../../domain/entities/User.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import generateOtp from "../../../shared/utils/generateOtp.ts";
+import type { IEmailService } from "../../../domain/interface/IEmailService.ts";
+import type { IOtpRepository } from "../../../domain/interface/IOtpRepository.ts";
+import type { IRegisterUserUseCase } from "../usecase interfaces/auth/IRegisterUserUseCase.ts";
 
-import { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
-import { AuthProvider } from "../../../domain/enums/AuthProvider.js";
-import { AccountStatus } from "../../../domain/enums/AccountStatus.js";
+import { OtpPurpose } from "../../../domain/enums/OtpPurpose.ts";
+import { AuthProvider } from "../../../domain/enums/AuthProvider.ts";
+import { AccountStatus } from "../../../domain/enums/AccountStatus.ts";
 
 export class RegisterUserUseCase implements IRegisterUserUseCase {
 
     constructor(
-        private userRepository: IUserRepository,
-        private otpRepository: IOtpRepository,
-        private emailService: IEmailService
+        private _userRepository: IUserRepository,
+        private _otpRepository: IOtpRepository,
+        private _emailService: IEmailService
     ) { }
 
     async execute(dto: RegisterUserDTO): Promise<AuthUserDTO> {
 
-        const existingUser = await this.userRepository.findByEmail(dto.email);
+        const existingUser = await this._userRepository.findByEmail(dto.email);
 
         if (existingUser && existingUser.isVerified) {
             throw new ApiError(HttpStatusCode.CONFLICT, AppMessages.ERROR.USER_ALREADY_EXISTS);
@@ -50,18 +50,18 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
                 authProvider: AuthProvider.LOCAL,
                 accountStatus: AccountStatus.ACTIVE,
             };
-            targetUser = await this.userRepository.create(user);
+            targetUser = await this._userRepository.create(user);
         } else {
             // Unverified user retrying registration - update details
             existingUser.fullName = dto.fullName;
             existingUser.password = hashedPassword;
-            targetUser = await this.userRepository.updateUser(existingUser);
+            targetUser = await this._userRepository.updateUser(existingUser);
         }
 
-        await this.otpRepository.saveOtp(targetUser.email, hashedOtp, OtpPurpose.VERIFY_ACCOUNT);
+        await this._otpRepository.saveOtp(targetUser.email, hashedOtp, OtpPurpose.VERIFY_ACCOUNT);
 
         try {
-            await this.emailService.sendOtpEmail(
+            await this._emailService.sendOtpEmail(
                 targetUser.email,
                 otp
             );

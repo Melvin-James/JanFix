@@ -1,52 +1,52 @@
 import type { Request, Response } from "express";
 
-import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
+import type { AuthRequest } from "../../../shared/types/AuthRequest.ts";
 
-import asyncHandler from "../../../shared/utils/asyncHandler.js";
+import asyncHandler from "../../../shared/utils/asyncHandler.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import type { IGetProviderApplicationsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProviderApplicationsUseCase.js";
+import type { IGetProviderApplicationsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProviderApplicationsUseCase.ts";
 
-import type { IGetProviderApplicationDetailsUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderApplicationDetailsUseCase.js";
+import type { IGetProviderApplicationDetailsUseCase } from "../../../application/use-cases/usecase interfaces/provider/IGetProviderApplicationDetailsUseCase.ts";
 
-import type { IApproveProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveProviderApplicationUseCase.js";
+import type { IApproveProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveProviderApplicationUseCase.ts";
 
-import type { IRejectProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectProviderApplicationUseCase.js";
+import type { IRejectProviderApplicationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectProviderApplicationUseCase.ts";
 
-import type { IGetServiceProvidersUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetServiceProvidersUseCase.js";
+import type { IGetServiceProvidersUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetServiceProvidersUseCase.ts";
 
-import type { IGetServiceProviderDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetServiceProviderDetailsUseCase.js";
+import type { IGetServiceProviderDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetServiceProviderDetailsUseCase.ts";
 
-import type { IUpdateServiceProviderStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateServiceProviderStatusUseCase.js";
+import type { IUpdateServiceProviderStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateServiceProviderStatusUseCase.ts";
 
-import type { IGetUsersForManagementUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetUsersForManagementUseCase.js";
+import type { IGetUsersForManagementUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetUsersForManagementUseCase.ts";
 
-import type { IUpdateUserAccountStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateUserAccountStatusUseCase.js";
+import type { IUpdateUserAccountStatusUseCase } from "../../../application/use-cases/usecase interfaces/admin/IUpdateUserAccountStatusUseCase.ts";
 
-import type { ICreateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/ICreateCategoryUseCase.js";
+import type { ICreateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/ICreateCategoryUseCase.ts";
 
-import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.js";
+import type { IGetCategoriesUseCase } from "../../../application/use-cases/usecase interfaces/category/IGetCategoriesUseCase.ts";
 
-import type { IUpdateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryUseCase.js";
+import type { IUpdateCategoryUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryUseCase.ts";
 
-import type { IUpdateCategoryStatusUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryStatusUseCase.js";
-import type { IGetReviewEligibleIssuesUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetReviewEligibleIssuesUseCase.js";
-import type { IApproveIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveIssueUseCase.js";
-import type { IRejectIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectIssueUseCase.js";
-import type { IGetIssueAIAnalysisUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueAIAnalysisUseCase.js";
-import type { IAnalyzeIssueCommentsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.js";
-import type { IGetIssuesWithProposalsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssuesWithProposalsUseCase.js";
-import type { IGetProposalsForIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalsForIssueUseCase.js";
-import type { IGetAdminProposalDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetAdminProposalDetailsUseCase.js";
-import type { IGetIssueProposalsRecommendationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueProposalsRecommendationUseCase.js";
-import type { IGetProposalAISummaryUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalAISummaryUseCase.js";
-import type { ISelectProposalUseCase } from "../../../application/use-cases/usecase interfaces/admin/ISelectProposalUseCase.js";
-import { Role } from "../../../domain/enums/Role.js";
-import ApiError from "../../../shared/utils/apiError.js";
+import type { IUpdateCategoryStatusUseCase } from "../../../application/use-cases/usecase interfaces/category/IUpdateCategoryStatusUseCase.ts";
+import type { IGetReviewEligibleIssuesUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetReviewEligibleIssuesUseCase.ts";
+import type { IApproveIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IApproveIssueUseCase.ts";
+import type { IRejectIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IRejectIssueUseCase.ts";
+import type { IGetIssueAIAnalysisUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueAIAnalysisUseCase.ts";
+import type { IAnalyzeIssueCommentsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.ts";
+import type { IGetIssuesWithProposalsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssuesWithProposalsUseCase.ts";
+import type { IGetProposalsForIssueUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalsForIssueUseCase.ts";
+import type { IGetAdminProposalDetailsUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetAdminProposalDetailsUseCase.ts";
+import type { IGetIssueProposalsRecommendationUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetIssueProposalsRecommendationUseCase.ts";
+import type { IGetProposalAISummaryUseCase } from "../../../application/use-cases/usecase interfaces/admin/IGetProposalAISummaryUseCase.ts";
+import type { ISelectProposalUseCase } from "../../../application/use-cases/usecase interfaces/admin/ISelectProposalUseCase.ts";
+import { Role } from "../../../domain/enums/Role.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
-import { sendSuccess, sendPaginated, sendError } from "../../../shared/response/index.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import { sendSuccess, sendPaginated, sendError } from "../../../shared/response/index.ts";
 
 export class AdminController {
 

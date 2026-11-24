@@ -1,14 +1,14 @@
-import { env } from "../../infrastructure/config/env.js";
+import { env } from "../../infrastructure/config/env.ts";
 
 import jwt from "jsonwebtoken";
 
-import type { IJwtService } from "../../domain/interface/IJwtService.js";
+import type { IJwtService } from "../../domain/interface/IJwtService.ts";
 
-import type { Role } from "../../domain/enums/Role.js";
+import type { Role } from "../../domain/enums/Role.ts";
 
-import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+import type { AccessTokenPayload, ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
 
-import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.js";
+import type { RefreshTokenPayload } from "../../shared/types/RefreshTokenPayload.ts";
 
 class JwtService implements IJwtService {
 

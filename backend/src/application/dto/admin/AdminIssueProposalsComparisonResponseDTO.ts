@@ -1,7 +1,7 @@
-import type { ProposalResponseDTO } from "../proposal/ProposalResponseDTO.js";
-import type { IssueResponseDTO } from "../issue/IssueResponseDTO.js";
-import type { ProviderType } from "../../../domain/enums/ProviderType.js";
-import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
+import type { ProposalResponseDTO } from "../proposal/ProposalResponseDTO.ts";
+import type { IssueResponseDTO } from "../issue/IssueResponseDTO.ts";
+import type { ProviderType } from "../../../domain/enums/ProviderType.ts";
+import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
 
 export interface ProposalComparisonCardDTO extends ProposalResponseDTO {
     proposalId: string;

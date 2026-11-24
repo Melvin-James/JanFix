@@ -1,8 +1,8 @@
-import type { User } from "../../domain/entities/User.js";
-import type { AuthUserDTO } from "../dto/auth/AuthUserDTO.js";
-import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.js";
-import { ProviderStatus } from "../../domain/enums/ProviderStatus.js";
-import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.js";
+import type { User } from "../../domain/entities/User.ts";
+import type { AuthUserDTO } from "../dto/auth/AuthUserDTO.ts";
+import { ApplicationStatus } from "../../domain/enums/ApplicationStatus.ts";
+import { ProviderStatus } from "../../domain/enums/ProviderStatus.ts";
+import type { ApplicationMode } from "../../shared/types/AccessTokenPayload.ts";
 
 export class LoginMapper {
 

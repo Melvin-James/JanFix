@@ -1,16 +1,16 @@
-import type { IIssueRepository, AdminIssueFilters } from "../../../domain/interface/IIssueRepository.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import type { IGetReviewEligibleIssuesUseCase } from "../usecase interfaces/admin/IGetReviewEligibleIssuesUseCase.js";
-import type { AdminIssueListItemDTO } from "../../dto/admin/AdminIssueResponseDTO.js";
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { IIssueRepository, AdminIssueFilters } from "../../../domain/interface/IIssueRepository.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import type { IGetReviewEligibleIssuesUseCase } from "../usecase interfaces/admin/IGetReviewEligibleIssuesUseCase.ts";
+import type { AdminIssueListItemDTO } from "../../dto/admin/AdminIssueResponseDTO.ts";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetReviewEligibleIssuesUseCase implements IGetReviewEligibleIssuesUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly storageService: IStorageService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _storageService: IStorageService
     ) {}
 
     async execute(
@@ -30,7 +30,7 @@ export class GetReviewEligibleIssuesUseCase implements IGetReviewEligibleIssuesU
         const safePage = page > 0 ? page : 1;
         const safePageSize = pageSize > 0 && pageSize <= 100 ? pageSize : 10;
 
-        const paginatedResult = await this.issueRepository.findReviewEligibleIssues(
+        const paginatedResult = await this._issueRepository.findReviewEligibleIssues(
             safePage,
             safePageSize,
             filters,
@@ -43,7 +43,7 @@ export class GetReviewEligibleIssuesUseCase implements IGetReviewEligibleIssuesU
             paginatedResult.items.map(async (item) => {
                 const refreshedImages = await refreshUploadedFileUrls(
                     item.issue.images,
-                    this.storageService,
+                    this._storageService,
                     urlCache
                 );
 

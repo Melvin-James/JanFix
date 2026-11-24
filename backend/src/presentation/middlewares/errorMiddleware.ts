@@ -4,14 +4,14 @@ import type {
   Response,
 } from "express";
 
-import ApiError from "../../shared/utils/apiError.js";
+import ApiError from "../../shared/utils/apiError.ts";
 
-import { AppMessages } from "../../shared/constants/messages.js";
+import { AppMessages } from "../../shared/constants/messages.ts";
 
-import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../shared/enums/HttpStatusCode.ts";
 
-import logger from "../../shared/utils/logger.js";
-import { sendError } from "../../shared/response/index.js";
+import logger from "../../shared/utils/logger.ts";
+import { sendError } from "../../shared/response/index.ts";
 
 const errorMiddleware = (
   err: Error,

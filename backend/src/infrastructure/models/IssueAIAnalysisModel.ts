@@ -1,7 +1,7 @@
 import { Schema, model, type Document, Types } from "mongoose";
-import { AIAnalysisStatus } from "../../domain/enums/AIAnalysisStatus.js";
-import { AIOverallClassification } from "../../domain/enums/AIOverallClassification.js";
-import { CommentClassification } from "../../domain/enums/CommentClassification.js";
+import { AIAnalysisStatus } from "../../domain/enums/AIAnalysisStatus.ts";
+import { AIOverallClassification } from "../../domain/enums/AIOverallClassification.ts";
+import { CommentClassification } from "../../domain/enums/CommentClassification.ts";
 
 export interface AICommentClassificationSubdocument {
     commentId: string;

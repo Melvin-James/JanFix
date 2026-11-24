@@ -1,22 +1,22 @@
 import express from "express";
 
-import authRoutes from "./presentation/routes/authRoutes.js";
+import authRoutes from "./presentation/routes/authRoutes.ts";
 
-import providerRoutes from "./presentation/routes/providerRoutes.js";
+import providerRoutes from "./presentation/routes/providerRoutes.ts";
 
-import uploadRoutes from "./presentation/routes/uploadRoutes.js";
+import uploadRoutes from "./presentation/routes/uploadRoutes.ts";
 
-import adminRoutes from "./presentation/routes/adminRoutes.js";
+import adminRoutes from "./presentation/routes/adminRoutes.ts";
 
-import issueRoutes from "./presentation/routes/issueRoutes.js";
+import issueRoutes from "./presentation/routes/issueRoutes.ts";
 
-import notificationRoutes from "./presentation/routes/notificationRoutes.js";
+import notificationRoutes from "./presentation/routes/notificationRoutes.ts";
 
-import donationRoutes, { donationController } from "./presentation/routes/donationRoutes.js";
+import donationRoutes, { donationController } from "./presentation/routes/donationRoutes.ts";
 
-import errorMiddleware from "./presentation/middlewares/errorMiddleware.js";
+import errorMiddleware from "./presentation/middlewares/errorMiddleware.ts";
 
-import { ApiEndpoints } from "./shared/constants/apiEndpoints.js";
+import { ApiEndpoints } from "./shared/constants/apiEndpoints.ts";
 
 import cookieParser from "cookie-parser";
 

@@ -1,12 +1,12 @@
-import { env } from "./infrastructure/config/env.js";
+import { env } from "./infrastructure/config/env.ts";
 
-import redisClient from "./infrastructure/config/redis.js";
+import redisClient from "./infrastructure/config/redis.ts";
 
-import app from "./app.js";
+import app from "./app.ts";
 
-import connectDB from "./infrastructure/database/db.js";
+import connectDB from "./infrastructure/database/db.ts";
 
-import logger from "./shared/utils/logger.js";
+import logger from "./shared/utils/logger.ts";
 
 const PORT = env.PORT || 5000;
 

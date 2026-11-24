@@ -1,36 +1,36 @@
 import { Types } from "mongoose";
 
-import type { IGetProposalsForIssueUseCase } from "../usecase interfaces/admin/IGetProposalsForIssueUseCase.js";
+import type { IGetProposalsForIssueUseCase } from "../usecase interfaces/admin/IGetProposalsForIssueUseCase.ts";
 
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
 
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
 
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
 
-import type { IStorageService } from "../../services/IStorageService.js";
+import type { IStorageService } from "../../services/IStorageService.ts";
 
 import type {
     AdminIssueProposalsComparisonResponseDTO,
     ProposalComparisonCardDTO,
-} from "../../dto/admin/AdminIssueProposalsComparisonResponseDTO.js";
+} from "../../dto/admin/AdminIssueProposalsComparisonResponseDTO.ts";
 
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
 
-import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.js";
+import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.ts";
 
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetProposalsForIssueUseCase implements IGetProposalsForIssueUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository,
-        private readonly userRepository: IUserRepository,
-        private readonly storageService: IStorageService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _userRepository: IUserRepository,
+        private readonly _storageService: IStorageService
     ) {}
 
     async execute(issueId: string): Promise<AdminIssueProposalsComparisonResponseDTO> {
@@ -38,25 +38,25 @@ export class GetProposalsForIssueUseCase implements IGetProposalsForIssueUseCase
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid issue ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
 
-        const proposals = await this.proposalRepository.findSubmittedByIssueId(issueId);
+        const proposals = await this._proposalRepository.findSubmittedByIssueId(issueId);
         const urlCache = new Map<string, string>();
 
         const issueResponse = IssueAppMapper.toResponse(issue);
         const refreshedIssueImages = await refreshUploadedFileUrls(
             issueResponse.images,
-            this.storageService,
+            this._storageService,
             urlCache
         );
 
         // Fetch user documents for providers
         const providerIds = [...new Set(proposals.map((p) => p.providerId))];
 
-        const providers = await this.userRepository.findByIds(providerIds);
+        const providers = await this._userRepository.findByIds(providerIds);
 
         const providerMap = new Map<string, (typeof providers)[0]>();
         for (const u of providers) {
@@ -81,7 +81,7 @@ export class GetProposalsForIssueUseCase implements IGetProposalsForIssueUseCase
                             providerAvatarUrl = urlCache.get(targetImg.key);
                         } else {
                             try {
-                                providerAvatarUrl = await this.storageService.getPresignedUrl(targetImg.key);
+                                providerAvatarUrl = await this._storageService.getPresignedUrl(targetImg.key);
                                 urlCache.set(targetImg.key, providerAvatarUrl);
                             } catch {
                                 providerAvatarUrl = targetImg.url;

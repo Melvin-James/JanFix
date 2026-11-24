@@ -1,24 +1,24 @@
-import type { IIssueRepository, IssueFilters } from "../../../domain/interface/IIssueRepository.js";
+import type { IIssueRepository, IssueFilters } from "../../../domain/interface/IIssueRepository.ts";
 
-import type { IssueResponseDTO } from "../../dto/issue/IssueResponseDTO.js";
+import type { IssueResponseDTO } from "../../dto/issue/IssueResponseDTO.ts";
 
-import type { IStorageService } from "../../services/IStorageService.js";
+import type { IStorageService } from "../../services/IStorageService.ts";
 
-import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.js";
+import { refreshUploadedFileUrls } from "../../services/refreshUploadedFileUrls.ts";
 
-import type { IGetFeedIssuesUseCase } from "../usecase interfaces/issue/IGetFeedIssuesUseCase.js";
+import type { IGetFeedIssuesUseCase } from "../usecase interfaces/issue/IGetFeedIssuesUseCase.ts";
 
-import type { PaginatedResult } from "../../../shared/types/Pagination.js";
+import type { PaginatedResult } from "../../../shared/types/Pagination.ts";
 
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
 
 export class GetFeedIssuesUseCase implements IGetFeedIssuesUseCase {
 
     constructor(
 
-        private readonly issueRepository: IIssueRepository,
+        private readonly _issueRepository: IIssueRepository,
 
-        private readonly storageService: IStorageService
+        private readonly _storageService: IStorageService
 
     ) { }
 
@@ -28,7 +28,7 @@ export class GetFeedIssuesUseCase implements IGetFeedIssuesUseCase {
         pageSize = 10,
         filters?: IssueFilters
     ): Promise<PaginatedResult<IssueResponseDTO>> {
-        const paginated = await this.issueRepository.findFeedIssues(
+        const paginated = await this._issueRepository.findFeedIssues(
             page,
             pageSize,
             filters,
@@ -44,7 +44,7 @@ export class GetFeedIssuesUseCase implements IGetFeedIssuesUseCase {
                     ...response,
                     images: await refreshUploadedFileUrls(
                         response.images,
-                        this.storageService,
+                        this._storageService,
                         urlCache
                     ),
                 };

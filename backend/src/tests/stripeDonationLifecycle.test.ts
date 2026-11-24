@@ -7,32 +7,32 @@ import type Stripe from "stripe";
 dotenv.config({ path: path.resolve(process.cwd(), "backend/.env") });
 dotenv.config();
 
-import { IssueStatus } from "../domain/enums/IssueStatus.js";
-import { IssueVisibility } from "../domain/enums/IssueVisibility.js";
-import { ProposalFundingType } from "../domain/enums/ProposalFundingType.js";
-import { DonationStatus } from "../domain/enums/DonationStatus.js";
-import { Role } from "../domain/enums/Role.js";
-import { AuthProvider } from "../domain/enums/AuthProvider.js";
-import { AccountStatus } from "../domain/enums/AccountStatus.js";
+import { IssueStatus } from "../domain/enums/IssueStatus.ts";
+import { IssueVisibility } from "../domain/enums/IssueVisibility.ts";
+import { ProposalFundingType } from "../domain/enums/ProposalFundingType.ts";
+import { DonationStatus } from "../domain/enums/DonationStatus.ts";
+import { Role } from "../domain/enums/Role.ts";
+import { AuthProvider } from "../domain/enums/AuthProvider.ts";
+import { AccountStatus } from "../domain/enums/AccountStatus.ts";
 
-import { IssueModel } from "../infrastructure/models/IssueModel.js";
-import { UserModel } from "../infrastructure/models/UserModel.js";
-import { CategoryModel } from "../infrastructure/models/CategoryModel.js";
-import { DonationModel } from "../infrastructure/models/DonationModel.js";
+import { IssueModel } from "../infrastructure/models/IssueModel.ts";
+import { UserModel } from "../infrastructure/models/UserModel.ts";
+import { CategoryModel } from "../infrastructure/models/CategoryModel.ts";
+import { DonationModel } from "../infrastructure/models/DonationModel.ts";
 
-import { IssueRepository } from "../infrastructure/repositories/IssueRepository.js";
-import { UserRepository } from "../infrastructure/repositories/UserRepository.js";
-import { DonationRepository } from "../infrastructure/repositories/DonationRepository.js";
-import { StripeService, type CreatePaymentIntentParams } from "../infrastructure/services/StripeService.js";
+import { IssueRepository } from "../infrastructure/repositories/IssueRepository.ts";
+import { UserRepository } from "../infrastructure/repositories/UserRepository.ts";
+import { DonationRepository } from "../infrastructure/repositories/DonationRepository.ts";
+import { StripeService, type CreatePaymentIntentParams } from "../infrastructure/services/StripeService.ts";
 
-import { CreateDonationPaymentIntentUseCase } from "../application/use-cases/donation/CreateDonationPaymentIntentUseCase.js";
-import { HandleStripeWebhookUseCase } from "../application/use-cases/donation/HandleStripeWebhookUseCase.js";
-import { GetIssueDonationsUseCase } from "../application/use-cases/donation/GetIssueDonationsUseCase.js";
-import { RetryDonationPaymentUseCase } from "../application/use-cases/donation/RetryDonationPaymentUseCase.js";
+import { CreateDonationPaymentIntentUseCase } from "../application/use-cases/donation/CreateDonationPaymentIntentUseCase.ts";
+import { HandleStripeWebhookUseCase } from "../application/use-cases/donation/HandleStripeWebhookUseCase.ts";
+import { GetIssueDonationsUseCase } from "../application/use-cases/donation/GetIssueDonationsUseCase.ts";
+import { RetryDonationPaymentUseCase } from "../application/use-cases/donation/RetryDonationPaymentUseCase.ts";
 
 class TestStripeService extends StripeService {
-  private eventMap = new Map<string, Stripe.Event>();
-  private paymentIntentsMap = new Map<string, Stripe.PaymentIntent>();
+  private _eventMap = new Map<string, Stripe.Event>();
+  private _paymentIntentsMap = new Map<string, Stripe.PaymentIntent>();
 
   override async createPaymentIntent(params: CreatePaymentIntentParams): Promise<Stripe.PaymentIntent> {
     const id = `pi_test_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -50,13 +50,13 @@ class TestStripeService extends StripeService {
       livemode: false,
     } as unknown as Stripe.PaymentIntent;
 
-    this.paymentIntentsMap.set(id, pi);
+    this._paymentIntentsMap.set(id, pi);
     return pi;
   }
 
   override async retrievePaymentIntent(paymentIntentId: string): Promise<Stripe.PaymentIntent> {
-    if (this.paymentIntentsMap.has(paymentIntentId)) {
-      return this.paymentIntentsMap.get(paymentIntentId)!;
+    if (this._paymentIntentsMap.has(paymentIntentId)) {
+      return this._paymentIntentsMap.get(paymentIntentId)!;
     }
     return {
       id: paymentIntentId,
@@ -72,19 +72,19 @@ class TestStripeService extends StripeService {
   }
 
   setPaymentIntentStatus(paymentIntentId: string, status: Stripe.PaymentIntent.Status) {
-    const existing = this.paymentIntentsMap.get(paymentIntentId);
+    const existing = this._paymentIntentsMap.get(paymentIntentId);
     if (existing) {
       existing.status = status;
     }
   }
 
   registerMockEvent(signature: string, event: Stripe.Event) {
-    this.eventMap.set(signature, event);
+    this._eventMap.set(signature, event);
   }
 
   override constructWebhookEvent(payload: Buffer | string, signature: string): Stripe.Event {
-    if (this.eventMap.has(signature)) {
-      return this.eventMap.get(signature)!;
+    if (this._eventMap.has(signature)) {
+      return this._eventMap.get(signature)!;
     }
     try {
       const parsed = typeof payload === "string" ? JSON.parse(payload) : JSON.parse(payload.toString("utf8"));

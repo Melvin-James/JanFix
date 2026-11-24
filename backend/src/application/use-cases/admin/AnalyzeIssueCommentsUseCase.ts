@@ -1,24 +1,24 @@
 import { Types } from "mongoose";
-import type { IAnalyzeIssueCommentsUseCase } from "../usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueAIAnalysisRepository } from "../../../domain/interface/IIssueAIAnalysisRepository.js";
-import type { IIssueAIService } from "../../../domain/interface/IIssueAIService.js";
-import type { IssueAIAnalysisResponseDTO } from "../../dto/admin/IssueAIAnalysisResponseDTO.js";
-import { IssueCommentModel } from "../../../infrastructure/models/IssueCommentModel.js";
-import { IssueAIAnalysisAppMapper } from "../../mappers/IssueAIAnalysisAppMapper.js";
-import { calculateCommunitySupportScore } from "../../services/communitySupportScoreCalculator.js";
-import { isIssueEligibleForReview, getIssueInteractionDeadline } from "../../../shared/utils/issueEligibility.js";
-import { AIAnalysisStatus } from "../../../domain/enums/AIAnalysisStatus.js";
-import { AIOverallClassification } from "../../../domain/enums/AIOverallClassification.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import logger from "../../../shared/utils/logger.js";
+import type { IAnalyzeIssueCommentsUseCase } from "../usecase interfaces/admin/IAnalyzeIssueCommentsUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueAIAnalysisRepository } from "../../../domain/interface/IIssueAIAnalysisRepository.ts";
+import type { IIssueAIService } from "../../../domain/interface/IIssueAIService.ts";
+import type { IssueAIAnalysisResponseDTO } from "../../dto/admin/IssueAIAnalysisResponseDTO.ts";
+import { IssueCommentModel } from "../../../infrastructure/models/IssueCommentModel.ts";
+import { IssueAIAnalysisAppMapper } from "../../mappers/IssueAIAnalysisAppMapper.ts";
+import { calculateCommunitySupportScore } from "../../services/communitySupportScoreCalculator.ts";
+import { isIssueEligibleForReview, getIssueInteractionDeadline } from "../../../shared/utils/issueEligibility.ts";
+import { AIAnalysisStatus } from "../../../domain/enums/AIAnalysisStatus.ts";
+import { AIOverallClassification } from "../../../domain/enums/AIOverallClassification.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import logger from "../../../shared/utils/logger.ts";
 
 export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly aiAnalysisRepository: IIssueAIAnalysisRepository,
-        private readonly aiService: IIssueAIService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _aiAnalysisRepository: IIssueAIAnalysisRepository,
+        private readonly _aiService: IIssueAIService
     ) {}
 
     async execute(issueId: string, serverNow: Date = new Date()): Promise<IssueAIAnalysisResponseDTO> {
@@ -26,7 +26,7 @@ export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid issue ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -43,7 +43,7 @@ export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase
         }
 
         // Acquire processing lock (idempotency & concurrency safe)
-        const lockResult = await this.aiAnalysisRepository.acquireProcessingLock(issueId, cutoffDate);
+        const lockResult = await this._aiAnalysisRepository.acquireProcessingLock(issueId, cutoffDate);
         if (!lockResult.acquired && lockResult.analysis) {
             return IssueAIAnalysisAppMapper.toResponse(lockResult.analysis, {
                 canTriggerAnalysis: lockResult.analysis.status === AIAnalysisStatus.FAILED,
@@ -63,7 +63,7 @@ export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase
 
             // Scenario: No eligible comments submitted
             if (eligibleDocs.length === 0) {
-                const noCommentsAnalysis = await this.aiAnalysisRepository.save({
+                const noCommentsAnalysis = await this._aiAnalysisRepository.save({
                     issueId,
                     status: AIAnalysisStatus.INSUFFICIENT_DATA,
                     cutoffDate,
@@ -91,7 +91,7 @@ export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase
             }));
 
             // Call AI provider
-            const aiResult = await this.aiService.analyzeCommunityComments(
+            const aiResult = await this._aiService.analyzeCommunityComments(
                 issue.title,
                 issue.description,
                 commentInputs
@@ -106,7 +106,7 @@ export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase
                     ? AIAnalysisStatus.INSUFFICIENT_DATA
                     : AIAnalysisStatus.COMPLETED;
 
-            const savedAnalysis = await this.aiAnalysisRepository.save({
+            const savedAnalysis = await this._aiAnalysisRepository.save({
                 issueId,
                 status: finalStatus,
                 cutoffDate,
@@ -130,7 +130,7 @@ export class AnalyzeIssueCommentsUseCase implements IAnalyzeIssueCommentsUseCase
             const message = error instanceof Error ? error.message : "Failed to analyze comments";
             logger.error({ issueId, error: message }, "JanAI analysis failed");
 
-            const failedAnalysis = await this.aiAnalysisRepository.markFailed(issueId, message);
+            const failedAnalysis = await this._aiAnalysisRepository.markFailed(issueId, message);
             if (failedAnalysis) {
                 return IssueAIAnalysisAppMapper.toResponse(failedAnalysis, {
                     canTriggerAnalysis: true,

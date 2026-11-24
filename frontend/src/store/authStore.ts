@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { AuthUser, ApplicationMode } from "../features/auth/types/authUser.js";
+import type { AuthUser, ApplicationMode } from "../features/auth/types/authUser.ts";
 
 interface AuthState {
   user: AuthUser | null;

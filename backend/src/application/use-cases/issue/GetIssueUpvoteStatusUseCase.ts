@@ -1,17 +1,17 @@
 import { Types } from "mongoose";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueVoteRepository } from "../../../domain/interface/IIssueVoteRepository.js";
-import type { IssueVoteResponseDTO } from "../../dto/issue/IssueVoteResponseDTO.js";
-import type { IGetIssueUpvoteStatusUseCase } from "../usecase interfaces/issue/IGetIssueUpvoteStatusUseCase.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueVoteRepository } from "../../../domain/interface/IIssueVoteRepository.ts";
+import type { IssueVoteResponseDTO } from "../../dto/issue/IssueVoteResponseDTO.ts";
+import type { IGetIssueUpvoteStatusUseCase } from "../usecase interfaces/issue/IGetIssueUpvoteStatusUseCase.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
 
 export class GetIssueUpvoteStatusUseCase implements IGetIssueUpvoteStatusUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly issueVoteRepository: IIssueVoteRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _issueVoteRepository: IIssueVoteRepository
     ) {}
 
     async execute(issueId: string, userId?: string): Promise<IssueVoteResponseDTO> {
@@ -19,7 +19,7 @@ export class GetIssueUpvoteStatusUseCase implements IGetIssueUpvoteStatusUseCase
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid issue ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -36,9 +36,9 @@ export class GetIssueUpvoteStatusUseCase implements IGetIssueUpvoteStatusUseCase
         }
 
         const [upvoteCount, hasUpvoted] = await Promise.all([
-            this.issueVoteRepository.countByIssueId(issueId),
+            this._issueVoteRepository.countByIssueId(issueId),
             userId && Types.ObjectId.isValid(userId)
-                ? this.issueVoteRepository.hasUserVoted(issueId, userId)
+                ? this._issueVoteRepository.hasUserVoted(issueId, userId)
                 : Promise.resolve(false),
         ]);
 

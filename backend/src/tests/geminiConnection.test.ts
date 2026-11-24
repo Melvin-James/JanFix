@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-import { env } from "../infrastructure/config/env.js";
+import { env } from "../infrastructure/config/env.ts";
 
 async function testGeminiConnection() {
   const ai = new GoogleGenAI({

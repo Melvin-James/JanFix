@@ -1,18 +1,18 @@
 import { Types } from "mongoose";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IIssueVoteRepository } from "../../../domain/interface/IIssueVoteRepository.js";
-import type { IssueVoteResponseDTO } from "../../dto/issue/IssueVoteResponseDTO.js";
-import type { IAddIssueUpvoteUseCase } from "../usecase interfaces/issue/IAddIssueUpvoteUseCase.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { IssueVisibility } from "../../../domain/enums/IssueVisibility.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { isIssueInteractionOpen } from "../../../shared/utils/issueEligibility.js";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IIssueVoteRepository } from "../../../domain/interface/IIssueVoteRepository.ts";
+import type { IssueVoteResponseDTO } from "../../dto/issue/IssueVoteResponseDTO.ts";
+import type { IAddIssueUpvoteUseCase } from "../usecase interfaces/issue/IAddIssueUpvoteUseCase.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { IssueVisibility } from "../../../domain/enums/IssueVisibility.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { isIssueInteractionOpen } from "../../../shared/utils/issueEligibility.ts";
 
 export class AddIssueUpvoteUseCase implements IAddIssueUpvoteUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly issueVoteRepository: IIssueVoteRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _issueVoteRepository: IIssueVoteRepository
     ) {}
 
     async execute(issueId: string, userId: string): Promise<IssueVoteResponseDTO> {
@@ -24,7 +24,7 @@ export class AddIssueUpvoteUseCase implements IAddIssueUpvoteUseCase {
             throw new ApiError(HttpStatusCode.BAD_REQUEST, "Invalid user ID format");
         }
 
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -54,9 +54,9 @@ export class AddIssueUpvoteUseCase implements IAddIssueUpvoteUseCase {
         }
 
         // Persist vote (idempotent: unique compound index handles concurrent duplicates)
-        await this.issueVoteRepository.addVote(issueId, userId);
+        await this._issueVoteRepository.addVote(issueId, userId);
 
-        const upvoteCount = await this.issueVoteRepository.countByIssueId(issueId);
+        const upvoteCount = await this._issueVoteRepository.countByIssueId(issueId);
 
         return {
             issueId,

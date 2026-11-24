@@ -1,5 +1,5 @@
 import multer from "multer";
-import { AppMessages } from "../../shared/constants/messages.js";
+import { AppMessages } from "../../shared/constants/messages.ts";
 
 export const upload = multer({
 

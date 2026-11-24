@@ -1,23 +1,23 @@
 import { Types } from "mongoose";
-import type { IGetAdminProposalDetailsUseCase } from "../usecase interfaces/admin/IGetAdminProposalDetailsUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IUserRepository } from "../../../domain/interface/IUserRepository.js";
-import type { IStorageService } from "../../services/IStorageService.js";
-import type { AdminProposalDetailsResponseDTO } from "../../dto/admin/AdminProposalDetailsResponseDTO.js";
-import { IssueAppMapper } from "../../mappers/IssueAppMapper.js";
-import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.js";
-import { ServiceProviderDetailsMapper } from "../../mappers/ServiceProviderDetailsMapper.js";
-import { refreshUploadedFileUrls, refreshProviderDocuments } from "../../services/refreshUploadedFileUrls.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { IGetAdminProposalDetailsUseCase } from "../usecase interfaces/admin/IGetAdminProposalDetailsUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IUserRepository } from "../../../domain/interface/IUserRepository.ts";
+import type { IStorageService } from "../../services/IStorageService.ts";
+import type { AdminProposalDetailsResponseDTO } from "../../dto/admin/AdminProposalDetailsResponseDTO.ts";
+import { IssueAppMapper } from "../../mappers/IssueAppMapper.ts";
+import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.ts";
+import { ServiceProviderDetailsMapper } from "../../mappers/ServiceProviderDetailsMapper.ts";
+import { refreshUploadedFileUrls, refreshProviderDocuments } from "../../services/refreshUploadedFileUrls.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class GetAdminProposalDetailsUseCase implements IGetAdminProposalDetailsUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository,
-        private readonly userRepository: IUserRepository,
-        private readonly storageService: IStorageService
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository,
+        private readonly _userRepository: IUserRepository,
+        private readonly _storageService: IStorageService
     ) {}
 
     async execute(issueId: string, proposalId: string): Promise<AdminProposalDetailsResponseDTO> {
@@ -29,8 +29,8 @@ export class GetAdminProposalDetailsUseCase implements IGetAdminProposalDetailsU
         }
 
         const [issue, proposal] = await Promise.all([
-            this.issueRepository.findById(issueId),
-            this.proposalRepository.findByIdAndIssueId(proposalId, issueId),
+            this._issueRepository.findById(issueId),
+            this._proposalRepository.findByIdAndIssueId(proposalId, issueId),
         ]);
 
         if (!issue) {
@@ -41,7 +41,7 @@ export class GetAdminProposalDetailsUseCase implements IGetAdminProposalDetailsU
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Proposal not found for this issue");
         }
 
-        const providerUser = await this.userRepository.findById(proposal.providerId);
+        const providerUser = await this._userRepository.findById(proposal.providerId);
         if (!providerUser || !providerUser.providerProfile) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Provider account not found");
         }
@@ -51,13 +51,13 @@ export class GetAdminProposalDetailsUseCase implements IGetAdminProposalDetailsU
         const issueResponse = IssueAppMapper.toResponse(issue);
         const refreshedIssueImages = await refreshUploadedFileUrls(
             issueResponse.images,
-            this.storageService,
+            this._storageService,
             urlCache
         );
 
         const refreshedDocuments = await refreshProviderDocuments(
             providerUser.providerProfile.documents,
-            this.storageService,
+            this._storageService,
             urlCache,
             { includeSensitive: true }
         );

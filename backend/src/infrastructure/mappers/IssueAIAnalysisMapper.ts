@@ -1,6 +1,6 @@
 import type { Document } from "mongoose";
-import type { IssueAIAnalysis } from "../../domain/entities/IssueAIAnalysis.js";
-import type { IssueAIAnalysisDocument } from "../models/IssueAIAnalysisModel.js";
+import type { IssueAIAnalysis } from "../../domain/entities/IssueAIAnalysis.ts";
+import type { IssueAIAnalysisDocument } from "../models/IssueAIAnalysisModel.ts";
 
 export class IssueAIAnalysisMapper {
     static toEntity(doc: Document): IssueAIAnalysis {

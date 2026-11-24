@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { ProviderType } from "../../../domain/enums/ProviderType.js";
+import { ProviderType } from "../../../domain/enums/ProviderType.ts";
 
-import { uploadedFileSchema } from "../common/uploadedFileSchema.js";
+import { uploadedFileSchema } from "../common/uploadedFileSchema.ts";
 
 
 export const providerApplicationSchema = z.object({

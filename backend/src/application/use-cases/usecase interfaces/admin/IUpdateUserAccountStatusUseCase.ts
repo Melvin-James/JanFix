@@ -1,6 +1,6 @@
-import type { AccountStatus } from "../../../../domain/enums/AccountStatus.js";
+import type { AccountStatus } from "../../../../domain/enums/AccountStatus.ts";
 
-import type { UpdateUserAccountStatusResponseDTO } from "../../../dto/admin/UpdateUserAccountStatusResponseDTO.js";
+import type { UpdateUserAccountStatusResponseDTO } from "../../../dto/admin/UpdateUserAccountStatusResponseDTO.ts";
 
 export interface IUpdateUserAccountStatusUseCase {
     execute(

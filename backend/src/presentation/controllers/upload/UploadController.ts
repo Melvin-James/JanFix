@@ -1,19 +1,19 @@
 import type { Request, Response } from "express";
 
-import type { IUploadFileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IUploadFileUseCase.js";
+import type { IUploadFileUseCase } from "../../../application/use-cases/usecase interfaces/provider/IUploadFileUseCase.ts";
 
-import asyncHandler from "../../../shared/utils/asyncHandler.js";
+import asyncHandler from "../../../shared/utils/asyncHandler.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import { UploadFolder } from "../../../domain/enums/UploadFolder.js";
+import { UploadFolder } from "../../../domain/enums/UploadFolder.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import type { UploadFileResponseDTO } from "../../../application/dto/upload/UploadFileResponseDTO.js";
-import { sendSuccess } from "../../../shared/response/index.js";
+import type { UploadFileResponseDTO } from "../../../application/dto/upload/UploadFileResponseDTO.ts";
+import { sendSuccess } from "../../../shared/response/index.ts";
 
 export class UploadController {
 

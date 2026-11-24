@@ -1,4 +1,4 @@
-import type { OtpPurpose } from "../../../domain/enums/OtpPurpose.js";
+import type { OtpPurpose } from "../../../domain/enums/OtpPurpose.ts";
 
 export interface ResendOtpDTO {
 

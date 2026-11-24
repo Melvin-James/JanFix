@@ -3,12 +3,12 @@ import type {
     IProposalRepository,
     IssueWithProposalsFilters,
     IssueWithProposalsAggregateItem,
-} from "../../domain/interface/IProposalRepository.js";
-import type { Proposal } from "../../domain/entities/Proposal.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
-import { ProposalModel } from "../models/ProposalModel.js";
-import { ProposalMapper } from "../mappers/ProposalMapper.js";
-import { ProposalStatus } from "../../domain/enums/ProposalStatus.js";
+} from "../../domain/interface/IProposalRepository.ts";
+import type { Proposal } from "../../domain/entities/Proposal.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
+import { ProposalModel } from "../models/ProposalModel.ts";
+import { ProposalMapper } from "../mappers/ProposalMapper.ts";
+import { ProposalStatus } from "../../domain/enums/ProposalStatus.ts";
 
 export class ProposalRepository implements IProposalRepository {
     async create(proposal: Omit<Proposal, "id" | "createdAt" | "updatedAt">): Promise<Proposal> {

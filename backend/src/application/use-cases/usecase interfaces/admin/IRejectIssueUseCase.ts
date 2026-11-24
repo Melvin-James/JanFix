@@ -1,4 +1,4 @@
-import type { IssueResponseDTO } from "../../../dto/issue/IssueResponseDTO.js";
+import type { IssueResponseDTO } from "../../../dto/issue/IssueResponseDTO.ts";
 
 export interface IRejectIssueUseCase {
     execute(issueId: string, rejectionReason: string, serverNow?: Date): Promise<IssueResponseDTO>;

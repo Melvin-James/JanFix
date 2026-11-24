@@ -1,22 +1,22 @@
-import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.js";
+import type { ICategoryRepository } from "../../../domain/interface/ICategoryRepository.ts";
 
-import { AppMessages } from "../../../shared/constants/messages.js";
+import { AppMessages } from "../../../shared/constants/messages.ts";
 
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
-import ApiError from "../../../shared/utils/apiError.js";
+import ApiError from "../../../shared/utils/apiError.ts";
 
-import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.js";
+import type { CategoryResponseDTO } from "../../dto/category/CategoryResponseDTO.ts";
 
-import type { UpdateCategoryDTO } from "../../dto/category/UpdateCategoryDTO.js";
+import type { UpdateCategoryDTO } from "../../dto/category/UpdateCategoryDTO.ts";
 
-import { CategoryMapper } from "../../mappers/CategoryMapper.js";
+import { CategoryMapper } from "../../mappers/CategoryMapper.ts";
 
-import type { IUpdateCategoryUseCase } from "../usecase interfaces/category/IUpdateCategoryUseCase.js";
+import type { IUpdateCategoryUseCase } from "../usecase interfaces/category/IUpdateCategoryUseCase.ts";
 
 export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
     constructor(
-        private readonly categoryRepository: ICategoryRepository
+        private readonly _categoryRepository: ICategoryRepository
     ) { }
 
     async execute(
@@ -24,7 +24,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
         data: UpdateCategoryDTO
     ): Promise<CategoryResponseDTO> {
 
-        const existingCategory = await this.categoryRepository.findById(
+        const existingCategory = await this._categoryRepository.findById(
             categoryId
         );
 
@@ -32,7 +32,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
             throw new ApiError(HttpStatusCode.NOT_FOUND, AppMessages.ERROR.CATEGORY_NOT_FOUND);
         }
 
-        const categoryWithSameName = await this.categoryRepository.findByName(data.name);
+        const categoryWithSameName = await this._categoryRepository.findByName(data.name);
 
         if (categoryWithSameName && categoryWithSameName.id !== existingCategory.id) {
             throw new ApiError(
@@ -41,7 +41,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
             );
         }
 
-        const updatedCategory = await this.categoryRepository.update(
+        const updatedCategory = await this._categoryRepository.update(
             categoryId,
             {
                 name: data.name,

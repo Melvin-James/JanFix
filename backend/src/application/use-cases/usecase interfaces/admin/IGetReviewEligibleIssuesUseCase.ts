@@ -1,6 +1,6 @@
-import type { AdminIssueListItemDTO } from "../../../dto/admin/AdminIssueResponseDTO.js";
-import type { PaginatedResult } from "../../../../shared/types/Pagination.js";
-import type { AdminIssueFilters } from "../../../../domain/interface/IIssueRepository.js";
+import type { AdminIssueListItemDTO } from "../../../dto/admin/AdminIssueResponseDTO.ts";
+import type { PaginatedResult } from "../../../../shared/types/Pagination.ts";
+import type { AdminIssueFilters } from "../../../../domain/interface/IIssueRepository.ts";
 
 export interface IGetReviewEligibleIssuesUseCase {
     execute(

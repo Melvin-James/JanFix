@@ -1,4 +1,4 @@
-import type { OtpPurpose } from "../enums/OtpPurpose.js";
+import type { OtpPurpose } from "../enums/OtpPurpose.ts";
 
 export interface IOtpRepository { 
     saveOtp( 

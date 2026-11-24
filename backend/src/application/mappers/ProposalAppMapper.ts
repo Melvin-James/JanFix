@@ -1,5 +1,5 @@
-import type { Proposal } from "../../domain/entities/Proposal.js";
-import type { ProposalResponseDTO } from "../dto/proposal/ProposalResponseDTO.js";
+import type { Proposal } from "../../domain/entities/Proposal.ts";
+import type { ProposalResponseDTO } from "../dto/proposal/ProposalResponseDTO.ts";
 
 export class ProposalAppMapper {
     static toResponse(proposal: Proposal): ProposalResponseDTO {

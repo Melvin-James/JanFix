@@ -1,5 +1,5 @@
-import type { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
-import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
+import type { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.ts";
+import type { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
 
 export interface BudgetItemInputDTO {
     heading: string;

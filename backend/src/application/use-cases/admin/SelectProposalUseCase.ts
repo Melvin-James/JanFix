@@ -1,23 +1,23 @@
 import { Types } from "mongoose";
-import type { ISelectProposalUseCase } from "../usecase interfaces/admin/ISelectProposalUseCase.js";
-import type { IProposalSelectionRepository } from "../../../domain/interface/IProposalSelectionRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { INotificationRepository } from "../../../domain/interface/INotificationRepository.js";
-import { ProposalSelectionError } from "../../../domain/interface/IProposalSelectionRepository.js";
-import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { NotificationType } from "../../../domain/enums/NotificationType.js";
-import type { SelectProposalResponseDTO } from "../../dto/admin/SelectProposalResponseDTO.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
+import type { ISelectProposalUseCase } from "../usecase interfaces/admin/ISelectProposalUseCase.ts";
+import type { IProposalSelectionRepository } from "../../../domain/interface/IProposalSelectionRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { INotificationRepository } from "../../../domain/interface/INotificationRepository.ts";
+import { ProposalSelectionError } from "../../../domain/interface/IProposalSelectionRepository.ts";
+import { ProposalStatus } from "../../../domain/enums/ProposalStatus.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { NotificationType } from "../../../domain/enums/NotificationType.ts";
+import type { SelectProposalResponseDTO } from "../../dto/admin/SelectProposalResponseDTO.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
 
 export class SelectProposalUseCase implements ISelectProposalUseCase {
     constructor(
-        private readonly proposalSelectionRepository: IProposalSelectionRepository,
-        private readonly proposalRepository?: IProposalRepository,
-        private readonly issueRepository?: IIssueRepository,
-        private readonly notificationRepository?: INotificationRepository
+        private readonly _proposalSelectionRepository: IProposalSelectionRepository,
+        private readonly _proposalRepository?: IProposalRepository,
+        private readonly _issueRepository?: IIssueRepository,
+        private readonly _notificationRepository?: INotificationRepository
     ) {}
 
     async execute(
@@ -33,18 +33,18 @@ export class SelectProposalUseCase implements ISelectProposalUseCase {
         }
 
         try {
-            const result = await this.proposalSelectionRepository.selectProposalAtomic(
+            const result = await this._proposalSelectionRepository.selectProposalAtomic(
                 issueId,
                 proposalId,
                 serverNow
             );
 
             // Post-commit: Asynchronous notification dispatch (fail-safe)
-            if (this.notificationRepository && this.proposalRepository && this.issueRepository) {
+            if (this._notificationRepository && this._proposalRepository && this._issueRepository) {
                 try {
                     const [issue, allProposals] = await Promise.all([
-                        this.issueRepository.findById(issueId),
-                        this.proposalRepository.findSubmittedByIssueId(issueId),
+                        this._issueRepository.findById(issueId),
+                        this._proposalRepository.findSubmittedByIssueId(issueId),
                     ]);
 
                     if (issue) {
@@ -99,7 +99,7 @@ export class SelectProposalUseCase implements ISelectProposalUseCase {
                         }
 
                         if (notifications.length > 0) {
-                            await this.notificationRepository.createMany(notifications);
+                            await this._notificationRepository.createMany(notifications);
                         }
                     }
                 } catch (notifError) {

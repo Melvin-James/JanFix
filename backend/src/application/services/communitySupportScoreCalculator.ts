@@ -1,6 +1,6 @@
-import { AIOverallClassification } from "../../domain/enums/AIOverallClassification.js";
-import { CommentClassification } from "../../domain/enums/CommentClassification.js";
-import type { AICommentClassificationItem } from "../../domain/entities/IssueAIAnalysis.js";
+import { AIOverallClassification } from "../../domain/enums/AIOverallClassification.ts";
+import { CommentClassification } from "../../domain/enums/CommentClassification.ts";
+import type { AICommentClassificationItem } from "../../domain/entities/IssueAIAnalysis.ts";
 
 export interface ScoreCalculationResult {
     supportCount: number;

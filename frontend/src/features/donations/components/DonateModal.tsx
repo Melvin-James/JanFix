@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { loadStripe } from "@stripe/stripe-js";
+import { useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import {
   X,
@@ -18,11 +18,7 @@ import {
   getDonationStatus,
 } from "../services/donationService";
 import { StripeCheckoutForm } from "./StripeCheckoutForm";
-
-// Initialize Stripe outside component render
-const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || ""
-);
+import { stripePromise } from "../utils/stripe";
 
 interface DonateModalProps {
   issueId: string;
@@ -45,6 +41,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<
     "AMOUNT" | "CHECKOUT" | "PROCESSING" | "FAILED" | "SUCCESS"
   >("AMOUNT");
@@ -55,6 +52,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isRetrying, setIsRetrying] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isVerificationDelayed, setIsVerificationDelayed] = useState<boolean>(false);
 
   // Active donation session state
   const [activeDonationId, setActiveDonationId] = useState<string | null>(null);
@@ -148,31 +146,23 @@ export const DonateModal: React.FC<DonateModalProps> = ({
 
       if (statusRes.status === "SUCCEEDED") {
         if (pollingTimeoutRef.current) clearTimeout(pollingTimeoutRef.current);
-        setStep("SUCCESS");
         onSuccess();
+        handleClose();
+        navigate(`/donations/${donationId}/success`);
         return;
       }
 
-      if (statusRes.status === "FAILED") {
+      if (statusRes.status === "FAILED" || statusRes.status === "CANCELED") {
         if (pollingTimeoutRef.current) clearTimeout(pollingTimeoutRef.current);
-        setErrorMessage(
-          statusRes.failureReason ||
-            "Payment failed. You can retry with another payment method."
-        );
-        setStep("FAILED");
-        return;
-      }
-
-      if (statusRes.status === "CANCELED") {
-        if (pollingTimeoutRef.current) clearTimeout(pollingTimeoutRef.current);
-        setErrorMessage("Payment was canceled. You can try again.");
-        setStep("FAILED");
+        handleClose();
+        navigate(`/donations/${donationId}/failure`);
         return;
       }
 
       // Max 12 polling attempts (approx 24 seconds)
       if (pollCountRef.current >= 12) {
         if (pollingTimeoutRef.current) clearTimeout(pollingTimeoutRef.current);
+        setIsVerificationDelayed(true);
         setProcessingMessage(
           "Payment verification is taking a little longer than usual. Your contribution has been registered and will be verified automatically."
         );
@@ -236,8 +226,12 @@ export const DonateModal: React.FC<DonateModalProps> = ({
           break;
 
         case "ALREADY_SUCCEEDED":
-          setStep("SUCCESS");
-          onSuccess();
+          setStep("PROCESSING");
+          setProcessingMessage(
+            "Verifying payment confirmation with JanFix community ledger..."
+          );
+          pollCountRef.current = 0;
+          pollBackendDonationStatus(activeDonationId);
           break;
 
         case "PROCESSING":
@@ -276,6 +270,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
     setActiveDonationId(null);
     setActiveClientSecret(null);
     setErrorMessage(null);
+    setIsVerificationDelayed(false);
     onClose();
   };
 
@@ -428,7 +423,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
             </div>
           )}
 
-          {step === "CHECKOUT" && activeClientSecret && (
+          {step === "CHECKOUT" && activeClientSecret && activeDonationId && (
             <div className="space-y-4">
               <Elements
                 stripe={stripePromise}
@@ -444,6 +439,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({
                 }}
               >
                 <StripeCheckoutForm
+                  donationId={activeDonationId}
                   amountPaise={activeAmountPaise}
                   onPaymentCompleted={handleStripePaymentCompleted}
                   onPaymentProcessing={handleStripePaymentProcessing}
@@ -471,6 +467,34 @@ export const DonateModal: React.FC<DonateModalProps> = ({
                 <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
                 <span>Checking payment verification with server...</span>
               </div>
+
+              {isVerificationDelayed && activeDonationId && (
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2 max-w-sm mx-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = activeDonationId;
+                      handleClose();
+                      navigate(`/donations/${id}/result`);
+                    }}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer"
+                  >
+                    <span>View Verification Page</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      pollCountRef.current = 0;
+                      setIsVerificationDelayed(false);
+                      pollBackendDonationStatus(activeDonationId);
+                    }}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    <span>Check Again</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

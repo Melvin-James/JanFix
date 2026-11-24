@@ -1,15 +1,16 @@
 import type { Request, Response } from "express";
-import type { AuthRequest } from "../../../shared/types/AuthRequest.js";
-import asyncHandler from "../../../shared/utils/asyncHandler.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { sendSuccess, sendError } from "../../../shared/response/index.js";
-import { createDonationIntentSchema } from "../../../application/dto/donation/CreateDonationIntentDTO.js";
-import type { CreateDonationPaymentIntentUseCase } from "../../../application/use-cases/donation/CreateDonationPaymentIntentUseCase.js";
-import type { HandleStripeWebhookUseCase } from "../../../application/use-cases/donation/HandleStripeWebhookUseCase.js";
-import type { GetIssueDonationsUseCase } from "../../../application/use-cases/donation/GetIssueDonationsUseCase.js";
-import type { GetDonationStatusUseCase } from "../../../application/use-cases/donation/GetDonationStatusUseCase.js";
-import type { RetryDonationPaymentUseCase } from "../../../application/use-cases/donation/RetryDonationPaymentUseCase.js";
-import logger from "../../../shared/utils/logger.js";
+import type { AuthRequest } from "../../../shared/types/AuthRequest.ts";
+import asyncHandler from "../../../shared/utils/asyncHandler.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { sendSuccess, sendError } from "../../../shared/response/index.ts";
+import { AppMessages } from "../../../shared/constants/messages.ts";
+import type { CreateDonationIntentInput } from "../../../application/dto/donation/CreateDonationIntentDTO.ts";
+import type { CreateDonationPaymentIntentUseCase } from "../../../application/use-cases/donation/CreateDonationPaymentIntentUseCase.ts";
+import type { HandleStripeWebhookUseCase } from "../../../application/use-cases/donation/HandleStripeWebhookUseCase.ts";
+import type { GetIssueDonationsUseCase } from "../../../application/use-cases/donation/GetIssueDonationsUseCase.ts";
+import type { GetDonationStatusUseCase } from "../../../application/use-cases/donation/GetDonationStatusUseCase.ts";
+import type { RetryDonationPaymentUseCase } from "../../../application/use-cases/donation/RetryDonationPaymentUseCase.ts";
+import logger from "../../../shared/utils/logger.ts";
 
 export class DonationController {
   constructor(
@@ -24,23 +25,14 @@ export class DonationController {
     async (req: AuthRequest, res: Response): Promise<void> => {
       const userId = req.user?.userId;
       if (!userId) {
-        sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+        sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
         return;
       }
 
-      const parsed = createDonationIntentSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({
-          success: false,
-          message: "Validation failed",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
-      }
-
+      const body = req.body as CreateDonationIntentInput;
       const result = await this._createPaymentIntentUseCase.execute(
         userId,
-        parsed.data
+        body
       );
 
       sendSuccess(
@@ -101,7 +93,7 @@ export class DonationController {
     async (req: AuthRequest, res: Response): Promise<void> => {
       const userId = req.user?.userId;
       if (!userId) {
-        sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+        sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
         return;
       }
 
@@ -124,7 +116,7 @@ export class DonationController {
     async (req: AuthRequest, res: Response): Promise<void> => {
       const userId = req.user?.userId;
       if (!userId) {
-        sendError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
+        sendError(res, AppMessages.ERROR.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
         return;
       }
 

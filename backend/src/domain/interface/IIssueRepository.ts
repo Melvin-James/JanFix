@@ -1,8 +1,8 @@
 import type { ClientSession } from "mongoose";
-import type { Issue } from "../entities/Issue.js";
-import type { PaginatedResult } from "../../shared/types/Pagination.js";
-import type { IssueStatus } from "../enums/IssueStatus.js";
-import type { IssueVisibility } from "../enums/IssueVisibility.js";
+import type { Issue } from "../entities/Issue.ts";
+import type { PaginatedResult } from "../../shared/types/Pagination.ts";
+import type { IssueStatus } from "../enums/IssueStatus.ts";
+import type { IssueVisibility } from "../enums/IssueVisibility.ts";
 
 export interface IssueFilters {
     status?: IssueStatus | string | undefined;

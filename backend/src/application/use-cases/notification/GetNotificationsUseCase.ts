@@ -1,8 +1,8 @@
-import type { INotificationRepository } from "../../../domain/interface/INotificationRepository.js";
-import type { GetNotificationsResultDTO } from "../../dto/notification/NotificationResponseDTO.js";
+import type { INotificationRepository } from "../../../domain/interface/INotificationRepository.ts";
+import type { GetNotificationsResultDTO } from "../../dto/notification/NotificationResponseDTO.ts";
 
 export class GetNotificationsUseCase {
-    constructor(private readonly notificationRepository: INotificationRepository) {}
+    constructor(private readonly _notificationRepository: INotificationRepository) {}
 
     async execute(
         userId: string,
@@ -10,8 +10,8 @@ export class GetNotificationsUseCase {
         pageSize: number = 10
     ): Promise<GetNotificationsResultDTO> {
         const [paginated, unreadCount] = await Promise.all([
-            this.notificationRepository.findByRecipientPaginated(userId, page, pageSize),
-            this.notificationRepository.countUnread(userId),
+            this._notificationRepository.findByRecipientPaginated(userId, page, pageSize),
+            this._notificationRepository.countUnread(userId),
         ]);
 
         return {

@@ -1,16 +1,16 @@
 import { Router } from "express";
 
-import { upload } from "../middlewares/uploadMiddleware.js";
+import { upload } from "../middlewares/uploadMiddleware.ts";
 
-import { UploadController } from "../controllers/upload/UploadController.js";
+import { UploadController } from "../controllers/upload/UploadController.ts";
 
-import { UploadFileUseCase } from "../../application/use-cases/upload/UploadFileUseCase.js";
+import { UploadFileUseCase } from "../../application/use-cases/upload/UploadFileUseCase.ts";
 
-import { S3StorageService } from "../../infrastructure/storage/S3StorageService.js";
+import { S3StorageService } from "../../infrastructure/storage/S3StorageService.ts";
 
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authenticate } from "../middlewares/authMiddleware.ts";
 
-import { ApiEndpoints } from "../../shared/constants/apiEndpoints.js";
+import { ApiEndpoints } from "../../shared/constants/apiEndpoints.ts";
 
 const router = Router();
 

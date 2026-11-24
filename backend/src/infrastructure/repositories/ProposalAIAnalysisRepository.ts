@@ -4,7 +4,7 @@ import {
     IndividualProposalSummaryModel,
     type IssueProposalRecommendationDocument,
     type IndividualProposalSummaryDocument,
-} from "../models/ProposalAIAnalysisModel.js";
+} from "../models/ProposalAIAnalysisModel.ts";
 
 export interface IProposalAIAnalysisRepository {
     getIssueRecommendation(issueId: string): Promise<IssueProposalRecommendationDocument | null>;

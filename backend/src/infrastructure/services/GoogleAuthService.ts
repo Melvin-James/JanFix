@@ -1,18 +1,18 @@
 import { OAuth2Client } from "google-auth-library";
 
-import { env } from "../config/env.js";
+import { env } from "../config/env.ts";
 
 import type {
     GoogleUser,
     IGoogleAuthService,
-} from "../../domain/interface/IGoogleAuthService.js";
+} from "../../domain/interface/IGoogleAuthService.ts";
 
 class GoogleAuthService implements IGoogleAuthService {
 
-    private client: OAuth2Client;
+    private _client: OAuth2Client;
 
     constructor() {
-        this.client = new OAuth2Client(
+        this._client = new OAuth2Client(
             env.GOOGLE_CLIENT_ID
         );
     }
@@ -22,7 +22,7 @@ class GoogleAuthService implements IGoogleAuthService {
     ): Promise<GoogleUser> {
 
         const ticket =
-            await this.client.verifyIdToken({
+            await this._client.verifyIdToken({
                 idToken: credential,
                 audience: env.GOOGLE_CLIENT_ID,
             });

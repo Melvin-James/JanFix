@@ -1,7 +1,7 @@
-import type { ProviderType } from "../../../domain/enums/ProviderType.js";
-import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.js";
-import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.js";
-import type { UploadedFile } from "../../../domain/entities/UploadedFile.js";
+import type { ProviderType } from "../../../domain/enums/ProviderType.ts";
+import type { ProviderStatus } from "../../../domain/enums/ProviderStatus.ts";
+import type { ApplicationStatus } from "../../../domain/enums/ApplicationStatus.ts";
+import type { UploadedFile } from "../../../domain/entities/UploadedFile.ts";
 
 export interface ServiceProviderDetailsResponseDTO {
     id: string;

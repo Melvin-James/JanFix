@@ -1,5 +1,5 @@
-import type { IssueResponseDTO } from "../../../dto/issue/IssueResponseDTO.js";
-import type { Role } from "../../../../domain/enums/Role.js";
+import type { IssueResponseDTO } from "../../../dto/issue/IssueResponseDTO.ts";
+import type { Role } from "../../../../domain/enums/Role.ts";
 
 export interface IGetIssueByIdUseCase {
     execute(

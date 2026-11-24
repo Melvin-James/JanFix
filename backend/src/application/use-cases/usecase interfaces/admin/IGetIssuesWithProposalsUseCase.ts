@@ -1,6 +1,6 @@
-import type { PaginatedResult } from "../../../../shared/types/Pagination.js";
-import type { AdminIssueProposalSummaryDTO } from "../../../dto/admin/AdminIssueProposalSummaryDTO.js";
-import type { IssueWithProposalsFilters } from "../../../../domain/interface/IProposalRepository.js";
+import type { PaginatedResult } from "../../../../shared/types/Pagination.ts";
+import type { AdminIssueProposalSummaryDTO } from "../../../dto/admin/AdminIssueProposalSummaryDTO.ts";
+import type { IssueWithProposalsFilters } from "../../../../domain/interface/IProposalRepository.ts";
 
 export interface IGetIssuesWithProposalsUseCase {
     execute(

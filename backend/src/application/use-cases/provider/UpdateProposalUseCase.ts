@@ -1,20 +1,20 @@
 import { Types } from "mongoose";
-import type { IUpdateProposalUseCase } from "../usecase interfaces/provider/IUpdateProposalUseCase.js";
-import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.js";
-import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.js";
-import type { UpdateProposalDTO } from "../../dto/proposal/SubmitProposalDTO.js";
-import type { ProposalResponseDTO } from "../../dto/proposal/ProposalResponseDTO.js";
-import type { BudgetItem } from "../../../domain/entities/Proposal.js";
-import { ProposalStatus } from "../../../domain/enums/ProposalStatus.js";
-import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.js";
-import { IssueStatus } from "../../../domain/enums/IssueStatus.js";
-import { ProviderType } from "../../../domain/enums/ProviderType.js";
-import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.js";
-import { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.js";
-import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.js";
-import ApiError from "../../../shared/utils/apiError.js";
-import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.js";
-import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.js";
+import type { IUpdateProposalUseCase } from "../usecase interfaces/provider/IUpdateProposalUseCase.ts";
+import type { IIssueRepository } from "../../../domain/interface/IIssueRepository.ts";
+import type { IProposalRepository } from "../../../domain/interface/IProposalRepository.ts";
+import type { UpdateProposalDTO } from "../../dto/proposal/SubmitProposalDTO.ts";
+import type { ProposalResponseDTO } from "../../dto/proposal/ProposalResponseDTO.ts";
+import type { BudgetItem } from "../../../domain/entities/Proposal.ts";
+import { ProposalStatus } from "../../../domain/enums/ProposalStatus.ts";
+import { ProposalWindowStatus } from "../../../domain/enums/ProposalWindowStatus.ts";
+import { IssueStatus } from "../../../domain/enums/IssueStatus.ts";
+import { ProviderType } from "../../../domain/enums/ProviderType.ts";
+import { ProposalFundingType } from "../../../domain/enums/ProposalFundingType.ts";
+import { NgoParticipationMode } from "../../../domain/enums/NgoParticipationMode.ts";
+import { ProposalAppMapper } from "../../mappers/ProposalAppMapper.ts";
+import ApiError from "../../../shared/utils/apiError.ts";
+import { HttpStatusCode } from "../../../shared/enums/HttpStatusCode.ts";
+import { PROPOSAL_SUBMISSION_WINDOW_MS } from "../../../shared/constants/proposal.constants.ts";
 
 function parseTimeToMinutes(timeStr: string): number {
     const parts = timeStr.split(":").map(Number);
@@ -25,8 +25,8 @@ function parseTimeToMinutes(timeStr: string): number {
 
 export class UpdateProposalUseCase implements IUpdateProposalUseCase {
     constructor(
-        private readonly issueRepository: IIssueRepository,
-        private readonly proposalRepository: IProposalRepository
+        private readonly _issueRepository: IIssueRepository,
+        private readonly _proposalRepository: IProposalRepository
     ) {}
 
     async execute(
@@ -43,7 +43,7 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
         }
 
         // 1. Verify Issue existence and deadline
-        const issue = await this.issueRepository.findById(issueId);
+        const issue = await this._issueRepository.findById(issueId);
         if (!issue) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "Issue not found");
         }
@@ -72,7 +72,7 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
         }
 
         // 2. Retrieve existing proposal
-        const proposal = await this.proposalRepository.findByIssueAndProvider(issueId, providerId);
+        const proposal = await this._proposalRepository.findByIssueAndProvider(issueId, providerId);
         if (!proposal) {
             throw new ApiError(HttpStatusCode.NOT_FOUND, "No proposal found for this issue");
         }
@@ -267,7 +267,7 @@ export class UpdateProposalUseCase implements IUpdateProposalUseCase {
             };
         }
 
-        const updated = await this.proposalRepository.update(proposal.id!, updates);
+        const updated = await this._proposalRepository.update(proposal.id!, updates);
         if (!updated) {
             throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Failed to update proposal");
         }

@@ -1,13 +1,13 @@
-import { env } from "../../infrastructure/config/env.js";
+import { env } from "../../infrastructure/config/env.ts";
 import nodemailer from "nodemailer";
-import type { IEmailService } from "../../domain/interface/IEmailService.js";
+import type { IEmailService } from "../../domain/interface/IEmailService.ts";
 
 class EmailService implements IEmailService {
 
-  private transporter;
+  private _transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
+    this._transporter = nodemailer.createTransport({
 
       host: "smtp.gmail.com",
 
@@ -28,7 +28,7 @@ class EmailService implements IEmailService {
     otp: string
   ): Promise<void> {
 
-    await this.transporter.sendMail({
+    await this._transporter.sendMail({
       from: process.env.EMAIL_USER,
 
       to: email,

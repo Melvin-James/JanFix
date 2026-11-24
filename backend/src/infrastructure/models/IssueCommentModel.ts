@@ -1,5 +1,5 @@
 import { Schema, model, type Document, Types } from "mongoose";
-import { ISSUE_COMMENT_LIMITS } from "../../shared/constants/issueComment.constants.js";
+import { ISSUE_COMMENT_LIMITS } from "../../shared/constants/issueComment.constants.ts";
 
 export const MAX_COMMENT_LENGTH = ISSUE_COMMENT_LIMITS.MAX_LENGTH;
 
