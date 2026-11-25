@@ -10,12 +10,16 @@ import type { ProviderActivationFormData } from "../validations/providerActivati
 export const getProviderProfile =
     async (): Promise<{
         success: boolean;
-        provider: ProviderProfile;
+        data: {
+            profile: ProviderProfile;
+        };
     }> => {
-        
+
         const response = await axiosInstance.get<{
             success: boolean;
-            provider: ProviderProfile;
+            data: {
+                profile: ProviderProfile;
+            };
         }>("/provider/profile");
 
         return response.data;
@@ -87,7 +91,7 @@ export interface GetProviderIssuesParams {
     pageSize?: number;
     category?: string;
     search?: string;
-    visibility?:string
+    visibility?: string
 }
 
 export const getProviderIssues = async (

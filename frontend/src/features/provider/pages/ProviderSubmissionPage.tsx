@@ -53,7 +53,7 @@ function ProviderSubmissionPage() {
         
         const data = await getProviderProfile();
         
-        setProvider(data.provider);
+        setProvider(data.data.profile);
       
       } catch (err) {
         
