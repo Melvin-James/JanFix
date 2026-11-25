@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import { loginUser } from "../services/authService";
 
@@ -25,6 +25,8 @@ import GoogleAuthButton from "../components/GoogleAuthButton";
 
 import toast from "react-hot-toast";
 
+import { hasRole } from "../../../utils/auth";
+
 function LoginPage() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
@@ -39,10 +41,11 @@ function LoginPage() {
 
   const [loading, setLoading] = useState(false);
 
-
   const [serverError, setServerError] = useState<string>("");
 
   const setUser = useAuthStore((state) => state.setUser);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const onSubmit = async (data: LoginFormData) => {
 
@@ -59,6 +62,37 @@ function LoginPage() {
       setUser(user);
 
       toast.success("Authenticated");
+
+      const state = location.state as { from?: { pathname?: string; search?: string } | string } | undefined;
+      let returnPath: string | null = null;
+      if (state?.from) {
+        if (typeof state.from === "string") {
+          returnPath = state.from;
+        } else if (state.from.pathname) {
+          returnPath = `${state.from.pathname}${state.from.search || ""}`;
+        }
+      }
+
+      if (hasRole(user, "ADMIN")) {
+        navigate("/admin", { replace: true });
+      } else if (user.activeMode === "SERVICE_PROVIDER") {
+        const isApproved =
+          Boolean(user.providerAccess?.isApproved) ||
+          user.providerProfile?.status?.applicationStatus === "APPROVED";
+        if (isApproved) {
+          const hasPayoutDetails = Boolean(
+            user.providerAccess?.hasPayoutDetails ||
+            (user.providerProfile?.payoutDetails?.accountHolderName &&
+             user.providerProfile?.payoutDetails?.upiId)
+          );
+          const isActivated =
+            Boolean(user.providerAccess?.isActivated) ||
+            (user.providerProfile?.status?.providerStatus === "ACTIVE" && hasPayoutDetails);
+          navigate(isActivated ? "/provider/dashboard" : "/provider/activation", { replace: true });
+        }
+      } else {
+        navigate(returnPath || "/home", { replace: true });
+      }
 
     } catch (error: unknown) {
 

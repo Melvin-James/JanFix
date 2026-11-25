@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 import { useAuthStore } from "../store/authStore";
 
@@ -16,13 +16,14 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     const user = useAuthStore((state) => state.user);
 
     const isAuthLoading = useAuthStore((state) => state.isAuthLoading);
+    const location = useLocation();
 
     if (isAuthLoading) {
         return <LoadingSpinner />;
     }
 
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     return children;
