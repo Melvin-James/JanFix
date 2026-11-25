@@ -1,12 +1,12 @@
-import { Navigate }from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
-import {useAuthStore} from "../store/authStore";
+import { useAuthStore } from "../store/authStore";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 
 import ProviderRedirect from "../features/provider/components/ProviderRedirect";
 
-import type {ReactNode} from "react";
+import type { ReactNode } from "react";
 
 import { hasRole } from "../utils/auth";
 
@@ -24,6 +24,11 @@ function PublicRoute({ children }: PublicRouteProps) {
     const isAuthLoading =
         useAuthStore((state) => state.isAuthLoading);
 
+    const activeMode =
+        useAuthStore((state) => state.activeMode);
+
+    const location = useLocation();
+
     if (isAuthLoading) {
 
         return <LoadingSpinner />;
@@ -39,12 +44,22 @@ function PublicRoute({ children }: PublicRouteProps) {
         return <Navigate to="/admin" replace />;
     }
 
-    if (hasRole(user, "SERVICE_PROVIDER")) {
+    if (activeMode === "SERVICE_PROVIDER") {
 
         return <ProviderRedirect />;
     }
 
-    return <Navigate to="/home" replace />;
+    const state = location.state as { from?: { pathname?: string; search?: string } | string } | undefined;
+    let target = "/home";
+    if (state?.from) {
+      if (typeof state.from === "string") {
+        target = state.from;
+      } else if (state.from.pathname) {
+        target = `${state.from.pathname}${state.from.search || ""}`;
+      }
+    }
+
+    return <Navigate to={target} replace />;
 }
 
 export default PublicRoute;
