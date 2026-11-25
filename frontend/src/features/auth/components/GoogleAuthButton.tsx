@@ -1,7 +1,8 @@
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { googleLogin } from "../services/authService";
 import { useAuthStore } from "../../../store/authStore";
+import { hasRole } from "../../../utils/auth";
 import axios from "axios";
 
 export interface GoogleAuthButtonProps {
@@ -12,6 +13,7 @@ export interface GoogleAuthButtonProps {
 export function GoogleAuthButton({ onError, onLoadingChange }: GoogleAuthButtonProps) {
     const setUser = useAuthStore((state) => state.setUser);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSuccess = async (credentialResponse: CredentialResponse) => {
         try {
@@ -25,8 +27,39 @@ export function GoogleAuthButton({ onError, onLoadingChange }: GoogleAuthButtonP
 
             const response = await googleLogin(credential);
             if (response.data?.user) {
-                setUser(response.data.user);
-                navigate("/home");
+                const user = response.data.user;
+                setUser(user);
+
+                const state = location.state as { from?: { pathname?: string; search?: string } | string } | undefined;
+                let returnPath: string | null = null;
+                if (state?.from) {
+                  if (typeof state.from === "string") {
+                    returnPath = state.from;
+                  } else if (state.from.pathname) {
+                    returnPath = `${state.from.pathname}${state.from.search || ""}`;
+                  }
+                }
+
+                if (hasRole(user, "ADMIN")) {
+                    navigate("/admin", { replace: true });
+                } else if (user.activeMode === "SERVICE_PROVIDER") {
+                    const isApproved =
+                      Boolean(user.providerAccess?.isApproved) ||
+                      user.providerProfile?.status?.applicationStatus === "APPROVED";
+                    if (isApproved) {
+                      const hasPayoutDetails = Boolean(
+                        user.providerAccess?.hasPayoutDetails ||
+                        (user.providerProfile?.payoutDetails?.accountHolderName &&
+                         user.providerProfile?.payoutDetails?.upiId)
+                      );
+                      const isActivated =
+                        Boolean(user.providerAccess?.isActivated) ||
+                        (user.providerProfile?.status?.providerStatus === "ACTIVE" && hasPayoutDetails);
+                      navigate(isActivated ? "/provider/dashboard" : "/provider/activation", { replace: true });
+                    }
+                } else {
+                    navigate(returnPath || "/home", { replace: true });
+                }
             }
         } catch (err: unknown) {
             console.error("Google authentication error:", err);
